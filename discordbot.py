@@ -162,7 +162,7 @@ async def prime(ctx, *args):
 				first_flag = False
 			else:
 				res_prime += '\*'
-			res_prime += str(temp)
+			res_prime += str(int(temp))
 		if minus_flag:
 			if first_flag:
 				first_flag = False

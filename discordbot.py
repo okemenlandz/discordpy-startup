@@ -136,15 +136,17 @@ async def beyond(ctx):
 async def prime(ctx, *args):
 	if len(args) == 0:
 		await ctx.send('数字を入れてください')
-	elif args[0] = '1':
+	elif args[0] == '1':
 		await ctx.send('1')
-	elif args[0] = '0':
+	elif args[0] == '0':
 		await ctx.send('0')
 	elif args[0].isdecimal():
 		prime_list = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53]
 		temp = int(args[0])
+		minus_flag = False
 		if temp < 0:
 			temp = 0 - temp
+			minus_flag = True
 		res_prime = ''
 		first_flag = True
 		for i in range(16):
@@ -156,9 +158,17 @@ async def prime(ctx, *args):
 				res_prime += str(prime_list[i-1])
 				temp /= prime_list[i-1]
 		if temp != 1:
-			if not first_flag:
+			if first_flag:
+				first_flag = False
+			else:
 				res_prime += '\*'
 			res_prime += str(temp)
+		if minus_flag:
+			if first_flag:
+				first_flag = False
+			else:
+				res_prime += '\*'
+			res_prime += '-1'
 		await ctx.send(res_prime)
 	else:
 		await ctx.send('数字を入れてください')

@@ -10,7 +10,7 @@ import math
 bot = commands.Bot(command_prefix='/')
 token = os.environ['DISCORD_BOT_TOKEN'] #heroku
 alarm_list = []
-version = 'ver 7.0 期待値'
+version = 'ver 8.0 復活'
 
 @bot.event
 async def on_command_error(ctx, error):

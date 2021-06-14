@@ -140,15 +140,19 @@ async def prime(ctx, *args):
 		prime_list = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53]
 		temp = int(args[0])
 		res_prime = ''
+		first_flag = true
 		for i in range(16):
 			while (temp % prime_list[i-1]) == 0:
+				if first_flag:
+					first_flag = false
+				else:
+					res_prime += '\*'
 				res_prime += str(prime_list[i-1])
-				res_prime += '*'
 				temp /= prime_list[i-1]
-		
-		await ctx.send(res_prime)
 		if temp != 1:
-			await ctx.send(temp)
+			res_prime += '\*'
+			res_prime += temp
+		await ctx.send(res_prime)
 	else:
 		await ctx.send('数字を入れてください')
 

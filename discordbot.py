@@ -199,7 +199,6 @@ async def val(ctx,*args):
 			mc_disp = mc_disp + '・' + mc + '\n'
 		await ctx.send(mc_disp)
 
-@bot.command()
 def right():
 	right = random.randint(0,36)
 	if right < 5:

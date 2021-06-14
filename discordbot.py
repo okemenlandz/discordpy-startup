@@ -138,7 +138,7 @@ async def prime(ctx, *args):
 		await ctx.send('数字を入れてください')
 	elif args[0].isdecimal():
 		prime_list = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53]
-		temp = args[0]
+		temp = int(args[0])
 		res_prime = ''
 		for i in range(16):
 			while (temp % prime_list[i-1]) == 0:
@@ -147,9 +147,6 @@ async def prime(ctx, *args):
 		
 		await ctx.send(res_prime)
 		
-		
-	
-
 @bot.command()
 async def gag(ctx):
 	per_seed = random.expovariate(0.1)

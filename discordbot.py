@@ -147,7 +147,11 @@ async def prime(ctx, *args):
 				temp /= prime_list[i-1]
 		
 		await ctx.send(res_prime)
-		
+		if temp != 1:
+			await ctx.send(temp)
+	else:
+		await ctx.send('数字を入れてください')
+
 @bot.command()
 async def gag(ctx):
 	per_seed = random.expovariate(0.1)

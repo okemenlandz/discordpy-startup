@@ -143,7 +143,7 @@ async def prime(ctx, *args):
 		for i in range(16):
 			while (temp % prime_list[i-1]) == 0:
 				res_prime += str(prime_list[i-1])
-				res_prime += ' '
+				res_prime += '*'
 				temp /= prime_list[i-1]
 		
 		await ctx.send(res_prime)

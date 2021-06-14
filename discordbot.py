@@ -151,7 +151,7 @@ async def prime(ctx, *args):
 				temp /= prime_list[i-1]
 		if temp != 1:
 			res_prime += '\*'
-			res_prime += temp
+			res_prime += str(temp)
 		await ctx.send(res_prime)
 	else:
 		await ctx.send('数字を入れてください')

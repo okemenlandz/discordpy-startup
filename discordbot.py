@@ -140,11 +140,11 @@ async def prime(ctx, *args):
 		prime_list = [2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53]
 		temp = int(args[0])
 		res_prime = ''
-		first_flag = true
+		first_flag = True
 		for i in range(16):
 			while (temp % prime_list[i-1]) == 0:
 				if first_flag:
-					first_flag = false
+					first_flag = False
 				else:
 					res_prime += '\*'
 				res_prime += str(prime_list[i-1])

@@ -117,7 +117,7 @@ async def nmki(ctx):
 	nmki_list1 = ['実力','ラック']
 	nmki_list2 = ['あり','なし']
 	random.shuffle(nmki_list1)
-	ramdom.shuhhle(nmki_list2)
+	ramdom.shuffle(nmki_list2)
 	await ctx.send(nmki_list1[0] + nmki_list2[0] + nmki_list1[1] + nmki_list2[1])
 
 @bot.command()

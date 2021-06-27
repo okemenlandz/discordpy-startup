@@ -111,6 +111,14 @@ async def ast(ctx):
 	ast_list = ['時計塔','布団なら俺の隣で寝てるよ','りょったは困ります','ごふいよ','(っ\'-\')╮ =͟͟͞:pig2:']
 	random.shuffle(ast_list)
 	await ctx.send(ast_list[0])
+	
+@bot.command()
+async def nmki(ctx):
+	nmki_list1 = ['実力','ラック']
+	nmki_list2 = ['あり','なし']
+	random.shuffle(nmki_list1)
+	ramdom.shuhhle(nmki_list2)
+	await ctx.send(nmki_list1[0] + nmki_list2[0] + nmki_list1[1] + nmki_list2[1])
 
 @bot.command()
 async def sex(ctx):

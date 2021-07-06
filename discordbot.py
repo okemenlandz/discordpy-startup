@@ -43,7 +43,7 @@ async def on_voice_state_update(member, before, after):
 			await alert_channel.send(msg)
    
 	if member.guild.id == 764512399301935134 and (before.channel != after.channel):
-		alert_channel = bot.get_channel(741963356663185533)
+		alert_channel = bot.get_channel(764515511417438219)
 		if before.channel is None:
 			msg = f'{member.name}が{after.channel.name}で通話を開始した。'
 			await alert_channel.send(msg)

@@ -180,7 +180,7 @@ async def prime(ctx, *args):
 			res_prime += '-1'
 		await ctx.send(res_prime)
 	else:
-		await ctx.send('数字を入れてください')
+		await ctx.send('数字を入れてください。')
 
 @bot.command()
 async def gag(ctx):

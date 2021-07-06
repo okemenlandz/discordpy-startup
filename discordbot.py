@@ -10,7 +10,7 @@ import math
 bot = commands.Bot(command_prefix='/')
 token = os.environ['DISCORD_BOT_TOKEN'] #heroku
 alarm_list = []
-version = 'ver 8.0 復活'
+version = 'ver 8.0'
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -42,7 +42,7 @@ async def on_voice_state_update(member, before, after):
 			msg = f'{member.name}は{before.channel.name}から{after.channel.name}に移動した！'
 			await alert_channel.send(msg)
    
-	if member.guild.id == 741963356663185529 and (before.channel != after.channel):
+	if member.guild.id == 764512399301935134 and (before.channel != after.channel):
 		alert_channel = bot.get_channel(741963356663185533)
 		if before.channel is None:
 			msg = f'{member.name}が{after.channel.name}で通話を開始した。'

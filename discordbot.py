@@ -434,7 +434,7 @@ def sql_query():
     	print(f"Error Occurred: {e}")
 
 	finally:
-    	if conn is not None and cnx.is_connected():
+    	if conn is not None and conn.is_connected():
         	conn.close()
 
     cur = conn.cursor()

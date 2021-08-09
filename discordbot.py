@@ -6,9 +6,13 @@ import re
 import random
 import traceback
 import math
+import packages.mysql.connector as mydb
 
 bot = commands.Bot(command_prefix='/')
 token = os.environ['DISCORD_BOT_TOKEN'] #heroku
+db_password = os.environ['DB_PASSWORD']
+db_user = os.environ['DB_USER']
+db_host = os.environ['DB_HOST']
 alarm_list = []
 version = 'ver 8.0'
 
@@ -412,5 +416,27 @@ async def gen(ctx):
 		await ctx.send(f'{judge}\n超源RUSH　終了\n超源RUSH×{cnt[1]+cnt[2]}\n超源BONUS×{cnt[3]}')
 		total = (cnt[1]*330+cnt[2]*660+cnt[3]*990+rest)*4
 		await ctx.send(f'投資:{in_money}円\n回収:{total}円\n収支:{total - in_money}円')
+
+def sql_query():
+	conn = None
+	try:
+	    conn = mydb.connect(
+	        user='db_user',  # ユーザー名
+	        password='db_password',  # パスワード
+	        host='db_host',  # ホスト名(IPアドレス）
+	        port='3306',
+	        database='okemenlandz.okemenlandz'
+	    )
+
+	    if conn.is_connected:
+	        print("Connected!")
+	except Exception as e:
+    	print(f"Error Occurred: {e}")
+
+	finally:
+    	if conn is not None and cnx.is_connected():
+        	conn.close()
+
+    cur = conn.cursor()
 		
 bot.run(token)

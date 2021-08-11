@@ -42,6 +42,9 @@ async def on_voice_state_update(member, before, after):
 		if before.channel is None:
 			msg = f'{member.name}は{after.channel.name}'
 			await alert_channel.send(msg)
+		elif after.channel is None:
+			msg = f'{member.name}はいなくなった。'
+			await alert_channel.send(msg)
 		else:
 			msg = f'{member.name}は{before.channel.name}から{after.channel.name}に移動した！'
 			await alert_channel.send(msg)
@@ -50,6 +53,9 @@ async def on_voice_state_update(member, before, after):
 		alert_channel = bot.get_channel(862005213233938443)
 		if before.channel is None:
 			msg = f'{member.name}が{after.channel.name}で通話を開始した。'
+			await alert_channel.send(msg)
+		elif after.channel is None:
+			msg = f'{member.name}はいなくなった。'
 			await alert_channel.send(msg)
 		else:
 			msg = f'{member.name}は{before.channel.name}から{after.channel.name}に移動した！'

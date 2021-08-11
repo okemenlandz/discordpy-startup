@@ -18,23 +18,23 @@ version = 'ver 8.0'
 
 @bot.event
 async def on_command_error(ctx, error):
-    orig_error = getattr(error, "original", error)
-    error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
-    await ctx.send(error_msg)
+	orig_error = getattr(error, "original", error)
+	error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
+	await ctx.send(error_msg)
 
 @bot.event
 async def on_ready():
-    
-    msg = '起動しました。'
-    
-    alert_channel = bot.get_channel(744596357561712785)
-    await alert_channel.send(msg)
-    await alert_channel.send(version)
-    
-    alert_channel = bot.get_channel(741963356663185533)
-    await alert_channel.send(msg)
-    await alert_channel.send(version)
-    
+	
+	msg = '起動しました。'
+	
+	alert_channel = bot.get_channel(744596357561712785)
+	await alert_channel.send(msg)
+	await alert_channel.send(version)
+	
+	alert_channel = bot.get_channel(741963356663185533)
+	await alert_channel.send(msg)
+	await alert_channel.send(version)
+	
 @bot.event
 async def on_voice_state_update(member, before, after): 
 	if member.guild.id == 744596357561712782 and (before.channel != after.channel):
@@ -54,7 +54,7 @@ async def on_voice_state_update(member, before, after):
 		else:
 			msg = f'{member.name}は{before.channel.name}から{after.channel.name}に移動した！'
 			await alert_channel.send(msg)
-            
+			
 @bot.command()
 async def ping(ctx):
 	await ctx.send('pong')
@@ -62,7 +62,7 @@ async def ping(ctx):
 @bot.command()
 async def pong(ctx):
 	await ctx.send('ping\npong')
-        
+		
 @bot.command()
 async def ver(ctx):
 	await ctx.send(version)
@@ -417,26 +417,29 @@ async def gen(ctx):
 		total = (cnt[1]*330+cnt[2]*660+cnt[3]*990+rest)*4
 		await ctx.send(f'投資:{in_money}円\n回収:{total}円\n収支:{total - in_money}円')
 
+"""
 def sql_query():
 	conn = None
 	try:
-	    conn = mydb.connect(
-	        user='db_user',  # ユーザー名
-	        password='db_password',  # パスワード
-	        host='db_host',  # ホスト名(IPアドレス）
-	        port='3306',
-	        database='okemenlandz.okemenlandz'
-	    )
+		conn = mydb.connect(
+			user='db_user',  # ユーザー名
+			password='db_password',  # パスワード
+			host='db_host',  # ホスト名(IPアドレス）
+			port='3306',
+			database='okemenlandz.okemenlandz'
+		)
 
-	    if conn.is_connected:
-	        print("Connected!")
+		if conn.is_connected:
+			print("Connected!")
+			
 	except Exception as e:
-    	print(f"Error Occurred: {e}")
+		print(f"Error Occurred: {e}")
 
 	finally:
-    	if conn is not None and conn.is_connected():
-        	conn.close()
+		if conn is not None and conn.is_connected():
+			conn.close()
 
-    cur = conn.cursor()
-		
+	cur = conn.cursor()
+"""
+
 bot.run(token)

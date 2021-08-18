@@ -94,6 +94,10 @@ async def doya(ctx):
 @bot.command()
 async def nemochi(ctx):
 	await ctx.send('ねもち…:yawning_face:')
+
+@bot.command()
+async def dc(ctx):
+	await ctx.send('!dc')
 	
 @bot.command()
 async def rico(ctx):

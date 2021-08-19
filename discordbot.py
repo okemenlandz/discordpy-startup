@@ -98,7 +98,7 @@ async def nemochi(ctx):
 @bot.command()
 async def rythm(ctx, *args):
 	await ctx.message.author.voice.channel.connect()
-	await ctx.send('!' + args[0])
+	"""await ctx.send('!' + args[0])"""
     await ctx.message.author.guild.voice_client.disconnect()
 
 @bot.command()

@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 from discord.ext import tasks
 from datetime import datetime 
@@ -97,9 +98,9 @@ async def nemochi(ctx):
 
 @bot.command()
 async def rythm(ctx, *args):
-	await ctx.author.voice.channel.connect()
+	await discord.VoiceChannel.connect(ctx.author.voice.channel)
 	await ctx.send('!' + args[0])
-    await ctx.author.guild.voice_client.disconnect()
+    #await ctx.author.guild.voice_client.disconnect()
 
 @bot.command()
 async def rico(ctx):

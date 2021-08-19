@@ -96,8 +96,10 @@ async def nemochi(ctx):
 	await ctx.send('ねもち…:yawning_face:')
 
 @bot.command()
-async def dc(ctx):
-	await ctx.send('!dc')
+async def rythm(ctx, *args):
+	await ctx.message.author.voice.channel.connect()
+	await ctx.send('!' + args[0])
+    await ctx.message.author.guild.voice_client.disconnect()
 	
 @bot.command()
 async def rico(ctx):

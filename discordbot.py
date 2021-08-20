@@ -100,7 +100,7 @@ async def nemochi(ctx):
 async def rythm(ctx, *args):
 	await discord.VoiceChannel.connect(ctx.author.voice.channel)
 	await ctx.send('!' + args[0])
-    await ctx.author.guild.voice_client.disconnect()
+    #await ctx.author.guild.voice_client.disconnect()
 
 @bot.command()
 async def rico(ctx):

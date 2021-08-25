@@ -219,7 +219,7 @@ async def gag(ctx):
 async def wao(ctx,*args):
 	if len(args) == 0:
 		cnt = int(12)
-		wow_list = ['合宿免許ワオ！！','ワオ','ワオワオワオ','ワオ！！','合宿免許','合宿','免許','応援','ガール','えなこ']
+		wow_list = ['合宿免許ワオ！！','ワオ','ワオワオワオ','ワオ！！','合宿免許','合宿','免許']
 		wow_str = ''
 		while cnt >= 1:
 			random.shuffle(wow_list)

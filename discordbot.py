@@ -100,12 +100,6 @@ async def nemochi(ctx):
 	await ctx.send('ねもち…:yawning_face:')
 
 @bot.command()
-async def rythm(ctx, *args):
-	await discord.VoiceChannel.connect(ctx.author.voice.channel)
-	await ctx.send('!' + args[0])
-	#await ctx.author.guild.voice_client.disconnect()
-
-@bot.command()
 async def rico(ctx):
 	rico_list = ['King of Drug','さんぱーみ','たべちゃった','せーのって言ってください:pleading_face:','スイッチ入れてなかった']
 	random.shuffle(rico_list)
@@ -161,6 +155,14 @@ async def beyond(ctx):
 	random.shuffle(byd_list)
 	await ctx.send(byd_list[0])
 	
+@bot.command()
+async def oha(ctx):
+	await ctx.send('おはよー')
+
+@bot.command()
+async def oya(ctx):
+	await ctx.send('おやすみー')
+
 @bot.command()
 async def prime(ctx, *args):
 	if len(args) == 0:

@@ -176,6 +176,7 @@ async def prime(ctx, *args):
 					if first_flag:
 						first_flag = False
 						res_prime += str(i)
+						temp //= i
 					else:
 						res_prime += '\*'
 						res_prime += str(i)
@@ -186,6 +187,7 @@ async def prime(ctx, *args):
 				first_flag = False
 				res_prime += str(temp)
 			else:
+				res_prime += '\*'
 				res_prime += str(temp)
 
 		if res_prime=='':
@@ -193,6 +195,7 @@ async def prime(ctx, *args):
 				first_flag = False
 				res_prime += args[0]
 			else:
+				res_prime += '\*'
 				res_prime += args[0]
 
 		await ctx.send(res_prime)

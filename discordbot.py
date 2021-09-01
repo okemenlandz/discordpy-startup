@@ -169,7 +169,7 @@ async def prime(ctx, *args):
 	elif args[0].isdecimal():
 		first_flag = True
 		res_prime = ''
-	    temp = n
+	    temp = args[0]
 	    for i in range(2, int(-(-n**0.5//1))+1):
 	        if temp%i==0:
 	            while temp%i==0:
@@ -191,9 +191,9 @@ async def prime(ctx, *args):
 	    if res_prime=='':
 	        if first_flag:
 				first_flag = False
-				res_prime += n
+				res_prime += args[0]
 			else:
-	        	res_prime += n
+	        	res_prime += args[0]
 
 		await ctx.send(res_prime)
 	else:

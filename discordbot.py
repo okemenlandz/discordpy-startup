@@ -170,7 +170,7 @@ async def prime(ctx, *args):
 		first_flag = True
 		res_prime = ''
 	    temp = args[0]
-	    for i in range(2, int(-(-n**0.5//1))+1):
+	    for i in range(2, int(-(-args[0]**0.5//1))+1):
 	        if temp%i==0:
 	            while temp%i==0:
 	            	if first_flag:

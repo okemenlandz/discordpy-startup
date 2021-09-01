@@ -161,7 +161,7 @@ async def beyond(ctx):
 @bot.command()
 async def prime(ctx, *args):
 	if len(args) == 0:
-		await ctx.send('数字を入れてください')
+		await ctx.send('正しい数字を入れてください')
 	elif args[0] == '1':
 		await ctx.send('1')
 	elif args[0] == '0':
@@ -200,7 +200,7 @@ async def prime(ctx, *args):
 
 		await ctx.send(res_prime)
 	else:
-		await ctx.send('数字を入れてください。')
+		await ctx.send('正しい数字を入れてください。')
 
 @bot.command()
 async def gag(ctx):
@@ -229,7 +229,7 @@ async def gb(ctx,*args):
 	message = ''
 
 	if len(args) == 0:
-		await ctx.send('数字を入れてください')
+		await ctx.send('正しい数字を入れてください')
 	elif len(args) > 4:
 		await ctx.send('パラメータが多すぎます')
 	else:
@@ -237,7 +237,7 @@ async def gb(ctx,*args):
 			if not (args[i].isdecimal()):
 				err_flg = True
 		if err_flg:
-			await ctx.send('数字を入れてください')
+			await ctx.send('正しい数字を入れてください')
 		else:
 			for i in range(player_num):
 				players.append(int(args[i]))

@@ -220,14 +220,51 @@ async def gag(ctx):
 
 @bot.command()
 async def gb(ctx,*args):
-	"""gap_list = [27,81,136,193,251,311,374,400]
+	gap_list = [27,81,136,193,251,311,374,400]
+	err_flg = False
+	player_num = len(args)
+	players = []
+	gaps = [0,0,0,0]
+	temp = 0
+	message = ''
+
 	if len(args) == 0:
 		await ctx.send('数字を入れてください')
-	elif args[0] == '1':
-		await ctx.send('1')
-	elif args[0] == '0':
-		await ctx.send('0')
-	elif args[0].isdecimal():"""
+	elif len(args) > 4:
+		await ctx.send('パラメータが多すぎます')
+	else:
+		for i in range(player_num):
+			if not (args[i].isdecimal()):
+				err_flg = True
+		if err_flg:
+			await ctx.send('数字を入れてください')
+		else:
+			for i in range(player_num):
+				players.append(int(args[i]))
+
+			for i in range(player_num):
+				gaps[i] = 0
+				for j in range(player_num):
+					if players[i] > players[j]:
+						temp = players[i] - players[j]
+						for k in range(8):
+							if temp <= gap_list[k]:
+								break
+							gaps[i] -= 1
+					elif players[i] < players[j]:
+						temp = players[j] - players[i]
+						for k in range(8):
+							if temp <= gap_list[k]:
+								break
+							gaps[i] += 1
+
+				if not i == 0:
+					message += " "
+				message += str(gaps[i])
+			await ctx.send(message)
+
+
+
 
 @bot.command()
 async def val(ctx,*args):

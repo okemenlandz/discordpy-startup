@@ -188,7 +188,7 @@ async def prime(ctx, *args):
 			else:
 	        	res_prime += temp
 
-	    if arr==[]:
+	    if res_prime=='':
 	        if first_flag:
 				first_flag = False
 				res_prime += n
@@ -216,43 +216,15 @@ async def gag(ctx):
 		await ctx.send(f'あなたのギャグは{per}%です')
 
 @bot.command()
-async def wao(ctx,*args):
+async def gb(ctx,*args):
+	"""gap_list = [27,81,136,193,251,311,374,400]
 	if len(args) == 0:
-		cnt = int(12)
-		wow_list = ['合宿免許ワオ！！','ワオ','ワオワオワオ','ワオ！！','合宿免許','合宿','免許']
-		wow_str = ''
-		while cnt >= 1:
-			random.shuffle(wow_list)
-			while(random.randint(0,1) < 1):
-				wow_str += wow_list[0]
-				cnt -= 1
-			wow_str += wow_list[0]
-			cnt -= 1
-		await ctx.send(wow_str)
-	elif args[0].isdecimal():
-		cnt = int(args[0])
-		wow_list = ['合宿免許ワオ！！','ワオ','ワオワオワオ','ワオ！！','合宿免許','合宿','免許','応援','ガール','えなこ']
-		wow_str = ''
-		while cnt >= 1:
-			random.shuffle(wow_list)
-			while(random.randint(0,1) < 1):
-				wow_str += wow_list[0]
-				cnt -= 1
-			wow_str += wow_list[0]
-			cnt -= 1
-		await ctx.send(wow_str)
-	else:
-		cnt = int(12)
-		wow_list = ['合宿免許ワオ！！','ワオ','ワオワオワオ','ワオ！！','合宿免許','合宿','免許','応援','ガール','えなこ']
-		wow_str = ''
-		while cnt >= 1:
-			random.shuffle(wow_list)
-			while(random.randint(0,1) < 1):
-				wow_str += wow_list[0]
-				cnt -= 1
-			wow_str += wow_list[0]
-			cnt -= 1
-		await ctx.send(wow_str)
+		await ctx.send('数字を入れてください')
+	elif args[0] == '1':
+		await ctx.send('1')
+	elif args[0] == '0':
+		await ctx.send('0')
+	elif args[0].isdecimal():"""
 
 @bot.command()
 async def val(ctx,*args):

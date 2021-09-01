@@ -167,7 +167,7 @@ async def prime(ctx, *args):
 	elif args[0] == '0':
 		await ctx.send('0')
 	elif args[0].isdecimal():
-
+		first_flag = True
 		res_prime = ''
 	    temp = n
 	    for i in range(2, int(-(-n**0.5//1))+1):

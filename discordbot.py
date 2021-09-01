@@ -259,7 +259,7 @@ async def gb(ctx,*args):
 							gaps[i] += 1
 
 				if not i == 0:
-					message += " "
+					message += "\n"
 				message += str(gaps[i])
 			await ctx.send(message)
 

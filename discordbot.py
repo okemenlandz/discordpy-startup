@@ -158,7 +158,7 @@ async def beyond(ctx):
 	random.shuffle(byd_list)
 	await ctx.send(byd_list[0])
 	
-@bot.command()
+"""@bot.command()
 async def prime(ctx, *args):
 	if len(args) == 0:
 		await ctx.send('数字を入れてください')
@@ -197,7 +197,7 @@ async def prime(ctx, *args):
 
 		await ctx.send(res_prime)
 	else:
-		await ctx.send('数字を入れてください。')
+		await ctx.send('数字を入れてください。')"""
 
 @bot.command()
 async def gag(ctx):

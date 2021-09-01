@@ -100,7 +100,7 @@ async def nemochi(ctx):
 async def rythm(ctx, *args):
 	await discord.VoiceChannel.connect(ctx.author.voice.channel)
 	await ctx.send('!' + args[0])
-    #await ctx.author.guild.voice_client.disconnect()
+	#await ctx.author.guild.voice_client.disconnect()
 
 @bot.command()
 async def rico(ctx):
@@ -158,7 +158,7 @@ async def beyond(ctx):
 	random.shuffle(byd_list)
 	await ctx.send(byd_list[0])
 	
-"""@bot.command()
+@bot.command()
 async def prime(ctx, *args):
 	if len(args) == 0:
 		await ctx.send('数字を入れてください')
@@ -169,35 +169,35 @@ async def prime(ctx, *args):
 	elif args[0].isdecimal():
 		first_flag = True
 		res_prime = ''
-	    temp = args[0]
-	    for i in range(2, int(-(-args[0]**0.5//1))+1):
-	        if temp%i==0:
-	            while temp%i==0:
-	            	if first_flag:
+		temp = int(args[0])
+		for i in range(2, int(-(-int(args[0])**0.5//1))+1):
+			if temp%i==0:
+				while temp%i==0:
+					if first_flag:
 						first_flag = False
-						res_prime += i
+						res_prime += str(i)
 					else:
 						res_prime += '\*'
-						res_prime += i
-		                temp //= i
+						res_prime += str(i)
+						temp //= i
 
-	    if temp!=1:
-	    	if first_flag:
+		if temp!=1:
+			if first_flag:
 				first_flag = False
-				res_prime += temp
+				res_prime += str(temp)
 			else:
-	        	res_prime += temp
+				res_prime += str(temp)
 
-	    if res_prime=='':
-	        if first_flag:
+		if res_prime=='':
+			if first_flag:
 				first_flag = False
 				res_prime += args[0]
 			else:
-	        	res_prime += args[0]
+				res_prime += args[0]
 
 		await ctx.send(res_prime)
 	else:
-		await ctx.send('数字を入れてください。')"""
+		await ctx.send('数字を入れてください。')
 
 @bot.command()
 async def gag(ctx):

@@ -298,6 +298,18 @@ def right():
 	return 0
 
 @bot.command()
+async def god(ctx):
+	flag = True
+	normal_cnt = 0
+	while flag:
+		v = random.randint(0,8191)
+		normal_cnt += 1
+		if v == 8191:
+			flag = False
+	await ctx.send(f'{normal_cnt}回転で当選しました。')
+
+
+@bot.command()
 async def symphogear(ctx):
 	flag = True
 	normal_cnt = 0

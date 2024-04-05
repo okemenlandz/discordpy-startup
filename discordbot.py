@@ -1,6 +1,7 @@
 import discord
 import traceback
 import random
+import math
 from discord.ext import commands
 from os import getenv
 

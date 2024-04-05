@@ -121,6 +121,9 @@ async def oha(ctx):
 @bot.command()
 async def oya(ctx):
 	await ctx.send('おやすみー')
+
+@bot.command()
+async def prime(ctx, *args):
 	if len(args) == 0:
 		await ctx.send('正しい数字を入れてください')
 	elif args[0] == '1':

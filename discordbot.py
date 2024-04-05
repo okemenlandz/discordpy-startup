@@ -16,7 +16,7 @@ db_user = os.environ['DB_USER']
 db_host = os.environ['DB_HOST']
 alarm_list = []
 version = 'ver 8.0'
-
+"""
 @bot.event
 async def on_command_error(ctx, error):
 	#orig_error = getattr(error, "original", error)
@@ -460,7 +460,6 @@ async def gen(ctx):
 		total = (cnt[1]*330+cnt[2]*660+cnt[3]*990+rest)*4
 		await ctx.send(f'投資:{in_money}円\n回収:{total}円\n収支:{total - in_money}円')
 
-"""
 def sql_query():
 	conn = None
 	try:

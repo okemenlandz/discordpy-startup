@@ -434,7 +434,7 @@ async def gen(ctx):
 	
 	if v == 65535:
 		cnt = [0,0,1,0]
-		await ctx.send('全回転:tada:')
+		await ctx.send('ロングフリーズ:tada:')
 	elif v > 65411:
 		cnt = [0,0,1,0]
 	else:
@@ -444,6 +444,7 @@ async def gen(ctx):
 		await ctx.send(f'チャレンジ失敗\n投資:{in_money}円\n回収:{2640 + rest * 4}円\n収支:{2640 + rest * 4 - in_money}円')
 	else:
 		await ctx.send('超源RUSH 突入')
+		cnt = [0,1,0,0]
 		while(cnt[0] < 4):
 			r_ch = right_g()
 			if r_ch == 0:

@@ -412,9 +412,9 @@ async def gen(ctx):
 				judge = f'[{ctx.author}] '
 				cnt[0] = 0
 				cnt[int(r_ch/3)] += 1
-		await ctx.send(f'[{ctx.author}] {judge}\n超源RUSH　終了\n超源RUSH×{cnt[1]+cnt[2]}\n超源BONUS×{cnt[3]}')
+		await ctx.send(f'[{ctx.author}] {judge}\n[{ctx.author}] 超源RUSH　終了\n[{ctx.author}] 超源RUSH×{cnt[1]+cnt[2]}\n[{ctx.author}] 超源BONUS×{cnt[3]}')
 		total = (cnt[1]*300+cnt[2]*600+cnt[3]*900+rest)*4
-		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n回収:{total}円\n収支:{total - in_money}円')
+		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 
 def right_g2():
 	right = random.randint(0,244) # 1/2.44
@@ -462,7 +462,7 @@ async def gen2(ctx):
 			elif r_ch == 9:
 				judge += f'({9})'
 				await ctx.send(judge)
-				judge = ''
+				judge = f'[{ctx.author}] '
 				cnt[0] = 0
 				cnt[2] += 1
 				lt_lot = random.randint(0,9)
@@ -486,9 +486,9 @@ async def gen2(ctx):
 				judge = f'[{ctx.author}] '
 				cnt[0] = 0
 				cnt[1] += 1
-		await ctx.send(f'[{ctx.author}] {judge}\n超源RUSH　終了\n超源RUSH×{cnt[1]}\n超源BONUS×{cnt[2]}')
+		await ctx.send(f'[{ctx.author}] {judge}\n[{ctx.author}] 超源RUSH　終了\n[{ctx.author}] 超源RUSH×{cnt[1]}\n[{ctx.author}] 超源BONUS×{cnt[2]}')
 		total = (cnt[1]*210+cnt[2]*630+rest)*4
-		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n回収:{total}円\n収支:{total - in_money}円')
+		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 
 token = getenv('DISCORD_BOT_TOKEN')
 bot.run(token)

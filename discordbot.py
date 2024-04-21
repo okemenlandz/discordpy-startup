@@ -262,7 +262,7 @@ async def god(ctx):
 		normal_cnt += 1
 		if v == 8191:
 			flag = False
-	await ctx.send(f'{normal_cnt}回転で当選しました。')
+	await ctx.send(f'[{ctx.author}] {normal_cnt}回転で当選しました。')
 
 
 @bot.command()

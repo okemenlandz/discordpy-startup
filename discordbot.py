@@ -172,15 +172,15 @@ async def gag(ctx):
 	per = round(per_seed,2)
 	if per >= 100:
 		per = 100
-		await ctx.send(f'あなたのギャグは{per}%！:clap:')
+		await ctx.send(f'{ctx.author}のギャグは{per}%！:clap:')
 	elif per >= 50:
-		await ctx.send(f'あなたのギャグは{per}%です！')
+		await ctx.send(f'{ctx.author}のギャグは{per}%です！')
 	elif per <= 3:
-		await ctx.send(f'あなたのギャグは{per}%です…あーあ')
+		await ctx.send(f'{ctx.author}のギャグは{per}%です…あーあ')
 	elif per <= 10:
-		await ctx.send(f'あなたのギャグは{per}%です…')
+		await ctx.send(f'{ctx.author}のギャグは{per}%です…')
 	else:
-		await ctx.send(f'あなたのギャグは{per}%です')
+		await ctx.send(f'{ctx.author}のギャグは{per}%です')
 
 @bot.command()
 async def gb(ctx,*args):
@@ -277,14 +277,14 @@ async def symphogear(ctx):
 			
 	in_money = math.ceil(normal_cnt / 10.5) * 500
 	rest = math.ceil(((0 - (normal_cnt * 2)) % 21) * 125 / 21)
-	await ctx.send(f'{normal_cnt}回転で当選しました。')
+	await ctx.send(f'[{ctx.author}] {normal_cnt}回転で当選しました。')
 
 	pl = ''
-	judge = ''
+	judge = f'[{ctx.author}] '
 	
 	if v == 19980:
 		cnt = [0,0,0,0,1]
-		await ctx.send('全回転:tada:')
+		await ctx.send(f'[{ctx.author}] 全回転:tada:')
 	else:
 		cnt = [0,1,0,0,0]
 
@@ -335,7 +335,7 @@ async def symphogear(ctx):
 
 		await ctx.send(f'{pl}.')
 		await ctx.send(f'{judge}.')
-		judge = ''
+		judge = f'[{ctx.author}] '
 		
 	if cnt[0] == 5:
 		await ctx.send(f'最終決戦終了\n投資:{in_money}円\n回収:{1480 + rest * 4}円\n収支:{1480 + rest * 4 - in_money}円')
@@ -349,18 +349,18 @@ async def symphogear(ctx):
 			elif r_ch == 16:
 				judge += '(15)'
 				await ctx.send(judge)
-				judge = ''
+				judge = f'[{ctx.author}] '
 				cnt[0] = 0
 				cnt[4] += 1
 			else:
 				judge += f'({r_ch})'
 				await ctx.send(judge)
-				judge = ''
+				judge = f'[{ctx.author}] '
 				cnt[0] = 0
 				cnt[int(r_ch/4)] += 1
-		await ctx.send(f'{judge}\nシンフォギアチャンス　終了\nFEVER×{cnt[1]+cnt[2]+cnt[3]+cnt[4]}\n(4)×{cnt[1]}\n(8)×{cnt[2]}\n(12)×{cnt[3]}\n(15)×{cnt[4]}')
+		await ctx.send(f'[{ctx.author}] {judge}\nシンフォギアチャンス　終了\nFEVER×{cnt[1]+cnt[2]+cnt[3]+cnt[4]}\n(4)×{cnt[1]}\n(8)×{cnt[2]}\n(12)×{cnt[3]}\n(15)×{cnt[4]}')
 		total = (cnt[1]*370+cnt[2]*740+cnt[3]*1120+cnt[4]*1410+rest)*4
-		await ctx.send(f'投資:{in_money}円\n回収:{total}円\n収支:{total - in_money}円')
+		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n回収:{total}円\n収支:{total - in_money}円')
 
 def right_g():
 	right = random.randint(0,205)
@@ -383,23 +383,23 @@ async def gen(ctx):
 			
 	in_money = math.ceil(normal_cnt / 10.5) * 500
 	rest = math.ceil(((0 - (normal_cnt * 2)) % 21) * 125 / 21)
-	await ctx.send(f'{normal_cnt}回転で当選しました。')
+	await ctx.send(f'[{ctx.author}] {normal_cnt}回転で当選しました。')
 
 	pl = ''
-	judge = ''
+	judge = f'[{ctx.author}] '
 	
 	if v == 65535:
 		cnt = [0,0,1,0]
-		await ctx.send('ロングフリーズ:tada:')
+		await ctx.send(f'[{ctx.author}] ロングフリーズ:tada:')
 	elif v > 65411:
 		cnt = [0,0,1,0]
 	else:
 		cnt = [0,0,0,0]
 		
 	if cnt[2] == 0:
-		await ctx.send(f'チャレンジ失敗\n投資:{in_money}円\n回収:{2400 + rest * 4}円\n収支:{2400 + rest * 4 - in_money}円')
+		await ctx.send(f'[{ctx.author}] チャレンジ失敗\n投資:{in_money}円\n回収:{2400 + rest * 4}円\n収支:{2400 + rest * 4 - in_money}円')
 	else:
-		await ctx.send('超源RUSH 突入')
+		await ctx.send(f'[{ctx.author}] 超源RUSH 突入')
 		cnt = [0,1,0,0]
 		while(cnt[0] < 4):
 			r_ch = right_g()
@@ -409,12 +409,12 @@ async def gen(ctx):
 			else:
 				judge += f'({r_ch})'
 				await ctx.send(judge)
-				judge = ''
+				judge = f'[{ctx.author}] '
 				cnt[0] = 0
 				cnt[int(r_ch/3)] += 1
-		await ctx.send(f'{judge}\n超源RUSH　終了\n超源RUSH×{cnt[1]+cnt[2]}\n超源BONUS×{cnt[3]}')
+		await ctx.send(f'[{ctx.author}] {judge}\n超源RUSH　終了\n超源RUSH×{cnt[1]+cnt[2]}\n超源BONUS×{cnt[3]}')
 		total = (cnt[1]*300+cnt[2]*600+cnt[3]*900+rest)*4
-		await ctx.send(f'投資:{in_money}円\n回収:{total}円\n収支:{total - in_money}円')
+		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n回収:{total}円\n収支:{total - in_money}円')
 
 def right_g2():
 	right = random.randint(0,244) # 1/2.44
@@ -437,10 +437,10 @@ async def gen2(ctx):
 			
 	in_money = math.ceil(normal_cnt / 9) * 500
 	rest = math.ceil(((0 - normal_cnt) % 9) / 9 * 125) # 上皿に残ったやつ
-	await ctx.send(f'{normal_cnt}回転で当選しました。')
+	await ctx.send(f'[{ctx.author}] {normal_cnt}回転で当選しました。')
 
 	pl = ''
-	judge = ''
+	judge = f'[{ctx.author}] '
 	cnt = []
 	
 	if v < 283: # 突入
@@ -450,9 +450,9 @@ async def gen2(ctx):
 		
 	initial_payout = 210 * 4 # 初当たり出玉 
 	if cnt[1] == 0:
-		await ctx.send(f'チャレンジ失敗\n投資:{in_money}円\n回収:{initial_payout + rest * 4}円\n収支:{initial_payout + rest * 4 - in_money}円')
+		await ctx.send(f'[{ctx.author}] チャレンジ失敗\n投資:{in_money}円\n回収:{initial_payout + rest * 4}円\n収支:{initial_payout + rest * 4 - in_money}円')
 	else:
-		await ctx.send('超源RUSH 突入')
+		await ctx.send(f'[{ctx.author}] 超源RUSH 突入')
 		cnt = [0,1,0,0]
 		while(cnt[0] < 4):
 			r_ch = right_g2()
@@ -467,7 +467,7 @@ async def gen2(ctx):
 				cnt[2] += 1
 				lt_lot = random.randint(0,9)
 				if lt_lot == 0:
-					await ctx.send(':tada:ラッキートリガー発動:tada:')
+					await ctx.send(f'[{ctx.author}] :tada:ラッキートリガー発動:tada:')
 					while(cnt[0] < 6):
 						r_ch = right_g2()
 						if r_ch == 0:
@@ -476,19 +476,19 @@ async def gen2(ctx):
 						else:
 							judge += f'({r_ch})'
 							await ctx.send(judge)
-							judge = ''
+							judge = f'[{ctx.author}] '
 							cnt[0] = 0
 							cnt[int((r_ch+3)/6)] += 1
 					cnt[0] = 3 # 下位ラッシュのファイナルジャッジと同じ状態にして親ループに戻る
 			else:
 				judge += f'({3})'
 				await ctx.send(judge)
-				judge = ''
+				judge = f'[{ctx.author}] '
 				cnt[0] = 0
 				cnt[1] += 1
-		await ctx.send(f'{judge}\n超源RUSH　終了\n超源RUSH×{cnt[1]}\n超源BONUS×{cnt[2]}')
+		await ctx.send(f'[{ctx.author}] {judge}\n超源RUSH　終了\n超源RUSH×{cnt[1]}\n超源BONUS×{cnt[2]}')
 		total = (cnt[1]*210+cnt[2]*630+rest)*4
-		await ctx.send(f'投資:{in_money}円\n回収:{total}円\n収支:{total - in_money}円')
+		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n回収:{total}円\n収支:{total - in_money}円')
 
 token = getenv('DISCORD_BOT_TOKEN')
 bot.run(token)

@@ -358,9 +358,9 @@ async def symphogear(ctx):
 				judge = f'[{ctx.author}] '
 				cnt[0] = 0
 				cnt[int(r_ch/4)] += 1
-		await ctx.send(f'[{ctx.author}] {judge}\nシンフォギアチャンス　終了\nFEVER×{cnt[1]+cnt[2]+cnt[3]+cnt[4]}\n(4)×{cnt[1]}\n(8)×{cnt[2]}\n(12)×{cnt[3]}\n(15)×{cnt[4]}')
+		await ctx.send(f'{judge}\n[{ctx.author}] シンフォギアチャンス　終了\n[{ctx.author}] FEVER×{cnt[1]+cnt[2]+cnt[3]+cnt[4]}\n[{ctx.author}] (4)×{cnt[1]}\n(8)×{cnt[2]}\n(12)×{cnt[3]}\n(15)×{cnt[4]}')
 		total = (cnt[1]*370+cnt[2]*740+cnt[3]*1120+cnt[4]*1410+rest)*4
-		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n回収:{total}円\n収支:{total - in_money}円')
+		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 
 def right_g():
 	right = random.randint(0,205)
@@ -412,7 +412,7 @@ async def gen(ctx):
 				judge = f'[{ctx.author}] '
 				cnt[0] = 0
 				cnt[int(r_ch/3)] += 1
-		await ctx.send(f'[{ctx.author}] {judge}\n[{ctx.author}] 超源RUSH　終了\n[{ctx.author}] 超源RUSH×{cnt[1]+cnt[2]}\n[{ctx.author}] 超源BONUS×{cnt[3]}')
+		await ctx.send(f'{judge}\n[{ctx.author}] 超源RUSH　終了\n[{ctx.author}] 超源RUSH×{cnt[1]+cnt[2]}\n[{ctx.author}] 超源BONUS×{cnt[3]}')
 		total = (cnt[1]*300+cnt[2]*600+cnt[3]*900+rest)*4
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 
@@ -450,7 +450,7 @@ async def gen2(ctx):
 		
 	initial_payout = 210 * 4 # 初当たり出玉 
 	if cnt[1] == 0:
-		await ctx.send(f'[{ctx.author}] チャレンジ失敗\n投資:{in_money}円\n回収:{initial_payout + rest * 4}円\n収支:{initial_payout + rest * 4 - in_money}円')
+		await ctx.send(f'[{ctx.author}] チャレンジ失敗\n[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{initial_payout + rest * 4}円\n[{ctx.author}] 収支:{initial_payout + rest * 4 - in_money}円')
 	else:
 		await ctx.send(f'[{ctx.author}] 超源RUSH 突入')
 		cnt = [0,1,0,0]
@@ -486,7 +486,7 @@ async def gen2(ctx):
 				judge = f'[{ctx.author}] '
 				cnt[0] = 0
 				cnt[1] += 1
-		await ctx.send(f'[{ctx.author}] {judge}\n[{ctx.author}] 超源RUSH　終了\n[{ctx.author}] 超源RUSH×{cnt[1]}\n[{ctx.author}] 超源BONUS×{cnt[2]}')
+		await ctx.send(f'{judge}\n[{ctx.author}] 超源RUSH　終了\n[{ctx.author}] 超源RUSH×{cnt[1]}\n[{ctx.author}] 超源BONUS×{cnt[2]}')
 		total = (cnt[1]*210+cnt[2]*630+rest)*4
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 

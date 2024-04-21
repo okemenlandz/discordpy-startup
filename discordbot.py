@@ -397,7 +397,7 @@ async def gen(ctx):
 		cnt = [0,0,0,0]
 		
 	if cnt[2] == 0:
-		await ctx.send(f'チャレンジ失敗\n投資:{in_money}円\n回収:{2640 + rest * 4}円\n収支:{2640 + rest * 4 - in_money}円')
+		await ctx.send(f'チャレンジ失敗\n投資:{in_money}円\n回収:{2400 + rest * 4}円\n収支:{2400 + rest * 4 - in_money}円')
 	else:
 		await ctx.send('超源RUSH 突入')
 		cnt = [0,1,0,0]
@@ -413,7 +413,81 @@ async def gen(ctx):
 				cnt[0] = 0
 				cnt[int(r_ch/3)] += 1
 		await ctx.send(f'{judge}\n超源RUSH　終了\n超源RUSH×{cnt[1]+cnt[2]}\n超源BONUS×{cnt[3]}')
-		total = (cnt[1]*330+cnt[2]*660+cnt[3]*990+rest)*4
+		total = (cnt[1]*300+cnt[2]*600+cnt[3]*900+rest)*4
+		await ctx.send(f'投資:{in_money}円\n回収:{total}円\n収支:{total - in_money}円')
+
+def right_g2():
+	right = random.randint(0,244) # 1/2.44
+	if right < 80:
+		return 3
+	elif right < 100:
+		return 9
+	else:
+		return 0
+
+@bot.command()
+async def gen2(ctx):
+	flag = True # 通常時フラグ
+	normal_cnt = 0
+	while flag:
+		v = random.randint(0,65535)
+		normal_cnt += 1
+		if v < 505: # 505個があたり
+			flag = False
+			
+	in_money = math.ceil(normal_cnt / 9) * 500
+	rest = math.ceil(((0 - normal_cnt) % 9) / 9 * 125) # 上皿に残ったやつ
+	await ctx.send(f'{normal_cnt}回転で当選しました。')
+
+	pl = ''
+	judge = ''
+	cnt = []
+	
+	if v < 283: # 突入
+		cnt = [0,1,0]
+	else: # 非突入
+		cnt = [0,0,0]
+		
+	initial_payout = 210 * 4 # 初当たり出玉 
+	if cnt[1] == 0:
+		await ctx.send(f'チャレンジ失敗\n投資:{in_money}円\n回収:{initial_payout + rest * 4}円\n収支:{initial_payout + rest * 4 - in_money}円')
+	else:
+		await ctx.send('超源RUSH 突入')
+		cnt = [0,1,0,0]
+		while(cnt[0] < 4):
+			r_ch = right_g2()
+			if r_ch == 0:
+				judge += ':x:'
+				cnt[0] += 1
+			elif r_ch == 9:
+				judge += f'({9})'
+				await ctx.send(judge)
+				judge = ''
+				cnt[0] = 0
+				cnt[2] += 1
+				lt_lot = random.randint(0,9)
+				if lt_lot == 0:
+					await ctx.send(':tada:ラッキートリガー発動:tada:')
+					while(cnt[0] < 6):
+						r_ch = right_g2()
+						if r_ch == 0:
+							judge += ':x:'
+							cnt[0] += 1
+						else:
+							judge += f'({r_ch})'
+							await ctx.send(judge)
+							judge = ''
+							cnt[0] = 0
+							cnt[int((r_ch+3)/6)] += 1
+					cnt[0] = 3 # 下位ラッシュのファイナルジャッジと同じ状態にして親ループに戻る
+			else:
+				judge += f'({3})'
+				await ctx.send(judge)
+				judge = ''
+				cnt[0] = 0
+				cnt[1] += 1
+		await ctx.send(f'{judge}\n超源RUSH　終了\n超源RUSH×{cnt[1]}\n超源BONUS×{cnt[2]}')
+		total = (cnt[1]*210+cnt[2]*630+rest)*4
 		await ctx.send(f'投資:{in_money}円\n回収:{total}円\n収支:{total - in_money}円')
 
 token = getenv('DISCORD_BOT_TOKEN')

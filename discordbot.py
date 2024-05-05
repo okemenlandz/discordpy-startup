@@ -279,7 +279,7 @@ async def symphogear(ctx):
 	rest = math.ceil(((0 - (normal_cnt * 2)) % 21) * 125 / 21)
 	await ctx.send(f'[{ctx.author}] {normal_cnt}回転で当選しました。')
 
-	pl = ''
+	pl = f'[{ctx.author}] '
 	judge = f'[{ctx.author}] '
 	
 	if v == 19980:

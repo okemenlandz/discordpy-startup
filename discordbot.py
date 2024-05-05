@@ -548,7 +548,6 @@ async def aria(ctx):
 		cnt1500 += 1
 	elif status == 15:
 		await ctx.send(f'[{ctx.author}] HYPER SCARLET BONUS')
-		await ctx.send(f'[{ctx.author}] 　突入')
 		cnt1500 += 1
 	elif status == 30:
 		await ctx.send(f'[{ctx.author}] HYPER SCARLET GOD BONUS 3000')
@@ -597,6 +596,7 @@ async def aria(ctx):
 	
 	# LBR
 	if (status==15) or (status==30):
+		await ctx.send(f'[{ctx.author}] LIGHTNING BULLET RUSH　突入')
 		flag = True
 		while flag:
 			v = random.randint(0,65535)
@@ -632,6 +632,7 @@ async def aria(ctx):
 
 	# 超LBR
 	if status == 45:
+		await ctx.send(f'[{ctx.author}] 超LIGHTNING BULLET RUSH　突入')
 		flag = True
 		while flag:
 			v = random.randint(0,65535)

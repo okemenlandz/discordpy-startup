@@ -270,7 +270,7 @@ async def symphogear(ctx):
 	flag = True
 	normal_cnt = 0
 	while flag:
-		v = random.randint(0,19980)
+		v = random.randint(0,19979)
 		normal_cnt += 1
 		if v > 19879:
 			flag = False
@@ -385,7 +385,6 @@ async def gen(ctx):
 	rest = math.ceil(((0 - (normal_cnt * 2)) % 21) * 125 / 21)
 	await ctx.send(f'[{ctx.author}] {normal_cnt}回転で当選しました。')
 
-	pl = ''
 	judge = f'[{ctx.author}] '
 	
 	if v == 65535:
@@ -417,7 +416,7 @@ async def gen(ctx):
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 
 def right_g2():
-	right = random.randint(0,244) # 1/2.44
+	right = random.randint(0,243) # 1/2.44
 	if right < 80:
 		return 3
 	elif right < 100:
@@ -439,7 +438,6 @@ async def gen2(ctx):
 	rest = math.ceil(((0 - normal_cnt) % 9) / 9 * 125) # 上皿に残ったやつ
 	await ctx.send(f'[{ctx.author}] {normal_cnt}回転で当選しました。')
 
-	pl = ''
 	judge = f'[{ctx.author}] '
 	cnt = []
 	
@@ -490,6 +488,175 @@ async def gen2(ctx):
 		await ctx.send(f'{judge}\n[{ctx.author}] 超源RUSH　終了\n[{ctx.author}] 超源RUSH×{cnt[1]}\n[{ctx.author}] 超源BONUS×{cnt[2]}')
 		total = (cnt[1]*210+cnt[2]*630+rest)*4
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
+
+def left_aria():
+	right = random.randint(0,99)
+	if right < 10:
+		return 45
+	elif right < 50:
+		return 30
+	elif right < 55:
+		return 15
+	else:
+		return 0
+
+# 1500回数を返す
+def right_aria():
+	flag = True
+	cnt = 1
+	while flag:
+		flag = False
+		quarter = random.randint(0,3)
+		if quarter == 0:
+			cnt += 1
+			flag = True
+	return cnt
+
+
+@bot.command()
+async def aria(ctx):
+	judge = f'[{ctx.author}] '
+	flag = True # 通常時フラグ
+	normal_cnt = 0
+	normal_total = 0
+	st_cnt = 0
+	charge_cnt = 0
+	max_cnt = 1500 # 最大獲得数
+	cnt1500 = 0
+	cnt3000 = 0
+	cntover = 0 # 4500以降
+
+	while flag:
+		v = random.randint(0,65535)
+		normal_cnt += 1
+		if v < 164: # 164個があたり
+			flag = False
+			normal_total += normal_cnt
+		elif v < 340: # 176個が緋弾チャージ
+			await ctx.send(f'[{ctx.author}] {normal_cnt}G 緋弾チャージ')
+			charge_cnt += 1
+			normal_total += normal_cnt
+			normal_cnt = 0
+
+	in_money = math.ceil(normal_total / 8) * 500
+	rest = math.ceil(((0 - normal_total) % 8) / 8 * 125) # 上皿に残ったやつ
+	await ctx.send(f'[{ctx.author}] {normal_cnt}Gで当選しました。')
+
+	status = left_aria()
+	if status == 0:
+		cnt1500 += 1
+	elif status == 15:
+		cnt1500 += 1
+	elif status == 30:
+		cnt3000 += 1
+	elif status == 45:
+		cnt3000 += 1
+		cntover += 1
+
+	# チャンスタイム
+	if status = 0:
+		flag = True
+		while flag:
+			v = random.randint(0,65535)
+			st_cnt += 1
+			if v < 164: # 164個があたり
+				flag = False
+				r = right_aria()
+				if r == 1:
+					cnt1500 += 1
+					await ctx.send(f'[{ctx.author}] {st_cnt}G HYPER SCARLET BONUS')
+				elif r == 2:
+					cnt3000 += 1
+					await ctx.send(f'[{ctx.author}] {st_cnt}G HYPER SCARLET GOD BONUS 3000')
+				else:
+					cnt3000 += 1
+					cntover += r-2
+					await ctx.send(f'[{ctx.author}] {st_cnt}G HYPER SCARLET GOD BONUS {r*1500}')
+				
+				if max_cnt < r:
+					max_cnt = r
+				
+				
+				status = 15
+
+			if st_cnt >= 70:
+				await ctx.send(f'[{ctx.author}] チャンスタイム　終了')
+				await ctx.send(f'[{ctx.author}] TOTAL　{cnt1500*1500 + cnt3000*3000 + cntover*1500}')
+				await ctx.send(f'[{ctx.author}] 最大獲得　{max_cnt*1500}')
+				await ctx.send(f'[{ctx.author}] 3000×{cnt3000}　1500×{cnt1500}')
+
+				total = (charge_cnt*420 + cnt1500*1500 + cnt3000*3000 + cntover*1500)*4
+				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
+				return
+	
+	# LBR
+	if (status==15) or (status==30):
+		flag = True
+		while flag:
+			v = random.randint(0,65535)
+			st_cnt += 1
+			if v < 624: # 624個があたり
+				flag = False
+				r = right_aria()
+				if r == 1:
+					cnt1500 += 1
+					await ctx.send(f'[{ctx.author}] {st_cnt}G HYPER SCARLET BONUS')
+				elif r == 2:
+					cnt3000 += 1
+					await ctx.send(f'[{ctx.author}] {st_cnt}G HYPER SCARLET GOD BONUS 3000')
+				else:
+					cnt3000 += 1
+					cntover += r-2
+					await ctx.send(f'[{ctx.author}] {st_cnt}G HYPER SCARLET GOD BONUS {r*1500}')
+				
+				if max_cnt < r:
+					max_cnt = r
+				
+				status = 45
+			
+			if st_cnt >= 70:
+				await ctx.send(f'[{ctx.author}] LIGHTNING BULLET RUSH　終了')
+				await ctx.send(f'[{ctx.author}] TOTAL　{cnt1500*1500 + cnt3000*3000 + cntover*1500}')
+				await ctx.send(f'[{ctx.author}] 最大獲得　{max_cnt*1500}')
+				await ctx.send(f'[{ctx.author}] 3000×{cnt3000}　1500×{cnt1500}')
+
+				total = (charge_cnt*420 + cnt1500*1500 + cnt3000*3000 + cntover*1500)*4
+				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
+				return
+
+	# 超LBR
+	if status == 45:
+		flag = True
+		while flag:
+			v = random.randint(0,65535)
+			st_cnt += 1
+			if v < 624: # 624個があたり
+				flag = False
+				st_cnt = 0
+				r = right_aria()
+				if r == 1:
+					cnt1500 += 1
+					await ctx.send(f'[{ctx.author}] {st_cnt}G HYPER SCARLET BONUS')
+				elif r == 2:
+					cnt3000 += 1
+					await ctx.send(f'[{ctx.author}] {st_cnt}G HYPER SCARLET GOD BONUS 3000')
+				else:
+					cnt3000 += 1
+					cntover += r-2
+					await ctx.send(f'[{ctx.author}] {st_cnt}G HYPER SCARLET GOD BONUS {r*1500}')
+				
+				if max_cnt < r:
+					max_cnt = r
+			
+			if st_cnt >= 167:
+				await ctx.send(f'[{ctx.author}] 超LIGHTNING BULLET RUSH　終了')
+				await ctx.send(f'[{ctx.author}] TOTAL　{cnt1500*1500 + cnt3000*3000 + cntover*1500}')
+				await ctx.send(f'[{ctx.author}] 最大獲得　{max_cnt*1500}')
+				await ctx.send(f'[{ctx.author}] 3000×{cnt3000}　1500×{cnt1500}')
+
+				total = (charge_cnt*420 + cnt1500*1500 + cnt3000*3000 + cntover*1500)*4
+				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
+				return
 
 token = getenv('DISCORD_BOT_TOKEN')
 bot.run(token)

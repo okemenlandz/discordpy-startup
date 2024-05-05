@@ -465,9 +465,10 @@ async def gen2(ctx):
 				judge = f'[{ctx.author}] '
 				cnt[0] = 0
 				cnt[2] += 1
-				lt_lot = random.randint(0,9)
+				lt_lot = random.randint(0,9) # 10%引いたら0 LT
 				if lt_lot == 0:
 					await ctx.send(f'[{ctx.author}] :tada:ラッキートリガー発動:tada:')
+					cnt[0] = -120 # 初回は127回回すまで終了しないよう調整
 					while(cnt[0] < 6):
 						r_ch = right_g2()
 						if r_ch == 0:

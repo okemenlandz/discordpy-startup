@@ -554,7 +554,7 @@ async def aria(ctx):
 		cntover += 1
 
 	# チャンスタイム
-	if status = 0:
+	if status == 0:
 		flag = True
 		while flag:
 			v = random.randint(0,65535)

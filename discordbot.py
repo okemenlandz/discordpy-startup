@@ -521,7 +521,7 @@ async def aria(ctx):
 	normal_total = 0
 	st_cnt = 0
 	charge_cnt = 0
-	max_cnt = 1500 # 最大獲得数
+	max_cnt = 1 # 最大獲得数
 	cnt1500 = 0
 	cnt3000 = 0
 	cntover = 0 # 4500以降
@@ -590,7 +590,7 @@ async def aria(ctx):
 				await ctx.send(f'[{ctx.author}] 最大獲得　{max_cnt*1500}')
 				await ctx.send(f'[{ctx.author}] 3000×{cnt3000}　1500×{cnt1500}')
 
-				total = (charge_cnt*420 + cnt1500*1500 + cnt3000*3000 + cntover*1500)*4
+				total = (charge_cnt*420 + cnt1500*1400 + cnt3000*2800 + cntover*1400)*4
 				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 				return
 	
@@ -626,7 +626,7 @@ async def aria(ctx):
 				await ctx.send(f'[{ctx.author}] 最大獲得　{max_cnt*1500}')
 				await ctx.send(f'[{ctx.author}] 3000×{cnt3000}　1500×{cnt1500}')
 
-				total = (charge_cnt*420 + cnt1500*1500 + cnt3000*3000 + cntover*1500)*4
+				total = (charge_cnt*420 + cnt1500*1400 + cnt3000*2800 + cntover*1400)*4
 				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 				return
 
@@ -634,11 +634,10 @@ async def aria(ctx):
 	if status == 45:
 		await ctx.send(f'[{ctx.author}] 超LIGHTNING BULLET RUSH　突入')
 		flag = True
-		while flag:
+		while st_cnt < 167:
 			v = random.randint(0,65535)
 			st_cnt += 1
 			if v < 624: # 624個があたり
-				flag = False
 				st_cnt = 0
 				r = right_aria()
 				if r == 1:
@@ -654,16 +653,14 @@ async def aria(ctx):
 				
 				if max_cnt < r:
 					max_cnt = r
-			
-			if st_cnt >= 167:
-				await ctx.send(f'[{ctx.author}] 超LIGHTNING BULLET RUSH　終了')
-				await ctx.send(f'[{ctx.author}] TOTAL　{cnt1500*1500 + cnt3000*3000 + cntover*1500}')
-				await ctx.send(f'[{ctx.author}] 最大獲得　{max_cnt*1500}')
-				await ctx.send(f'[{ctx.author}] 3000×{cnt3000}　1500×{cnt1500}')
+	
+		await ctx.send(f'[{ctx.author}] 超LIGHTNING BULLET RUSH　終了')
+		await ctx.send(f'[{ctx.author}] TOTAL　{cnt1500*1500 + cnt3000*3000 + cntover*1500}')
+		await ctx.send(f'[{ctx.author}] 最大獲得　{max_cnt*1500}')
+		await ctx.send(f'[{ctx.author}] 3000×{cnt3000}　1500×{cnt1500}')
 
-				total = (charge_cnt*420 + cnt1500*1500 + cnt3000*3000 + cntover*1500)*4
-				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
-				return
+		total = (charge_cnt*420 + cnt1500*1400 + cnt3000*2800 + cntover*1400)*4
+		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 
 token = getenv('DISCORD_BOT_TOKEN')
 bot.run(token)

@@ -582,7 +582,7 @@ async def aria(ctx):
 					max_cnt = r
 				
 				
-				status = 15
+				status = 45
 
 			if st_cnt >= 70:
 				await ctx.send(f'[{ctx.author}] チャンスタイム　終了')

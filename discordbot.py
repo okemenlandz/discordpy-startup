@@ -638,7 +638,6 @@ async def aria(ctx):
 			v = random.randint(0,65535)
 			st_cnt += 1
 			if v < 624: # 624個があたり
-				st_cnt = 0
 				r = right_aria()
 				if r == 1:
 					cnt1500 += 1
@@ -653,6 +652,8 @@ async def aria(ctx):
 				
 				if max_cnt < r:
 					max_cnt = r
+
+				st_cnt = 0
 	
 		await ctx.send(f'[{ctx.author}] 超LIGHTNING BULLET RUSH　終了')
 		await ctx.send(f'[{ctx.author}] TOTAL　{cnt1500*1500 + cnt3000*3000 + cntover*1500}')

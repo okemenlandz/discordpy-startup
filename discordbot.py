@@ -544,17 +544,23 @@ async def aria(ctx):
 
 	status = left_aria()
 	if status == 0:
+		await ctx.send(f'[{ctx.author}] SCARLET BONUS')
 		cnt1500 += 1
 	elif status == 15:
+		await ctx.send(f'[{ctx.author}] HYPER SCARLET BONUS')
+		await ctx.send(f'[{ctx.author}] 　突入')
 		cnt1500 += 1
 	elif status == 30:
+		await ctx.send(f'[{ctx.author}] HYPER SCARLET GOD BONUS 3000')
 		cnt3000 += 1
 	elif status == 45:
+		await ctx.send(f'[{ctx.author}] HYPER SCARLET GOD BONUS 4500')
 		cnt3000 += 1
 		cntover += 1
 
 	# チャンスタイム
 	if status == 0:
+		await ctx.send(f'[{ctx.author}] チャンスタイム　突入')
 		flag = True
 		while flag:
 			v = random.randint(0,65535)

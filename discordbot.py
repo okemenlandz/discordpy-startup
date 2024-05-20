@@ -675,7 +675,7 @@ async def jantama(ctx,*args):
 	if args[0] == '4':
 		if args[1] == 'sh':
 			req = 24100 + (int(args[2]) - s4t1[0]) * 1000
-			if req < 29100:
+			if req < 30000:
 				await ctx.send(f'銅東 トップ')
 			else:
 				await ctx.send(f'銅東 {req}点トップ')
@@ -683,7 +683,7 @@ async def jantama(ctx,*args):
 			if req <= 40000:
 				await ctx.send(f'銅東 {req}点2着')
 			req = 24100 + (int(args[2]) - s4n1[0]) * 1000
-			if req < 29100:
+			if req < 30000:
 				await ctx.send(f'銅南 トップ')
 			else:
 				await ctx.send(f'銅南 {req}点トップ')
@@ -692,7 +692,7 @@ async def jantama(ctx,*args):
 				await ctx.send(f'銅南 {req}点2着')
 		elif args[1] == 'si':
 			req = 24100 + (int(args[2]) - s4t1[0]) * 1000
-			if req < 29100:
+			if req < 30000:
 				await ctx.send(f'銅東 トップ')
 			else:
 				await ctx.send(f'銅東 {req}点トップ')
@@ -700,7 +700,7 @@ async def jantama(ctx,*args):
 			if req <= 40000:
 				await ctx.send(f'銅東 {req}点2着')
 			req = 24100 + (int(args[2]) - s4n1[0]) * 1000
-			if req < 29100:
+			if req < 30000:
 				await ctx.send(f'銅南 トップ')
 			else:
 				await ctx.send(f'銅南 {req}点トップ')
@@ -709,7 +709,7 @@ async def jantama(ctx,*args):
 				await ctx.send(f'銅南 {req}点2着')
 
 			req = 24100 + (int(args[2]) - s4t1[1]) * 1000
-			if req < 29100:
+			if req < 30000:
 				await ctx.send(f'銀東 トップ')
 			else:
 				await ctx.send(f'銀東 {req}点トップ')
@@ -717,7 +717,7 @@ async def jantama(ctx,*args):
 			if req <= 40000:
 				await ctx.send(f'銀東 {req}点2着')
 			req = 24100 + (int(args[2]) - s4n1[1]) * 1000
-			if req < 29100:
+			if req < 30000:
 				await ctx.send(f'銀南 トップ')
 			else:
 				await ctx.send(f'銀南 {req}点トップ')
@@ -726,7 +726,7 @@ async def jantama(ctx,*args):
 				await ctx.send(f'銀南 {req}点2着')
 		elif args[1] == 'k':
 			req = 24100 + (int(args[2]) - s4t1[1]) * 1000
-			if req < 29100:
+			if req < 30000:
 				await ctx.send(f'銀東 トップ')
 			else:
 				await ctx.send(f'銀東 {req}点トップ')
@@ -734,7 +734,7 @@ async def jantama(ctx,*args):
 			if req <= 40000:
 				await ctx.send(f'銀東 {req}点2着')
 			req = 24100 + (int(args[2]) - s4n1[1]) * 1000
-			if req < 29100:
+			if req < 30000:
 				await ctx.send(f'銀南 トップ')
 			else:
 				await ctx.send(f'銀南 {req}点トップ')
@@ -743,7 +743,7 @@ async def jantama(ctx,*args):
 				await ctx.send(f'銀南 {req}点2着')
 
 			req = 24100 + (int(args[2]) - s4t1[2]) * 1000
-			if req < 29100:
+			if req < 30000:
 				await ctx.send(f'金東 トップ')
 			else:
 				await ctx.send(f'金東 {req}点トップ')
@@ -751,7 +751,7 @@ async def jantama(ctx,*args):
 			if req <= 40000:
 				await ctx.send(f'金東 {req}点2着')
 			req = 24100 + (int(args[2]) - s4n1[2]) * 1000
-			if req < 29100:
+			if req < 30000:
 				await ctx.send(f'金南 トップ')
 			else:
 				await ctx.send(f'金南 {req}点トップ')
@@ -760,7 +760,7 @@ async def jantama(ctx,*args):
 				await ctx.send(f'金南 {req}点2着')
 		elif args[1] == 'g':
 			req = 24100 + (int(args[2]) - s4t1[2]) * 1000
-			if req < 29100:
+			if req < 30000:
 				await ctx.send(f'金東 トップ')
 			else:
 				await ctx.send(f'金東 {req}点トップ')
@@ -768,7 +768,7 @@ async def jantama(ctx,*args):
 			if req <= 40000:
 				await ctx.send(f'金東 {req}点2着')
 			req = 24100 + (int(args[2]) - s4n1[2]) * 1000
-			if req < 29100:
+			if req < 30000:
 				await ctx.send(f'金南 トップ')
 			else:
 				await ctx.send(f'金南 {req}点トップ')
@@ -777,7 +777,7 @@ async def jantama(ctx,*args):
 				await ctx.send(f'金南 {req}点2着')
 
 			req = 24100 + (int(args[2]) - s4t1[3]) * 1000
-			if req < 29100:
+			if req < 30000:
 				await ctx.send(f'玉東 トップ')
 			else:
 				await ctx.send(f'玉東 {req}点トップ')
@@ -785,7 +785,7 @@ async def jantama(ctx,*args):
 			if req <= 40000:
 				await ctx.send(f'玉東 {req}点2着')
 			req = 24100 + (int(args[2]) - s4n1[3]) * 1000
-			if req < 29100:
+			if req < 30000:
 				await ctx.send(f'玉南 トップ')
 			else:
 				await ctx.send(f'玉南 {req}点トップ')
@@ -794,7 +794,7 @@ async def jantama(ctx,*args):
 				await ctx.send(f'玉南 {req}点2着')
 		elif args[1] == 's':
 			req = 24100 + (int(args[2]) - s4t1[3]) * 1000
-			if req < 29100:
+			if req < 30000:
 				await ctx.send(f'玉東 トップ')
 			else:
 				await ctx.send(f'玉東 {req}点トップ')
@@ -802,7 +802,7 @@ async def jantama(ctx,*args):
 			if req <= 40000:
 				await ctx.send(f'玉東 {req}点2着')
 			req = 24100 + (int(args[2]) - s4n1[3]) * 1000
-			if req < 29100:
+			if req < 30000:
 				await ctx.send(f'玉南 トップ')
 			else:
 				await ctx.send(f'玉南 {req}点トップ')
@@ -811,7 +811,7 @@ async def jantama(ctx,*args):
 				await ctx.send(f'玉南 {req}点2着')
 
 			req = 24100 + (int(args[2]) - s4t1[4]) * 1000
-			if req < 29100:
+			if req < 30000:
 				await ctx.send(f'王東 トップ')
 			else:
 				await ctx.send(f'王東 {req}点トップ')
@@ -819,7 +819,7 @@ async def jantama(ctx,*args):
 			if req <= 40000:
 				await ctx.send(f'王東 {req}点2着')
 			req = 24100 + (int(args[2]) - s4n1[4]) * 1000
-			if req < 29100:
+			if req < 30000:
 				await ctx.send(f'王南 トップ')
 			else:
 				await ctx.send(f'王南 {req}点トップ')
@@ -829,100 +829,100 @@ async def jantama(ctx,*args):
 	elif args[0] == '3':
 		if args[1] == 'sh':
 			req = 34100 + (int(args[2]) - s3t1[0]) * 1000
-			if req < 34100:
+			if req < 40000:
 				await ctx.send(f'銅東 トップ')
 			else:
 				await ctx.send(f'銅東 {req}点トップ')
 			req = 34100 + (int(args[2]) - s3n1[0]) * 1000
-			if req < 34100:
+			if req < 40000:
 				await ctx.send(f'銅南 トップ')
 			else:
 				await ctx.send(f'銅南 {req}点トップ')
 		elif args[1] == 'si':
 			req = 34100 + (int(args[2]) - s3t1[0]) * 1000
-			if req < 34100:
+			if req < 40000:
 				await ctx.send(f'銅東 トップ')
 			else:
 				await ctx.send(f'銅東 {req}点トップ')
 			req = 34100 + (int(args[2]) - s3n1[0]) * 1000
-			if req < 34100:
+			if req < 40000:
 				await ctx.send(f'銅南 トップ')
 			else:
 				await ctx.send(f'銅南 {req}点トップ')
 
 			req = 34100 + (int(args[2]) - s3t1[1]) * 1000
-			if req < 34100:
+			if req < 40000:
 				await ctx.send(f'銀東 トップ')
 			else:
 				await ctx.send(f'銀東 {req}点トップ')
 			req = 34100 + (int(args[2]) - s3n1[1]) * 1000
-			if req < 34100:
+			if req < 40000:
 				await ctx.send(f'銀南 トップ')
 			else:
 				await ctx.send(f'銀南 {req}点トップ')
 		elif args[1] == 'k':
 			req = 34100 + (int(args[2]) - s3t1[1]) * 1000
-			if req < 34100:
+			if req < 40000:
 				await ctx.send(f'銀東 トップ')
 			else:
 				await ctx.send(f'銀東 {req}点トップ')
 			req = 34100 + (int(args[2]) - s3n1[1]) * 1000
-			if req < 34100:
+			if req < 40000:
 				await ctx.send(f'銀南 トップ')
 			else:
 				await ctx.send(f'銀南 {req}点トップ')
 
 			req = 34100 + (int(args[2]) - s3t1[2]) * 1000
-			if req < 34100:
+			if req < 40000:
 				await ctx.send(f'金東 トップ')
 			else:
 				await ctx.send(f'金東 {req}点トップ')
 			req = 34100 + (int(args[2]) - s3n1[2]) * 1000
-			if req < 34100:
+			if req < 40000:
 				await ctx.send(f'金南 トップ')
 			else:
 				await ctx.send(f'金南 {req}点トップ')
 		elif args[1] == 'g':
 			req = 34100 + (int(args[2]) - s3t1[2]) * 1000
-			if req < 34100:
+			if req < 40000:
 				await ctx.send(f'金東 トップ')
 			else:
 				await ctx.send(f'金東 {req}点トップ')
 			req = 34100 + (int(args[2]) - s3n1[2]) * 1000
-			if req < 34100:
+			if req < 40000:
 				await ctx.send(f'金南 トップ')
 			else:
 				await ctx.send(f'金南 {req}点トップ')
 
 			req = 34100 + (int(args[2]) - s3t1[3]) * 1000
-			if req < 34100:
+			if req < 40000:
 				await ctx.send(f'玉東 トップ')
 			else:
 				await ctx.send(f'玉東 {req}点トップ')
 			req = 34100 + (int(args[2]) - s3n1[3]) * 1000
-			if req < 34100:
+			if req < 40000:
 				await ctx.send(f'玉南 トップ')
 			else:
 				await ctx.send(f'玉南 {req}点トップ')
 		elif args[1] == 's':
 			req = 34100 + (int(args[2]) - s3t1[3]) * 1000
-			if req < 34100:
+			if req < 40000:
 				await ctx.send(f'玉東 トップ')
 			else:
 				await ctx.send(f'玉東 {req}点トップ')
 			req = 34100 + (int(args[2]) - s3n1[3]) * 1000
-			if req < 34100:
+			if req < 40000:
 				await ctx.send(f'玉南 トップ')
 			else:
 				await ctx.send(f'玉南 {req}点トップ')
 
 			req = 34100 + (int(args[2]) - s3t1[4]) * 1000
-			if req < 34100:
+			if req < 40000:
 				await ctx.send(f'王東 トップ')
 			else:
 				await ctx.send(f'王東 {req}点トップ')
 			req = 34100 + (int(args[2]) - s3n1[4]) * 1000
-			if req < 34100:
+			if req < 40000:
 				await ctx.send(f'王南 トップ')
 			else:
 				await ctx.send(f'王南 {req}点トップ')

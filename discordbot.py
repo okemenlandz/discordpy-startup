@@ -14,9 +14,11 @@ version = 'ver 10.0'
 
 @bot.event
 async def on_command_error(ctx, error):
-	#orig_error = getattr(error, "original", error)
-	#error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
-	#await ctx.send(error_msg)
+	orig_error = getattr(error, "original", error)
+	error_msg = ''.join(traceback.TracebackException.from_exception(orig_error).format())
+	alert_channel = bot.get_channel(1298134191418114180)
+	await alert_channel.send(error_msg)
+
 	err_list = ['(  ･᷄ᯅ･᷅ )？','( ；o；)？']
 	random.shuffle(err_list)
 	await ctx.send(err_list[0])

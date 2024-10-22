@@ -25,7 +25,7 @@ async def on_ready():
 	
 	msg = '起動しました。'
 	
-	alert_channel = bot.get_channel(744596357561712785)
+	alert_channel = bot.get_channel(854002265811451944)
 	await alert_channel.send(msg)
 	await alert_channel.send(version)
 	

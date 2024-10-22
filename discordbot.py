@@ -1,5 +1,6 @@
 import discord
 import traceback
+import mysql.connector
 import random
 import math
 from discord.ext import commands
@@ -515,6 +516,14 @@ def right_aria():
 
 @bot.command()
 async def aria(ctx):
+	# MySQLに接続
+	conn = mysql.connector.connect(
+    	host="mysql57.okemenlandz.sakura.ne.jp",
+    	user="okemenlandz",
+    	password="okemen65536",
+    	database="okemenlandz"
+	)
+
 	flag = True # 通常時フラグ
 	normal_cnt = 0
 	normal_total = 0
@@ -663,6 +672,15 @@ async def aria(ctx):
 
 		total = (charge_cnt*420 + cnt1500*1400 + cnt3000*2800 + cntover*1400 + rest)*4
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
+		
+		cursor = conn.cursor()
+		cursor.execute("select * from nemochi_slot where discord_id = %s", ctx.message.author.id)
+		result = cursor.fetchone()
+
+		await ctx.send(result)
+
+		cursor.close()
+		conn.close()
 
 @bot.command()
 async def jantama(ctx,*args):
@@ -926,7 +944,6 @@ async def jantama(ctx,*args):
 				await ctx.send(f'王南 トップ')
 			else:
 				await ctx.send(f'王南 {req}点トップ')
-
 
 token = getenv('DISCORD_BOT_TOKEN')
 bot.run(token)

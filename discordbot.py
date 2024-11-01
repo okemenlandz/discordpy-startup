@@ -1,6 +1,5 @@
 import discord
 import traceback
-import mysql.connector
 import random
 import math
 from discord.ext import commands
@@ -674,15 +673,6 @@ async def aria(ctx):
 
 		total = (charge_cnt*420 + cnt1500*1400 + cnt3000*2800 + cntover*1400 + rest)*4
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
-		
-		cursor = conn.cursor()
-		cursor.execute("select * from nemochi_slot where discord_id = %s", ctx.message.author.id)
-		result = cursor.fetchone()
-
-		await ctx.send(result)
-
-		cursor.close()
-		conn.close()
 
 @bot.command()
 async def jantama(ctx,*args):

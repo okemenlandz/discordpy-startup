@@ -741,7 +741,7 @@ def save_balance(diff, ctx):
 		res = requests.post(url, data=data)
 		return balance + diff, status
 	else:
-		0, status
+		return 0, status
 
 @bot.command()
 async def jantama(ctx,*args):

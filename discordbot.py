@@ -343,6 +343,10 @@ async def symphogear(ctx):
 		
 	if cnt[0] == 5:
 		await ctx.send(f'最終決戦終了\n投資:{in_money}円\n回収:{1480 + rest * 4}円\n収支:{1480 + rest * 4 - in_money}円')
+
+		new_balance, status = save_balance(1480 + rest * 4 - in_money, ctx)
+		if status == 200:
+			await ctx.send(f'[{ctx.author}] 残高：{new_balance}') 
 	else:
 		await ctx.send('シンフォギアチャンス　突入')
 		while(cnt[0] < 11):
@@ -365,6 +369,10 @@ async def symphogear(ctx):
 		await ctx.send(f'{judge}\n[{ctx.author}] シンフォギアチャンス　終了\n[{ctx.author}] FEVER×{cnt[1]+cnt[2]+cnt[3]+cnt[4]}\n[{ctx.author}] (4)×{cnt[1]}\n(8)×{cnt[2]}\n(12)×{cnt[3]}\n(15)×{cnt[4]}')
 		total = (cnt[1]*370+cnt[2]*740+cnt[3]*1120+cnt[4]*1410+rest)*4
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
+
+		new_balance, status = save_balance(total - in_money, ctx)
+		if status == 200:
+			await ctx.send(f'[{ctx.author}] 残高：{new_balance}') 
 
 def right_g():
 	right = random.randint(0,205)
@@ -401,6 +409,10 @@ async def gen(ctx):
 		
 	if cnt[2] == 0:
 		await ctx.send(f'[{ctx.author}] チャレンジ失敗\n投資:{in_money}円\n回収:{2400 + rest * 4}円\n収支:{2400 + rest * 4 - in_money}円')
+		
+		new_balance, status = save_balance(2400 + rest * 4 - in_money, ctx)
+		if status == 200:
+			await ctx.send(f'[{ctx.author}] 残高：{new_balance}') 
 	else:
 		await ctx.send(f'[{ctx.author}] 超源RUSH 突入')
 		cnt = [0,1,0,0]
@@ -418,6 +430,10 @@ async def gen(ctx):
 		await ctx.send(f'{judge}\n[{ctx.author}] 超源RUSH　終了\n[{ctx.author}] 超源RUSH×{cnt[1]+cnt[2]}\n[{ctx.author}] 超源BONUS×{cnt[3]}')
 		total = (cnt[1]*300+cnt[2]*600+cnt[3]*900+rest)*4
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
+
+		new_balance, status = save_balance(total - in_money, ctx)
+		if status == 200:
+			await ctx.send(f'[{ctx.author}] 残高：{new_balance}') 
 
 def right_g2():
 	right = random.randint(0,243) # 1/2.44
@@ -453,6 +469,10 @@ async def gen2(ctx):
 	initial_payout = 210 * 4 # 初当たり出玉 
 	if cnt[1] == 0:
 		await ctx.send(f'[{ctx.author}] チャレンジ失敗\n[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{initial_payout + rest * 4}円\n[{ctx.author}] 収支:{initial_payout + rest * 4 - in_money}円')
+		
+		new_balance, status = save_balance(initial_payout + rest * 4 - in_money, ctx)
+		if status == 200:
+			await ctx.send(f'[{ctx.author}] 残高：{new_balance}') 
 	else:
 		await ctx.send(f'[{ctx.author}] 超源RUSH 突入')
 		cnt = [0,1,0,0]
@@ -492,6 +512,9 @@ async def gen2(ctx):
 		await ctx.send(f'{judge}\n[{ctx.author}] 超源RUSH　終了\n[{ctx.author}] 超源RUSH×{cnt[1]}\n[{ctx.author}] 超源BONUS×{cnt[2]}')
 		total = (cnt[1]*210+cnt[2]*630+rest)*4
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
+		new_balance, status = save_balance(total - in_money, ctx)
+		if status == 200:
+			await ctx.send(f'[{ctx.author}] 残高：{new_balance}') 
 
 def left_aria():
 	right = random.randint(0,99)
@@ -575,21 +598,9 @@ async def aria(ctx):
 				total = (charge_cnt*420 + cnt1500*1400 + cnt3000*2800 + cntover*1400 + rest)*4
 				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 				
-				server_id = ctx.guild.id
-				user_id = ctx.author.id
-				url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys/" + str(server_id) + "/" + str(user_id)
-				res = requests.get(url)
-				
-				status = res.status_code
-
+				new_balance, status = save_balance(total - in_money, ctx)
 				if status == 200:
-					res = json.loads(res.text)
-					balance = res[0]["balance"]
-					data = {
-						'balance': balance + total - in_money
-					}
-					res = requests.post(url, data=data)
-					await ctx.send(f'[{ctx.author}] 残高：{balance + total - in_money}') 
+					await ctx.send(f'[{ctx.author}] 残高：{new_balance}') 
 				return
 			
 			v = random.randint(0,65535)
@@ -628,21 +639,9 @@ async def aria(ctx):
 				total = (charge_cnt*420 + cnt1500*1400 + cnt3000*2800 + cntover*1400 + rest)*4
 				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 				
-				server_id = ctx.guild.id
-				user_id = ctx.author.id
-				url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys/" + str(server_id) + "/" + str(user_id)
-				res = requests.get(url)
-				
-				status = res.status_code
-
+				new_balance, status = save_balance(total - in_money, ctx)
 				if status == 200:
-					res = json.loads(res.text)
-					balance = res[0]["balance"]
-					data = {
-						'balance': balance + total - in_money
-					}
-					res = requests.post(url, data=data)
-					await ctx.send(f'[{ctx.author}] 残高：{balance + total - in_money}') 
+					await ctx.send(f'[{ctx.author}] 残高：{new_balance}') 
 				return
 
 			v = random.randint(0,65535)
@@ -700,22 +699,24 @@ async def aria(ctx):
 		total = (charge_cnt*420 + cnt1500*1400 + cnt3000*2800 + cntover*1400 + rest)*4
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 
-		server_id = ctx.guild.id
-		user_id = ctx.author.id
-		url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys/" + str(server_id) + "/" + str(user_id)
-		res = requests.get(url)
-				
-		status = res.status_code
-
+		new_balance, status = save_balance(total - in_money, ctx)
 		if status == 200:
-			res = json.loads(res.text)
-			balance = res[0]["balance"]
-			data = {
-				'balance': balance + total - in_money
-			}
-			res = requests.post(url, data=data)
-			await ctx.send(f'[{ctx.author}] 残高：{balance + total - in_money}') 
-		return
+			await ctx.send(f'[{ctx.author}] 残高：{new_balance}') 
+
+def save_balance(diff, ctx):
+	url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys/" + str(ctx.guild.id) + "/" + str(ctx.author.id)
+	res = requests.get(url)
+				
+	status = res.status_code
+
+	if status == 200:
+		res = json.loads(res.text)
+		balance = res[0]["balance"]
+		data = {
+			'balance': balance + diff
+		}
+		res = requests.post(url, data=data)
+		return balance + diff, status
 
 @bot.command()
 async def jantama(ctx,*args):

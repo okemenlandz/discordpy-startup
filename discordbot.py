@@ -705,10 +705,10 @@ async def aria(ctx):
 
 @bot.command()
 async def regist(ctx,*args):
-	url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys/"
-	res = requests.get(url + str(ctx.author.id))
+	url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys"
+	res = requests.get(url + "/" + str(ctx.author.id))
 	name = ""
-	
+
 	if len(args) == 0:
 		name = ctx.author.global_name
 	else:

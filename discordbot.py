@@ -574,6 +574,7 @@ async def aria(ctx):
 
 				total = (charge_cnt*420 + cnt1500*1400 + cnt3000*2800 + cntover*1400 + rest)*4
 				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
+				
 				server_id = ctx.guild.id
 				user_id = ctx.author.id
 				url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys/" + str(server_id) + "/" + str(user_id)
@@ -583,7 +584,7 @@ async def aria(ctx):
 
 				if status == 200:
 					res = json.loads(res.text)
-					balance = res['balance']
+					balance = res[0]["balance"]
 					data = {
 						'balance': balance + total - in_money
 					}
@@ -626,12 +627,22 @@ async def aria(ctx):
 
 				total = (charge_cnt*420 + cnt1500*1400 + cnt3000*2800 + cntover*1400 + rest)*4
 				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
+				
 				server_id = ctx.guild.id
 				user_id = ctx.author.id
 				url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys/" + str(server_id) + "/" + str(user_id)
 				res = requests.get(url)
-				res = json.loads(res.text)
-				await ctx.send(res)
+				
+				status = res.status_code
+
+				if status == 200:
+					res = json.loads(res.text)
+					balance = res[0]["balance"]
+					data = {
+						'balance': balance + total - in_money
+					}
+					res = requests.post(url, data=data)
+					await ctx.send(f'[{ctx.author}] 残高：{balance + total - in_money}') 
 				return
 
 			v = random.randint(0,65535)
@@ -693,8 +704,18 @@ async def aria(ctx):
 		user_id = ctx.author.id
 		url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys/" + str(server_id) + "/" + str(user_id)
 		res = requests.get(url)
-		res = json.loads(res.text)
-		await ctx.send(res)
+				
+		status = res.status_code
+
+		if status == 200:
+			res = json.loads(res.text)
+			balance = res[0]["balance"]
+			data = {
+				'balance': balance + total - in_money
+			}
+			res = requests.post(url, data=data)
+			await ctx.send(f'[{ctx.author}] 残高：{balance + total - in_money}') 
+		return
 
 @bot.command()
 async def jantama(ctx,*args):

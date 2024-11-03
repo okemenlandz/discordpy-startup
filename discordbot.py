@@ -576,7 +576,7 @@ async def aria(ctx):
 				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 				server_id = ctx.guild.id
 				user_id = ctx.author.id
-				url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys/" + server_id + "/" + user_id
+				url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys/" + str(server_id) + "/" + str(user_id)
 				res = requests.get(url)
 				res = json.loads(res.text)
 				await ctx.send(res)
@@ -619,7 +619,7 @@ async def aria(ctx):
 				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 				server_id = ctx.guild.id
 				user_id = ctx.author.id
-				url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys/" + server_id + "/" + user_id
+				url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys/" + str(server_id) + "/" + str(user_id)
 				res = requests.get(url)
 				res = json.loads(res.text)
 				await ctx.send(res)
@@ -682,7 +682,7 @@ async def aria(ctx):
 
 		server_id = ctx.guild.id
 		user_id = ctx.author.id
-		url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys/" + server_id + "/" + user_id
+		url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys/" + str(server_id) + "/" + str(user_id)
 		res = requests.get(url)
 		res = json.loads(res.text)
 		await ctx.send(res)

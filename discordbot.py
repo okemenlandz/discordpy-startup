@@ -574,6 +574,12 @@ async def aria(ctx):
 
 				total = (charge_cnt*420 + cnt1500*1400 + cnt3000*2800 + cntover*1400 + rest)*4
 				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
+				server_id = ctx.guild.id
+				user_id = ctx.author.id
+				url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys/" + server_id + "/" + user_id
+				res = requests.get(url)
+				res = json.loads(res.text)
+				await ctx.send(res)
 				return
 			
 			v = random.randint(0,65535)
@@ -611,6 +617,12 @@ async def aria(ctx):
 
 				total = (charge_cnt*420 + cnt1500*1400 + cnt3000*2800 + cntover*1400 + rest)*4
 				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
+				server_id = ctx.guild.id
+				user_id = ctx.author.id
+				url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys/" + server_id + "/" + user_id
+				res = requests.get(url)
+				res = json.loads(res.text)
+				await ctx.send(res)
 				return
 
 			v = random.randint(0,65535)

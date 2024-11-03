@@ -2,6 +2,8 @@ import discord
 import traceback
 import random
 import math
+import requests
+import json
 from discord.ext import commands
 from os import getenv
 
@@ -517,14 +519,6 @@ def right_aria():
 
 @bot.command()
 async def aria(ctx):
-	# MySQLに接続
-	conn = mysql.connector.connect(
-    	host="mysql57.okemenlandz.sakura.ne.jp",
-    	user="okemenlandz",
-    	password="okemen65536",
-    	database="okemenlandz"
-	)
-
 	flag = True # 通常時フラグ
 	normal_cnt = 0
 	normal_total = 0
@@ -673,6 +667,13 @@ async def aria(ctx):
 
 		total = (charge_cnt*420 + cnt1500*1400 + cnt3000*2800 + cntover*1400 + rest)*4
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
+
+		server_id = ctx.guild.id
+		user_id = ctx.author.id
+		url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys/" + server_id + "/" + user_id
+		res = requests.get(url)
+		res = json.loads(res.text)
+		await ctx.send(res)
 
 @bot.command()
 async def jantama(ctx,*args):

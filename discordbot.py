@@ -346,7 +346,7 @@ async def symphogear(ctx):
 
 		new_balance, status = save_balance(1480 + rest * 4 - in_money, ctx)
 		if status == 200:
-			await ctx.send(f'[{ctx.author}] 残高：{new_balance}') 
+			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
 	else:
 		await ctx.send('シンフォギアチャンス　突入')
 		while(cnt[0] < 11):
@@ -372,7 +372,7 @@ async def symphogear(ctx):
 
 		new_balance, status = save_balance(total - in_money, ctx)
 		if status == 200:
-			await ctx.send(f'[{ctx.author}] 残高：{new_balance}') 
+			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
 
 def right_g():
 	right = random.randint(0,205)
@@ -412,7 +412,7 @@ async def gen(ctx):
 		
 		new_balance, status = save_balance(2400 + rest * 4 - in_money, ctx)
 		if status == 200:
-			await ctx.send(f'[{ctx.author}] 残高：{new_balance}') 
+			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
 	else:
 		await ctx.send(f'[{ctx.author}] 超源RUSH 突入')
 		cnt = [0,1,0,0]
@@ -433,7 +433,7 @@ async def gen(ctx):
 
 		new_balance, status = save_balance(total - in_money, ctx)
 		if status == 200:
-			await ctx.send(f'[{ctx.author}] 残高：{new_balance}') 
+			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
 
 def right_g2():
 	right = random.randint(0,243) # 1/2.44
@@ -472,7 +472,7 @@ async def gen2(ctx):
 		
 		new_balance, status = save_balance(initial_payout + rest * 4 - in_money, ctx)
 		if status == 200:
-			await ctx.send(f'[{ctx.author}] 残高：{new_balance}') 
+			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
 	else:
 		await ctx.send(f'[{ctx.author}] 超源RUSH 突入')
 		cnt = [0,1,0,0]
@@ -514,7 +514,7 @@ async def gen2(ctx):
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 		new_balance, status = save_balance(total - in_money, ctx)
 		if status == 200:
-			await ctx.send(f'[{ctx.author}] 残高：{new_balance}') 
+			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
 
 def left_aria():
 	right = random.randint(0,99)
@@ -600,7 +600,7 @@ async def aria(ctx):
 				
 				new_balance, status = save_balance(total - in_money, ctx)
 				if status == 200:
-					await ctx.send(f'[{ctx.author}] 残高：{new_balance}') 
+					await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
 				return
 			
 			v = random.randint(0,65535)
@@ -641,7 +641,7 @@ async def aria(ctx):
 				
 				new_balance, status = save_balance(total - in_money, ctx)
 				if status == 200:
-					await ctx.send(f'[{ctx.author}] 残高：{new_balance}') 
+					await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
 				return
 
 			v = random.randint(0,65535)
@@ -701,10 +701,27 @@ async def aria(ctx):
 
 		new_balance, status = save_balance(total - in_money, ctx)
 		if status == 200:
-			await ctx.send(f'[{ctx.author}] 残高：{new_balance}') 
+			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+
+@bot.command()
+async def regist(ctx,*args):
+	url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys/"
+	res = requests.get(url + str(ctx.author.id))
+
+	status = res.status_code
+
+	if status == 200:
+		await ctx.send(f'すでに登録されています。')
+	else:
+		data = {
+			"user_id": ctx.author.id,
+			"name": args[0]
+		}
+		res = requests.post(url, data=data)
+		await ctx.send(f'登録しました。')
 
 def save_balance(diff, ctx):
-	url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys/" + str(ctx.guild.id) + "/" + str(ctx.author.id)
+	url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys/" + str(ctx.author.id)
 	res = requests.get(url)
 				
 	status = res.status_code

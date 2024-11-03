@@ -578,8 +578,17 @@ async def aria(ctx):
 				user_id = ctx.author.id
 				url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys/" + str(server_id) + "/" + str(user_id)
 				res = requests.get(url)
-				res = json.loads(res.text)
-				await ctx.send(res)
+				
+				status = res.status_code
+
+				if status == 200:
+					res = json.loads(res.text)
+					balance = res['balance']
+					data = {
+						'balance': balance + total - in_money
+					}
+					res = requests.post(url, data=data)
+					await ctx.send(f'[{ctx.author}] 残高：{balance + total - in_money}') 
 				return
 			
 			v = random.randint(0,65535)

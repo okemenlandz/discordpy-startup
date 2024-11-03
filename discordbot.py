@@ -2,7 +2,7 @@ import discord
 import traceback
 import random
 import math
-# import requests
+import requests
 import json
 from discord.ext import commands
 from os import getenv

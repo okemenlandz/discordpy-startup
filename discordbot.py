@@ -708,6 +708,11 @@ async def regist(ctx,*args):
 	url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys/"
 	res = requests.get(url + str(ctx.author.id))
 
+	if len(args) == 0:
+		name = ctx.author.global_name
+	else:
+		name = args[0]
+
 	status = res.status_code
 
 	if status == 200:
@@ -715,7 +720,7 @@ async def regist(ctx,*args):
 	else:
 		data = {
 			"user_id": ctx.author.id,
-			"name": args[0]
+			"name": name
 		}
 		res = requests.post(url, data=data)
 		await ctx.send(f'登録しました。')

@@ -708,6 +708,7 @@ async def goyoku(ctx):
 	flag = True
 	normal_cnt = 0
 	cnt1500 = 0
+	cntover = 0
 	bonus_max = 0
 	while flag:
 		v = random.randint(0,65535)
@@ -731,6 +732,16 @@ async def goyoku(ctx):
 		if status == 200:
 			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
 	else:
+		cnt1500 = 2
+		flag = True
+		while flag:
+			flag = False
+			quarter = random.randint(0,3)
+			if quarter == 0:
+				flag = True
+				cnt1500 += 1
+				cntover += 1
+		await ctx.send(f'[{ctx.author}] 超強欲 {cnt1500 * 1500} BONUS')
 		await ctx.send(f'[{ctx.author}] 強欲RUSH 突入')
 		while(cnt[0] < 145):
 			right = random.randint(0,9999)
@@ -752,6 +763,7 @@ async def goyoku(ctx):
 					if quarter == 0:
 						flag = True
 						cnt1500 += 1
+						cntover += 1
 				await ctx.send(f'[{ctx.author}] {cnt[0]}G 超強欲 {cnt1500 * 1500} BONUS')
 				if cnt1500 * 1500 > bonus_max:
 					bonus_max = cnt1500 * 1500
@@ -761,9 +773,9 @@ async def goyoku(ctx):
 			cnt[0] = 0
 		
 		await ctx.send(f'[{ctx.author}] 強欲RUSH　終了\n[{ctx.author}] RUSH × {cnt[1]+cnt[2]+cnt[3]}\n[{ctx.author}] 超強欲 3000 BONUS × {cnt[3]}\n[{ctx.author}] 超強欲最高記録 {bonus_max}pt')
-		total = (cnt[1]*300+cnt[2]*1500+cnt[3]*3000)
+		total = (cnt[1]*300+cnt[2]*1500+cnt[3]*3000+cntover*1500)
 		await ctx.send(f'[{ctx.author}] TOTAL {total}pt')
-		total = (cnt[1]*280+cnt[2]*1400+cnt[3]*2800+rest)*4
+		total = (cnt[1]*280+cnt[2]*1400+cnt[3]*2800+cntover*1400+rest)*4
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 
 		new_balance, status = save_balance(total - in_money, ctx)

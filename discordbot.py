@@ -754,6 +754,9 @@ async def goyoku(ctx):
 				await ctx.send(f'[{ctx.author}] {cnt[0]}G 超強欲 {cnt1500 * 1500} BONUS')
 				if cnt1500 * 1500 > bonus_max:
 					bonus_max = cnt1500 * 1500
+			else:
+				cnt[0] += 1
+
 			cnt[0] = 0
 		
 		await ctx.send(f'[{ctx.author}] 強欲RUSH　終了\n[{ctx.author}] RUSH × {cnt[1]+cnt[2]+cnt[3]}\n[{ctx.author}] 超強欲 3000 BONUS × {cnt[3]}\n[{ctx.author}] 超強欲最高記録 {bonus_max}pt')

@@ -756,6 +756,7 @@ async def goyoku(ctx):
 					bonus_max = cnt1500 * 1500
 			else:
 				cnt[0] += 1
+				continue
 
 			cnt[0] = 0
 		

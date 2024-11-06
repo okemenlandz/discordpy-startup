@@ -734,6 +734,7 @@ async def goyoku(ctx):
 		await ctx.send(f'[{ctx.author}] 強欲RUSH 突入')
 		while(cnt[0] < 145):
 			right = random.randint(0,9999)
+			cnt[0] += 1
 			if right < 20:
 				cnt[1] += 1
 				await ctx.send(f'[{ctx.author}] {cnt[0]}G 2R')
@@ -755,7 +756,6 @@ async def goyoku(ctx):
 				if cnt1500 * 1500 > bonus_max:
 					bonus_max = cnt1500 * 1500
 			else:
-				cnt[0] += 1
 				continue
 
 			cnt[0] = 0

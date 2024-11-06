@@ -701,7 +701,63 @@ async def aria(ctx):
 
 		new_balance, status = save_balance(total - in_money, ctx)
 		if status == 200:
+			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円')	
+
+@bot.command()
+async def goyoku(ctx):
+	flag = True
+	normal_cnt = 0
+	while flag:
+		v = random.randint(0,65535)
+		normal_cnt += 1
+		if v < 188:
+			flag = False
+			
+	in_money = math.ceil(normal_cnt / 8.5) * 500
+	rest = math.ceil(((0 - (normal_cnt * 2)) % 17) * 125 / 17)
+	await ctx.send(f'[{ctx.author}] {normal_cnt}回転で当選しました。')
+	
+	if v > 104:
+		cnt = [0,0,0,1]
+	else:
+		cnt = [0,0,1,0]
+		
+	if cnt[2] == 1: # 1500のとき非突入
+		await ctx.send(f'[{ctx.author}] 大兎殲滅戦 終了\n投資:{in_money}円\n回収:{6000 + rest * 4}円\n収支:{6000 + rest * 4 - in_money}円')
+		
+		new_balance, status = save_balance(6000 + rest * 4 - in_money, ctx)
+		if status == 200:
 			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+	else:
+		await ctx.send(f'[{ctx.author}] 強欲RUSH 突入')
+		while(cnt[0] < 145):
+			right = random.randint(0,9999)
+			if right < 20:
+				cnt[1] += 1
+				await ctx.send(f'[{ctx.author}] {cnt[0]}G 2R')
+			elif right < 75:
+				cnt[2] += 1
+				await ctx.send(f'[{ctx.author}] {cnt[0]}G Re:ゼロ BONUS')
+			elif right < 100:
+				cnt[3] += 1
+				await ctx.send(f'[{ctx.author}] {cnt[0]}G 超強欲 3000 BONUS')
+			else:
+				cnt[0] += 1
+				continue
+
+			cnt[0] = 0
+		
+		await ctx.send(f'[{ctx.author}] 強欲RUSH　終了\n[{ctx.author}] RUSH × {cnt[1]+cnt[2]+cnt[3]}\n超強欲 3000 BONUS × {cnt[3]}')
+		total = (cnt[1]*300+cnt[2]*1500+cnt[3]*3000+rest)*4
+		await ctx.send(f'[{ctx.author}] TOTAL {total}pt')
+		total = (cnt[1]*280+cnt[2]*1400+cnt[3]*2800+rest)*4
+		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
+
+		new_balance, status = save_balance(total - in_money, ctx)
+		if status == 200:
+			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+
+
 
 @bot.command()
 async def regist(ctx,*args):

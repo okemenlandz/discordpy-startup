@@ -781,13 +781,19 @@ async def goyoku(ctx):
 		new_balance, status = save_balance(total - in_money, ctx)
 		if status == 200:
 			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+		else:
+			auto_regist(ctx, ctx.author.global_name)
+			if status != 200:
+				await ctx.send('残高アカウント登録エラー')
+				return 
+			new_balance, status = save_balance(total - in_money, ctx)
+			if status == 200:
+				await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+			else:
+				await ctx.send('残高登録エラー')
 
-
-
-@bot.command()
-async def regist(ctx,*args):
+def auto_regist(ctx, *args):
 	url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys"
-	res = requests.get(url + "/" + str(ctx.author.id))
 	name = ""
 
 	if len(args) == 0:
@@ -795,19 +801,30 @@ async def regist(ctx,*args):
 	else:
 		name = args[0]
 
-	status = res.status_code
+	data = {
+		"user_id": ctx.author.id,
+		"name": name
+	}
+	res = requests.post(url, data=data)
 
-	if status == 200:
-		await ctx.send(f'すでに登録されています。')
-	else:
-		data = {
-			"user_id": ctx.author.id,
-			"name": name
-		}
-		res = requests.post(url, data=data)
-		await ctx.send(f'登録しました。')
+	return res.status_code
 
 def save_balance(diff, ctx):
+	"""
+	Parameters
+	----------
+	diff : int
+    	登録する差分(金額)
+	ctx : Context
+
+	Returns
+	-------
+	int
+		もともとの残高に差分を加算したもの
+	status
+		APIのステータスコード
+	"""
+
 	url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys/" + str(ctx.author.id)
 	res = requests.get(url)
 				

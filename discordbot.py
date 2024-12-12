@@ -809,7 +809,7 @@ async def goyoku(ctx):
 	normal_cnt = 0
 	cnt1500 = 0
 	cntover = 0
-	bonus_max = 0
+	bonus_max = 3000
 	while flag:
 		v = random.randint(0,65535)
 		normal_cnt += 1
@@ -826,7 +826,7 @@ async def goyoku(ctx):
 		cnt = [0,0,1,0]
 		
 	if cnt[2] == 1: # 1500のとき非突入
-		await ctx.send(f'[{ctx.author}] 大兎殲滅戦 終了\n投資:{in_money}円\n回収:{6000 + rest * 4}円\n収支:{6000 + rest * 4 - in_money}円')
+		await ctx.send(f'[{ctx.author}] 大兎殲滅戦 終了\n[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{6000 + rest * 4}円\n[{ctx.author}] 収支:{6000 + rest * 4 - in_money}円')
 		
 		diff = 6000 + rest * 4 - in_money
 		new_balance, status = save_balance(diff, ctx)

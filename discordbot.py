@@ -349,7 +349,7 @@ async def symphogear(ctx):
 		if status == 200:
 			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
 		else:
-			auto_regist(ctx, ctx.author.global_name)
+			status = auto_regist(ctx, ctx.author.global_name)
 			if status != 200:
 				await ctx.send('残高アカウント登録エラー')
 				return 
@@ -386,7 +386,7 @@ async def symphogear(ctx):
 		if status == 200:
 			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
 		else:
-			auto_regist(ctx, ctx.author.global_name)
+			status = auto_regist(ctx, ctx.author.global_name)
 			if status != 200:
 				await ctx.send('残高アカウント登録エラー')
 				return 
@@ -437,7 +437,7 @@ async def gen(ctx):
 		if status == 200:
 			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
 		else:
-			auto_regist(ctx, ctx.author.global_name)
+			status = auto_regist(ctx, ctx.author.global_name)
 			if status != 200:
 				await ctx.send('残高アカウント登録エラー')
 				return 
@@ -469,7 +469,7 @@ async def gen(ctx):
 		if status == 200:
 			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
 		else:
-			auto_regist(ctx, ctx.author.global_name)
+			status = auto_regist(ctx, ctx.author.global_name)
 			if status != 200:
 				await ctx.send('残高アカウント登録エラー')
 				return 
@@ -519,7 +519,7 @@ async def gen2(ctx):
 		if status == 200:
 			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
 		else:
-			auto_regist(ctx, ctx.author.global_name)
+			status = auto_regist(ctx, ctx.author.global_name)
 			if status != 200:
 				await ctx.send('残高アカウント登録エラー')
 				return 
@@ -573,7 +573,7 @@ async def gen2(ctx):
 		if status == 200:
 			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
 		else:
-			auto_regist(ctx, ctx.author.global_name)
+			status = auto_regist(ctx, ctx.author.global_name)
 			if status != 200:
 				await ctx.send('残高アカウント登録エラー')
 				return 
@@ -670,7 +670,7 @@ async def aria(ctx):
 				if status == 200:
 					await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
 				else:
-					auto_regist(ctx, ctx.author.global_name)
+					status = auto_regist(ctx, ctx.author.global_name)
 					if status != 200:
 						await ctx.send('残高アカウント登録エラー')
 						return 
@@ -722,7 +722,7 @@ async def aria(ctx):
 				if status == 200:
 					await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
 				else:
-					auto_regist(ctx, ctx.author.global_name)
+					status = auto_regist(ctx, ctx.author.global_name)
 					if status != 200:
 						await ctx.send('残高アカウント登録エラー')
 						return 
@@ -793,7 +793,7 @@ async def aria(ctx):
 		if status == 200:
 			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
 		else:
-			auto_regist(ctx, ctx.author.global_name)
+			status = auto_regist(ctx, ctx.author.global_name)
 			if status != 200:
 				await ctx.send('残高アカウント登録エラー')
 				return 
@@ -833,7 +833,7 @@ async def goyoku(ctx):
 		if status == 200:
 			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
 		else:
-			auto_regist(ctx, ctx.author.global_name)
+			status = auto_regist(ctx, ctx.author.global_name)
 			if status != 200:
 				await ctx.send('残高アカウント登録エラー')
 				return 
@@ -894,7 +894,7 @@ async def goyoku(ctx):
 		if status == 200:
 			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
 		else:
-			auto_regist(ctx, ctx.author.global_name)
+			status = auto_regist(ctx, ctx.author.global_name)
 			if status != 200:
 				await ctx.send('残高アカウント登録エラー')
 				return 

@@ -1220,18 +1220,22 @@ async def jantama(ctx,*args):
 async def hanabi(ctx,*args):
 	game_cnt = int(args[0])
 	bita = float(args[1])
+	rate = int(args[2])
 
 	wari = (bita - 75) / 25 * 2
-	val = wari / 100 * game_cnt * 3
-	await ctx.send(f'機械割：{round(wari, 2)}% 期待値：{val}円')
+	val = (wari / 100 * game_cnt * 3) / rate * 1000
+	await ctx.send(f'機械割：{100 + round(wari, 2)}% 期待値：{val}円')
 
 @bot.command()
 async def nori(ctx,*args):
+	
+	await ctx.send(len(args))
 	# 子カウントと合計出す
 	total = 0
 	c = 0
 	p_list = []
 	for i in range(0,3,len(args)):
+		await ctx.send(args[i])
 		total += int(args[i+1])
 		if int(args[i+2]) != 0: # 子の時
 			c += 1

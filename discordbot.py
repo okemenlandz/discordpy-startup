@@ -1229,13 +1229,11 @@ async def hanabi(ctx,*args):
 @bot.command()
 async def nori(ctx,*args):
 	
-	await ctx.send(len(args))
 	# 子カウントと合計出す
 	total = 0
 	c = 0
 	p_list = []
 	for i in range(0,len(args),3):
-		await ctx.send(args[i])
 		total += int(args[i+1])
 		if int(args[i+2]) != 0: # 子の時
 			c += 1

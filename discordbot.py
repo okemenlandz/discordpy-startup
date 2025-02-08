@@ -1237,6 +1237,7 @@ async def nori(ctx,*args):
 		total += int(args[i+1])
 		if int(args[i+2]) != 0: # 子の時
 			c += 1
+			total -= int(args[i+2])
 		else: # 親の時
 			p_list.append(i)
 	

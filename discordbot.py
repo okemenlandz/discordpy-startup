@@ -1234,7 +1234,7 @@ async def nori(ctx,*args):
 	total = 0
 	c = 0
 	p_list = []
-	for i in range(0,3,len(args)):
+	for i in range(0,len(args),3):
 		await ctx.send(args[i])
 		total += int(args[i+1])
 		if int(args[i+2]) != 0: # 子の時
@@ -1254,7 +1254,7 @@ async def nori(ctx,*args):
 
 	# 人数分ループ
 	outputstr = ""
-	for i in range(0,3,len(args)):
+	for i in range(0,len(args),3):
 		if args[i+2] != 0: # 子の時
 			outputstr += f'{args[i]} {args[i+1]} {str(int(args[i+2]) - int(args[i+1]))}\n'
 		else: # 親の時

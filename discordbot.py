@@ -1254,12 +1254,12 @@ async def nori(ctx,*args):
 	outputstr = "```"
 	for i in range(0,len(args),3):
 		if int(args[i+2]) != 0: # 子の時
-			outputstr += f'{args[i]}  {args[i+1]}  {int(args[i+2])}  {str(int(args[i+2]) - int(args[i+1]))}\n'
+			outputstr += f'{args[i].ljust(5,"　")} {args[i+1].rjust(4)} {args[i+2].rjust(4)} {str(int(args[i+2]) - int(args[i+1])).rjust(4)}\n'
 		else: # 親の時
 			if i in toku_list:
-				outputstr += f'{args[i]}  {args[i+1]}  {per + 1}  {str(per - int(args[i+1]) + 1)}\n'
+				outputstr += f'{args[i].ljust(5,"　")} {args[i+1].rjust(4)} {str(per + 1).rjust(4)} {str(per - int(args[i+1]) + 1).rjust(4)}\n'
 			else:
-				outputstr += f'{args[i]}  {args[i+1]}  {per}  {str(per - int(args[i+1]))}\n'
+				outputstr += f'{args[i].ljust(5,"　")} {args[i+1].rjust(4)} {str(per).rjust(4)} {str(per - int(args[i+1])).rjust(4)}\n'
 
 	await ctx.send(outputstr + "```")
 

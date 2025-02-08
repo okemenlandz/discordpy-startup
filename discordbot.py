@@ -1216,5 +1216,50 @@ async def jantama(ctx,*args):
 			else:
 				await ctx.send(f'王南 {req}点トップ')
 
+@bot.command()
+async def hanabi(ctx,*args):
+	game_cnt = args[0]
+	bita = args[1]
+
+	wari = (bita - 75) / 25 * 2
+	val = wari / 100 * game_cnt * 3
+	await ctx.send(f'機械割：{round(wari, 2)}% 期待値：{val}円')
+
+@bot.command()
+async def nori(ctx,*args):
+	# 子カウントと合計出す
+	total = 0
+	c = 0
+	p_list = []
+	for i in range(0,3,len(args)):
+		total += int(args[i+1])
+		if int(args[i+2]) != 0: # 子の時
+			c += 1
+		else: # 親の時
+			p_list.append(i)
+	
+	p = len(p_list)
+
+	# 1人当たり
+	per = math.floor(total / p)
+	amari = total - (per * p)
+	if amari == 0:
+		toku_list = []
+	else:
+		toku_list = random.sample(p_list, amari)
+
+	# 人数分ループ
+	outputstr = ""
+	for i in range(0,3,len(args)):
+		if args[i+2] != 0: # 子の時
+			outputstr += f'{args[i]} {args[i+1]} {str(args[i+2] - int(args[i]))}\n'
+		else: # 親の時
+			if i in toku_list:
+				outputstr += f'{args[i]} {args[i+1]} {str(per - int(args[i]) + 1)}\n'
+			else:
+				outputstr += f'{args[i]} {args[i+1]} {str(per - int(args[i]))}\n'
+
+	await ctx.send(outputstr)
+
 token = getenv('DISCORD_BOT_TOKEN')
 bot.run(token)

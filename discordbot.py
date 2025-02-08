@@ -1252,7 +1252,7 @@ async def nori(ctx,*args):
 	outputstr = ""
 	for i in range(0,3,len(args)):
 		if args[i+2] != 0: # 子の時
-			outputstr += f'{args[i]} {args[i+1]} {str(args[i+2] - int(args[i+1]))}\n'
+			outputstr += f'{args[i]} {args[i+1]} {str(int(args[i+2]) - int(args[i+1]))}\n'
 		else: # 親の時
 			if i in toku_list:
 				outputstr += f'{args[i]} {args[i+1]} {str(per - int(args[i+1]) + 1)}\n'

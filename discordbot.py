@@ -1261,7 +1261,7 @@ async def nori(ctx,*args):
 			else:
 				outputstr += f'{args[i]}  {args[i+1]}  {per}  {str(per - int(args[i+1]))}\n'
 
-	await ctx.send(outputstr)
+	await ctx.send(outputstr + "```")
 
 token = getenv('DISCORD_BOT_TOKEN')
 bot.run(token)

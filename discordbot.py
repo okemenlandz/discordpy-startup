@@ -1218,8 +1218,8 @@ async def jantama(ctx,*args):
 
 @bot.command()
 async def hanabi(ctx,*args):
-	game_cnt = args[0]
-	bita = args[1]
+	game_cnt = int(args[0])
+	bita = float(args[1])
 
 	wari = (bita - 75) / 25 * 2
 	val = wari / 100 * game_cnt * 3

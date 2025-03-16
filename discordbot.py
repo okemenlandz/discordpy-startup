@@ -1226,6 +1226,15 @@ async def hanabi(ctx,*args):
 	val = math.floor( (wari / 100 * game_cnt * 3) / rate * 1000)
 	await ctx.send(f'機械割：{100 + round(wari, 2)}% 期待値：{val}円')
 
+async def disc(ctx,*args):
+	game_cnt = int(args[0])
+	bita = float(args[1])
+	rate = int(args[2])
+
+	wari = (bita - 58) / 42 * 3
+	val = math.floor( (wari / 100 * game_cnt * 3) / rate * 1000)
+	await ctx.send(f'機械割：{100 + round(wari, 2)}% 期待値：{val}円')
+
 @bot.command()
 async def nori(ctx,*args):
 	

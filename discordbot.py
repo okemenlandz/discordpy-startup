@@ -1307,8 +1307,11 @@ async def gochi(ctx, *args):
             break # 最後の1人は残り
 
         keta = len(str(last))
+        await ctx.send(keta)
         unit = pow(10, keta-1)
+        await ctx.send(unit)
         maxi = last - (last % unit)
+        await ctx.send(maxi)
 
         if i <= random.randint(1, player_num):
             gochi = maxi

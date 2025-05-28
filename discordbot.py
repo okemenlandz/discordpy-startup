@@ -4,6 +4,7 @@ import random
 import math
 import requests
 import json
+import datetime
 from discord.ext import commands
 from os import getenv
 
@@ -1273,6 +1274,143 @@ async def nori(ctx,*args):
 				outputstr += f'{args[i].ljust(5,"　")} {args[i+1].rjust(4)} {str(per).rjust(4)} {str(per - int(args[i+1])).rjust(4)}\n'
 
 	await ctx.send(outputstr + "```")
+
+@bot.command()
+async def dice(ctx, *args):
+    if len(args) != 1:
+        # エラー処理
+        return
+    count = [0,0,0,0,0,0]
+    emoji = [":one: ",":two: ",":three: ",":four: ",":five: ",":six "]
+    txt = ""
+
+    for i in range(args[0]):
+        r = random.randint(0, 5)
+        txt += emoji[r]
+        count[r] += 1
+
+    # 出力
+    await ctx.send(txt)
+    await ctx.send(f'{count[0]}-{count[1]}-{count[2]}-{count[3]}-{count[4]}{count[5]}\n合計: {count[0]+count[1]+count[2]+count[3]+count[4]+count[5]}')
+
+@bot.command()
+async def gochi(ctx, *args):
+    player_num = len(args) - 1
+    last = args[0]
+
+    r = random.sample(args,len(args))
+    i = 0
+    gochi = 0
+    for name in r:
+        i += 1
+        if i == player_num:
+            break # 最後の1人は残り
+
+        keta = len(last)
+        unit = pow(10, keta-1)
+        maxi = last - (last % unit)
+
+        if i <= random.randint(1, player_num):
+            gochi = maxi
+        else:
+            gochi = random.randint(0, maxi / unit) * unit
+
+        last -= gochi
+        await ctx.send("{name}: {gochi}")
+    else:
+        name = r[player_num - 1]
+        await ctx.send("{name}: {last}")
+
+@bot.command()
+async def heiten(ctx, args):
+    now = datetime.datetime.now()
+    hour = now.hour
+    minute = now.minute
+    second = now.second
+
+    last = int(args[0])
+    last_seconds = (((last - (last % 100)) / 100) - hour) * 3600 + (last % 100 - minute) * 60 + second
+    await ctx.send(f'残り{last_seconds // 4.1}回転')
+
+@bot.command()
+async def judge(a):
+    rank = 0
+    f = 0
+    pairList = [0,0,0,0,0]
+    flash = False
+    straight = False
+    four = False
+    three = False
+    pair = False
+    nopair = False
+    min = 14
+    max = 0
+    for i in range(5):
+        if a[i][1] == a[4][1]:
+            f += 1
+        for j in range(5):
+            if a[i][0] == a[j][0]:
+                pairList[i] += 1
+        if min > a[i][0]:
+            min = a[i][0]
+        if max < a[i][0]:
+            max = a[i][0]
+	
+    nopairCnt = 0
+    pairCnt = 0
+    for i in range(5):
+        if pairList[i] == 1:
+            nopairCnt += 1
+        elif pairList[i] == 2:
+            pair = True
+            pairCnt += 1
+        elif pairList[i] == 3:
+            three = True
+        elif pairList[i] == 4:
+            four = True
+
+    if nopairCnt == 5:
+        nopair = True
+
+    if nopair:
+        if min == max - 4:
+            straight = True
+        if min == 1:
+            straightCnt = 0
+            for i in range(10,14):
+                for j in range(5):
+                    if a[j][0] == i:
+                        straightCnt += 1
+            if straightCnt == 4:
+                straight = True
+
+    if f == 5:
+        flash = True
+
+    if flash & straight:
+        rank = 8
+    elif four:
+        rank = 7
+    elif three & pair:
+        rank = 6
+    elif flash:
+        rank = 5
+    elif straight:
+        rank = 4
+    elif three:
+        rank = 3
+    elif pairCnt == 4:
+        rank = 2
+    elif pair:
+        rank = 1
+    else:
+        rank = 0
+
+    return rank
+
+def rate(ctx, *args):
+    return
+
 
 token = getenv('DISCORD_BOT_TOKEN')
 bot.run(token)

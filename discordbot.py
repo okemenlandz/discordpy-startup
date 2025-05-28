@@ -1297,11 +1297,15 @@ async def dice(ctx, *args):
 async def gochi(ctx, *args):
     player_num = len(args) - 1
     last = int(args[0])
+	
+    # player.nameのみのlist作成
     l = []
     for i in range(1, len(args)):
         l.append(args[i])
 	
+    # 混ぜる
     r = random.sample(l, len(args)-1)
+	
     i = 0
     gochi = 0
     for name in r:
@@ -1323,9 +1327,9 @@ async def gochi(ctx, *args):
 
         last -= gochi
         await ctx.send(f'{name}: {gochi}')
-    else:
-        name = r[player_num - 1]
-        await ctx.send(f'{name}: {last}')
+    
+    name = r[player_num - 1]
+    await ctx.send(f'{name}: {last}')
 
 @bot.command()
 async def heiten(ctx, args):

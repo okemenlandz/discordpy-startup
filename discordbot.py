@@ -1317,7 +1317,7 @@ async def gochi(ctx, *args):
         unit = pow(10, keta-1)
         maxi = last - (last % unit)
 
-        if i <= random.randint(1, player_num) / 2:
+        if random.randint(1, 5) < 3:
             gochi = maxi
         else:
             gochi = random.randint(0, int(maxi / unit)) * unit

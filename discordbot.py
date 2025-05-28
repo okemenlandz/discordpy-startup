@@ -1319,10 +1319,10 @@ async def gochi(ctx, *args):
             gochi = random.randint(0, maxi / unit) * unit
 
         last -= gochi
-        await ctx.send("{name}: {gochi}")
+        await ctx.send(f'{name}: {gochi}')
     else:
         name = r[player_num - 1]
-        await ctx.send("{name}: {last}")
+        await ctx.send(f'{name}: {last}')
 
 @bot.command()
 async def heiten(ctx, args):

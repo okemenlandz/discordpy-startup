@@ -1316,7 +1316,7 @@ async def gochi(ctx, *args):
         if i <= random.randint(1, player_num):
             gochi = maxi
         else:
-            gochi = random.randint(0, maxi / unit) * unit
+            gochi = random.randint(0, int(maxi / unit)) * unit
 
         last -= gochi
         await ctx.send(f'{name}: {gochi}')

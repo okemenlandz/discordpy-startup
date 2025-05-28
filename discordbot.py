@@ -1296,7 +1296,7 @@ async def dice(ctx, *args):
 @bot.command()
 async def gochi(ctx, *args):
     player_num = len(args) - 1
-    last = args[0]
+    last = int(args[0])
 
     r = random.sample(args,len(args))
     i = 0
@@ -1306,7 +1306,7 @@ async def gochi(ctx, *args):
         if i == player_num:
             break # 最後の1人は残り
 
-        keta = len(last)
+        keta = len(str(last))
         unit = pow(10, keta-1)
         maxi = last - (last % unit)
 

@@ -1281,7 +1281,7 @@ async def dice(ctx, *args):
         # エラー処理
         return
     count = [0,0,0,0,0,0]
-    emoji = [":one: ",":two: ",":three: ",":four: ",":five: ",":six "]
+    emoji = [":one: ",":two: ",":three: ",":four: ",":five: ",":six: "]
     txt = ""
 
     for i in range(int(args[0])):
@@ -1291,7 +1291,7 @@ async def dice(ctx, *args):
 
     # 出力
     await ctx.send(txt)
-    await ctx.send(f'{count[0]}-{count[1]}-{count[2]}-{count[3]}-{count[4]}{count[5]}\n合計: {count[0]+count[1]+count[2]+count[3]+count[4]+count[5]}')
+    await ctx.send(f'{count[0]}-{count[1]}-{count[2]}-{count[3]}-{count[4]}-{count[5]}\n合計: {count[0]+count[1]*2+count[2]*3+count[3]*4+count[4]*5+count[5]*6}')
 
 @bot.command()
 async def gochi(ctx, *args):

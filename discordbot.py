@@ -1301,7 +1301,7 @@ async def gochi(ctx, *args):
     for i in range(1, len(args)):
         l.append(args[i])
 	
-    r = random.sample(l, len(args))
+    r = random.sample(l, len(args)-1)
     i = 0
     gochi = 0
     for name in r:

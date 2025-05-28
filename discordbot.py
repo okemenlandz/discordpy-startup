@@ -1284,7 +1284,7 @@ async def dice(ctx, *args):
     emoji = [":one: ",":two: ",":three: ",":four: ",":five: ",":six "]
     txt = ""
 
-    for i in range(args[0]):
+    for i in range(int(args[0])):
         r = random.randint(0, 5)
         txt += emoji[r]
         count[r] += 1

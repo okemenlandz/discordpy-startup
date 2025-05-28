@@ -1297,9 +1297,11 @@ async def dice(ctx, *args):
 async def gochi(ctx, *args):
     player_num = len(args) - 1
     last = int(args[0])
-    args.pop(0)
+    l = []
+    for i in range(1, len(args)):
+        l.append(args[i])
 	
-    r = random.sample(args, len(args))
+    r = random.sample(l, len(args))
     i = 0
     gochi = 0
     for name in r:

@@ -1418,6 +1418,185 @@ async def judge(a):
 def rate(ctx, *args):
     return
 
+def binomial_pmf(k, n, p):
+    """二項分布の確率質量関数 P(X=k | n, p)"""
+    if p < 0 or p > 1 or k > n:
+        return 0
+    comb = math.comb(n, k)
+    return comb * (p ** k) * ((1 - p) ** (n - k))
+
+import json
+import math
+from discord.ext import commands
+
+bot = commands.Bot(command_prefix="!")
+
+def binomial_pmf(k, n, p):
+    """二項分布の確率質量関数"""
+    if p < 0 or p > 1 or k > n:
+        return 0
+    comb = math.comb(n, k)
+    return comb * (p ** k) * ((1 - p) ** (n - k))
+
+@bot.command()
+async def hanbetsu(ctx, *, json_text: str):
+    """
+    JSON形式の9×n二次元配列を受け取り、各設定(1〜6)における尤度を計算する。
+
+    各行は:
+    [タイトル, 設定1確率, ..., 設定6確率, 起こった回数, 試行回数]
+    """
+    try:
+        matrix = json.loads(json_text)
+
+        if not all(isinstance(row, list) and len(row) == 9 for row in matrix):
+            await ctx.send("各行は9要素（タイトル＋設定1〜6＋発生回数＋試行回数）である必要があります。")
+            return
+
+        total_likelihoods = [1.0 for _ in range(6)]  # 各設定の累積尤度
+        results = []
+
+        for row in matrix:
+            title = str(row[0])
+            theoretical = row[1:7]
+            k = int(row[7])
+            n = int(row[8])
+
+            if n <= 0:
+                await ctx.send(f"{title}: 試行回数が0以下です。")
+                continue
+
+            # 各設定の尤度
+            likelihoods = [binomial_pmf(k, n, p) for p in theoretical]
+            total = sum(likelihoods)
+            normalized = [l / total if total > 0 else 0 for l in likelihoods]
+
+            # 累積尤度
+            for i in range(6):
+                total_likelihoods[i] *= likelihoods[i]
+
+            results.append({
+                "title": title,
+                "probabilities": normalized
+            })
+
+        # 総合結果
+        total_sum = sum(total_likelihoods)
+        total_probs = [l / total_sum for l in total_likelihoods] if total_sum > 0 else [0] * 6
+
+        # 出力整形
+        msg = "```\n"
+        for r in results:
+            msg += f"{r['title']}\n"
+            for i, p in enumerate(r["probabilities"], 1):
+                bar_len = int((p * 100) / 5)
+                bar = "█" * bar_len
+                percent_str = f"{p*100:.2f}%"
+                int_part = int(p*100)
+                if int_part < 10:
+                    percent_str = " " + percent_str
+                msg += f"設定{i}: {percent_str} {bar}\n"
+            msg += "\n"
+
+        msg += "――――――――――――――――――\n"
+        msg += "【総合判定（全データを統合）】\n"
+        for i, p in enumerate(total_probs, 1):
+            bar_len = int((p * 100) / 5)
+            bar = "█" * bar_len
+            percent_str = f"{p*100:.2f}%"
+            int_part = int(p*100)
+            if int_part < 10:
+                percent_str = " " + percent_str
+            msg += f"設定{i}: {percent_str} {bar}\n"
+        msg += "```"
+
+        await ctx.send(msg)
+
+    except json.JSONDecodeError:
+        await ctx.send("JSON形式が正しくありません。[[...],[...]] の形式で送ってください。")
+
+    """
+    JSON形式の8×n二次元配列を受け取り、
+    各設定(1〜6)における「観測結果が起こる確率（尤度）」を計算する。
+
+    各行は:
+    [設定1確率, ..., 設定6確率, 起こった回数, 試行回数]
+
+    例:
+    !hanbetsu [[0.1,0.2,0.3,0.15,0.15,0.1,12,100],
+               [0.05,0.1,0.2,0.3,0.25,0.1,18,100]]
+    """
+    try:
+        matrix = json.loads(json_text)
+
+        if not all(isinstance(row, list) and len(row) == 8 for row in matrix):
+            await ctx.send("各行は8要素（設定1〜6＋発生回数＋試行回数）である必要があります。")
+            return
+
+        # 各設定の総合尤度（掛け合わせ）
+        total_likelihoods = [1.0 for _ in range(6)]
+
+        msg = ""
+
+        for row_index, row in enumerate(matrix):
+            theoretical = row[:6]
+            k = int(row[6])
+            n = int(row[7])
+
+            if n <= 0:
+                await ctx.send(f"{row_index+1}行目: 試行回数が0以下です。")
+                continue
+
+            observed_p = k / n
+
+            # 各設定の尤度を計算
+            likelihoods = [binomial_pmf(k, n, p) for p in theoretical]
+
+            # 正規化（確率としての比率表示）
+            total = sum(likelihoods)
+            normalized = [l / total if total > 0 else 0 for l in likelihoods]
+
+            # 総合尤度を掛け合わせて累積（多データ統合）
+            for i in range(6):
+                total_likelihoods[i] *= likelihoods[i]
+
+            msg += f"第{row_index+1}行: 実測 {k}/{n} (={observed_p:.3f})\n"
+            for i, l in enumerate(normalized, 1):
+                msg += f"設定{i}: {l*100:.2f}% "
+            msg += f"\n→ 最も尤もらしい設定: {normalized.index(max(normalized)) + 1}\n\n"
+
+        # 総合結果
+        total_sum = sum(total_likelihoods)
+        if total_sum > 0:
+            total_probs = [l / total_sum for l in total_likelihoods]
+        else:
+            total_probs = [0] * 6
+
+        msg += "――――――――――――――――――\n"
+        msg += "【総合判定（全データを統合）】\n"
+        for i, p in enumerate(total_probs, 1):
+            msg += f"設定{i}: {p*100:.4f}% "
+        msg += f"\n→ 総合的に最も可能性が高い設定: {total_probs.index(max(total_probs)) + 1}"
+
+        await ctx.send(msg)
+
+    except json.JSONDecodeError:
+        await ctx.send("JSONの形式が正しくありません。[[...],[...]] の形式で送ってください。")
+
+
+"""
+@bot.command()
+async def mahjong(ctx, *args):
+    if len(args) % 5 != 0:
+        await ctx.send("リストの長さは5の倍数である必要があります。")
+        return
+	
+    guild = ctx.guild.id
+    
+    n = len(args) // 5
+    result = [args[i*5:(i+1)*5] for i in range(n)]
+    return
+"""
 
 token = getenv('DISCORD_BOT_TOKEN')
 bot.run(token)

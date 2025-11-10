@@ -1419,19 +1419,6 @@ def rate(ctx, *args):
     return
 
 def binomial_pmf(k, n, p):
-    """二項分布の確率質量関数 P(X=k | n, p)"""
-    if p < 0 or p > 1 or k > n:
-        return 0
-    comb = math.comb(n, k)
-    return comb * (p ** k) * ((1 - p) ** (n - k))
-
-import json
-import math
-from discord.ext import commands
-
-bot = commands.Bot(command_prefix="!")
-
-def binomial_pmf(k, n, p):
     """二項分布の確率質量関数"""
     if p < 0 or p > 1 or k > n:
         return 0

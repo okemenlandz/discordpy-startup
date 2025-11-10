@@ -1518,7 +1518,7 @@ async def hanbetsu(ctx, *, json_text: str):
         for r in results:
             msg += f"{r['title']}\n"
             for i, p in enumerate(r["probabilities"], 1):
-                bar_len = int((p * 100) / 5)
+                bar_len = int((p * 100) / 2)
                 bar = "█" * bar_len
                 percent_str = f"{p*100:.2f}%"
                 int_part = int(p*100)
@@ -1530,7 +1530,7 @@ async def hanbetsu(ctx, *, json_text: str):
         msg += "――――――――――――――――――\n"
         msg += "【総合判定（全データを統合）】\n"
         for i, p in enumerate(total_probs, 1):
-            bar_len = int((p * 100) / 5)
+            bar_len = int((p * 100) / 2)
             bar = "█" * bar_len
             percent_str = f"{p*100:.2f}%"
             int_part = int(p*100)

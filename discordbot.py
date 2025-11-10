@@ -1426,6 +1426,14 @@ def binomial_pmf(k, n, p):
     comb = math.comb(n, k)
     return comb * (p ** k) * ((1 - p) ** (n - k))
 
+def parse_prob(x):
+    s = str(x)
+    if "/" in s:
+        numerator, denominator = map(float, s.split("/"))
+        return numerator / denominator
+    else:
+        return float(s)
+
 @bot.command()
 async def hanbetsu(ctx, *, json_text: str):
     """
@@ -1450,7 +1458,7 @@ async def hanbetsu(ctx, *, json_text: str):
             
             # 分数表記対応: 文字列や数値を float に変換
             try:
-                theoretical = [float(Fraction(str(x))) for x in row[1:7]]
+                theoretical = [parse_prob(x) for x in row[1:7]]
             except ValueError:
                 await ctx.send(f"{title}: 設定確率の値が正しくありません。")
                 return

@@ -7,6 +7,7 @@ import json
 import datetime
 from discord.ext import commands
 from os import getenv
+from fractions import Fraction
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -1427,6 +1428,88 @@ def binomial_pmf(k, n, p):
 
 @bot.command()
 async def hanbetsu(ctx, *, json_text: str):
+    """
+    JSON形式の9×n二次元配列を受け取り、各設定(1〜6)における尤度を計算する。
+    各行は:
+    [タイトル, 設定1確率, ..., 設定6確率, 起こった回数, 試行回数]
+
+    確率は 0.16 のような浮動小数点でも、1/6 のような分数表記でもOK
+    """
+    try:
+        matrix = json.loads(json_text)
+
+        if not all(isinstance(row, list) and len(row) == 9 for row in matrix):
+            await ctx.send("各行は9要素（タイトル＋設定1〜6＋発生回数＋試行回数）である必要があります。")
+            return
+
+        total_likelihoods = [1.0 for _ in range(6)]  # 各設定の累積尤度
+        results = []
+
+        for row in matrix:
+            title = str(row[0])
+            
+            # 分数表記対応: 文字列や数値を float に変換
+            try:
+                theoretical = [float(Fraction(str(x))) for x in row[1:7]]
+            except ValueError:
+                await ctx.send(f"{title}: 設定確率の値が正しくありません。")
+                return
+
+            k = int(row[7])
+            n = int(row[8])
+
+            if n <= 0:
+                await ctx.send(f"{title}: 試行回数が0以下です。")
+                continue
+
+            # 各設定の尤度
+            likelihoods = [binomial_pmf(k, n, p) for p in theoretical]
+            total = sum(likelihoods)
+            normalized = [l / total if total > 0 else 0 for l in likelihoods]
+
+            # 累積尤度
+            for i in range(6):
+                total_likelihoods[i] *= likelihoods[i]
+
+            results.append({
+                "title": title,
+                "probabilities": normalized
+            })
+
+        # 総合結果
+        total_sum = sum(total_likelihoods)
+        total_probs = [l / total_sum for l in total_likelihoods] if total_sum > 0 else [0] * 6
+
+        # 出力整形
+        msg = "```\n"
+        for r in results:
+            msg += f"{r['title']}\n"
+            for i, p in enumerate(r["probabilities"], 1):
+                bar_len = int((p * 100) / 5)
+                bar = "█" * bar_len
+                percent_str = f"{p*100:.2f}%"
+                int_part = int(p*100)
+                if int_part < 10:
+                    percent_str = " " + percent_str
+                msg += f"設定{i}: {percent_str} {bar}\n"
+            msg += "\n"
+
+        msg += "――――――――――――――――――\n"
+        msg += "【総合判定（全データを統合）】\n"
+        for i, p in enumerate(total_probs, 1):
+            bar_len = int((p * 100) / 5)
+            bar = "█" * bar_len
+            percent_str = f"{p*100:.2f}%"
+            int_part = int(p*100)
+            if int_part < 10:
+                percent_str = " " + percent_str
+            msg += f"設定{i}: {percent_str} {bar}\n"
+        msg += "```"
+
+        await ctx.send(msg)
+
+    except json.JSONDecodeError:
+        await ctx.send("JSON形式が正しくありません。[[...],[...]] の形式で送ってください。")
     """
     JSON形式の9×n二次元配列を受け取り、各設定(1〜6)における尤度を計算する。
 

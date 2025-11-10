@@ -1427,12 +1427,37 @@ def binomial_pmf(k, n, p):
     return comb * (p ** k) * ((1 - p) ** (n - k))
 
 def parse_prob(x):
-    s = str(x)
+    """
+    x: 文字列または数値
+    以下の形式に対応
+    - '1/6' のような分数
+    - '1/38.14' のような小数分母の分数
+    - '0.16' のような小数
+    - '16%' のようなパーセント表記
+    """
+    s = str(x).strip()
+    
+    # パーセント表記
+    if s.endswith("%"):
+        try:
+            return float(s[:-1]) / 100
+        except ValueError:
+            raise ValueError(f"無効なパーセント表記: {x}")
+    
+    # 分数表記（分母が整数でも小数でもOK）
     if "/" in s:
-        numerator, denominator = map(float, s.split("/"))
-        return numerator / denominator
-    else:
+        try:
+            numerator, denominator = map(float, s.split("/"))
+            return numerator / denominator
+        except ValueError:
+            raise ValueError(f"無効な分数表記: {x}")
+    
+    # 浮動小数点
+    try:
         return float(s)
+    except ValueError:
+        raise ValueError(f"無効な確率表記: {x}")
+
 
 @bot.command()
 async def hanbetsu(ctx, *, json_text: str):

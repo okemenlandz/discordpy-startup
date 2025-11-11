@@ -1516,7 +1516,7 @@ async def hanbetsu(ctx, *, json_text: str):
         # 出力整形
         msg = "```\n"
         for r in results:
-            msg += f"{r['title']}\n"
+            msg += f"【{r['title']}】\n"
             for i, p in enumerate(r["probabilities"], 1):
                 bar_len = int((p * 100) / 4)
                 bar = "█" * bar_len
@@ -1528,7 +1528,7 @@ async def hanbetsu(ctx, *, json_text: str):
             msg += "\n"
 
         msg += "――――――――――――――――――\n"
-        msg += "【総合判定（全データを統合）】\n"
+        msg += "【総合判定】\n"
         for i, p in enumerate(total_probs, 1):
             bar_len = int((p * 100) / 4)
             bar = "█" * bar_len

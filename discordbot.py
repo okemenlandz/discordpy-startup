@@ -18,7 +18,7 @@ bot = commands.Bot(command_prefix='/', intents=intents)
 version = 'ver 10.0'
 
 genai.configure(api_key=getenv('GEMINI_API_KEY'))
-gemini_model = genai.GenerativeModel('gemini-2.0-flash')
+gemini_model = genai.GenerativeModel('gemini-2.5-flash-lite')
 conversation_histories = defaultdict(list)
 MAX_HISTORY = 20
 

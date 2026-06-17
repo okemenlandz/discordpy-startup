@@ -18,7 +18,7 @@ bot = commands.Bot(command_prefix='/', intents=intents)
 version = 'ver 10.0'
 
 genai.configure(api_key=getenv('GEMINI_API_KEY'))
-gemini_model = genai.GenerativeModel('gemini-1.5-flash')
+gemini_model = genai.GenerativeModel('gemini-2.0-flash')
 conversation_histories = defaultdict(list)
 MAX_HISTORY = 20
 
@@ -89,12 +89,18 @@ async def on_message(message):
 				try:
 					messages_to_send = history + [{'role': 'user', 'parts': [content]}]
 					response = await gemini_model.generate_content_async(messages_to_send)
-					reply = response.text
+					if response.candidates and response.candidates[0].content.parts:
+						reply = response.text
+					else:
+						reply = '返答できませんでした。'
 					history.append({'role': 'user', 'parts': [content]})
 					history.append({'role': 'model', 'parts': [reply]})
 					if len(history) > MAX_HISTORY:
 						conversation_histories[channel_id] = history[-MAX_HISTORY:]
 				except Exception as e:
+					error_msg = ''.join(traceback.TracebackException.from_exception(e).format())
+					alert_channel = bot.get_channel(1298134191418114180)
+					await alert_channel.send(error_msg)
 					reply = 'エラーが発生しました。'
 
 			if len(reply) > 2000:

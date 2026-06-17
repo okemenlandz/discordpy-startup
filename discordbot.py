@@ -5,6 +5,8 @@ import math
 import requests
 import json
 import datetime
+import google.generativeai as genai
+from collections import defaultdict
 from discord.ext import commands
 from os import getenv
 from fractions import Fraction
@@ -14,6 +16,11 @@ intents.message_content = True
 
 bot = commands.Bot(command_prefix='/', intents=intents)
 version = 'ver 10.0'
+
+genai.configure(api_key=getenv('GEMINI_API_KEY'))
+gemini_model = genai.GenerativeModel('gemini-1.5-flash')
+conversation_histories = defaultdict(list)
+MAX_HISTORY = 20
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -64,6 +71,38 @@ async def on_voice_state_update(member, before, after):
 		else:
 			msg = f'{member.name}は{before.channel.name}から{after.channel.name}に移動した！'
 			await alert_channel.send(msg)
+
+@bot.event
+async def on_message(message):
+	if message.author == bot.user:
+		return
+
+	if bot.user.mentioned_in(message):
+		content = message.content
+		content = content.replace(f'<@{bot.user.id}>', '').replace(f'<@!{bot.user.id}>', '').strip()
+
+		if content:
+			channel_id = message.channel.id
+			history = conversation_histories[channel_id]
+
+			async with message.channel.typing():
+				try:
+					messages_to_send = history + [{'role': 'user', 'parts': [content]}]
+					response = await gemini_model.generate_content_async(messages_to_send)
+					reply = response.text
+					history.append({'role': 'user', 'parts': [content]})
+					history.append({'role': 'model', 'parts': [reply]})
+					if len(history) > MAX_HISTORY:
+						conversation_histories[channel_id] = history[-MAX_HISTORY:]
+				except Exception as e:
+					reply = 'エラーが発生しました。'
+
+			if len(reply) > 2000:
+				reply = reply[:1997] + '...'
+
+			await message.reply(reply)
+
+	await bot.process_commands(message)
 
 @bot.command()
 async def ping(ctx):

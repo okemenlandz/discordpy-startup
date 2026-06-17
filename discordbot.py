@@ -1,4 +1,4 @@
-import discord
+﻿import discord
 import traceback
 import random
 import math
@@ -85,6 +85,7 @@ async def on_message(message):
 			channel_id = message.channel.id
 			history = conversation_histories[channel_id]
 
+			reply = 'エラーが発生しました。'
 			async with message.channel.typing():
 				try:
 					messages_to_send = history + [{'role': 'user', 'parts': [content]}]
@@ -98,10 +99,14 @@ async def on_message(message):
 					if len(history) > MAX_HISTORY:
 						conversation_histories[channel_id] = history[-MAX_HISTORY:]
 				except Exception as e:
-					error_msg = ''.join(traceback.TracebackException.from_exception(e).format())
-					alert_channel = bot.get_channel(1298134191418114180)
-					await alert_channel.send(error_msg)
 					reply = 'エラーが発生しました。'
+					error_msg = ''.join(traceback.TracebackException.from_exception(e).format())
+					try:
+						alert_channel = bot.get_channel(1298134191418114180)
+						if alert_channel:
+							await alert_channel.send(error_msg)
+					except Exception:
+						pass
 
 			if len(reply) > 2000:
 				reply = reply[:1997] + '...'

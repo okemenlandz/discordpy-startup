@@ -5,7 +5,7 @@ import math
 import requests
 import json
 import datetime
-import google.generativeai as genai
+from groq import AsyncGroq
 from collections import defaultdict
 from discord.ext import commands
 from os import getenv
@@ -17,8 +17,8 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='/', intents=intents)
 version = 'ver 10.0'
 
-genai.configure(api_key=getenv('GEMINI_API_KEY'))
-gemini_model = genai.GenerativeModel('gemini-2.5-flash-lite')
+groq_client = AsyncGroq(api_key=getenv('GROQ_API_KEY'))
+GROQ_MODEL = 'llama-3.3-70b-versatile'
 conversation_histories = defaultdict(list)
 MAX_HISTORY = 20
 
@@ -88,14 +88,14 @@ async def on_message(message):
 			reply = 'エラーが発生しました。'
 			async with message.channel.typing():
 				try:
-					messages_to_send = history + [{'role': 'user', 'parts': [content]}]
-					response = await gemini_model.generate_content_async(messages_to_send)
-					if response.candidates and response.candidates[0].content.parts:
-						reply = response.text
-					else:
-						reply = '返答できませんでした。'
-					history.append({'role': 'user', 'parts': [content]})
-					history.append({'role': 'model', 'parts': [reply]})
+					messages_to_send = history + [{'role': 'user', 'content': content}]
+					response = await groq_client.chat.completions.create(
+						model=GROQ_MODEL,
+						messages=messages_to_send
+					)
+					reply = response.choices[0].message.content
+					history.append({'role': 'user', 'content': content})
+					history.append({'role': 'assistant', 'content': reply})
 					if len(history) > MAX_HISTORY:
 						conversation_histories[channel_id] = history[-MAX_HISTORY:]
 				except Exception as e:

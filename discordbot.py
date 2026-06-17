@@ -101,12 +101,12 @@ async def on_message(message):
 				except Exception as e:
 					reply = 'エラーが発生しました。'
 					error_msg = ''.join(traceback.TracebackException.from_exception(e).format())
+					print(error_msg)
 					try:
-						alert_channel = bot.get_channel(1298134191418114180)
-						if alert_channel:
-							await alert_channel.send(error_msg)
-					except Exception:
-						pass
+						alert_channel = await bot.fetch_channel(1298134191418114180)
+						await alert_channel.send(error_msg[:2000])
+					except Exception as log_err:
+						print(f'ログ送信失敗: {log_err}')
 
 			if len(reply) > 2000:
 				reply = reply[:1997] + '...'

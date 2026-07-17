@@ -1609,6 +1609,7 @@ async def mahjong(ctx, *args):
 """
 
 MONEY_API = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/money_yachin"
+MONEY_CHANNEL_ID = 1223067264987824218
 
 def get_all_moneys():
 	res = requests.get(MONEY_API)
@@ -1627,9 +1628,15 @@ def update_balance_by_uid(user_id, new_balance):
 	res = requests.post(url, data={'balance': new_balance})
 	return res.status_code
 
+def is_money_channel(ctx):
+	return ctx.channel.id == MONEY_CHANNEL_ID
+
 @bot.command()
-async def money(ctx, *, text=None):
-	if text is None:
+async def money(ctx, from_name=None, to_name=None, amount_str=None):
+	if not is_money_channel(ctx):
+		return
+
+	if from_name is None:
 		users, status = get_all_moneys()
 		if status != 200:
 			await ctx.send('残高取得エラー')
@@ -1637,31 +1644,26 @@ async def money(ctx, *, text=None):
 		if not users:
 			await ctx.send('登録されているユーザーはいません')
 			return
+		sorted_users = sorted(users, key=lambda u: u.get('balance', 0), reverse=True)
+		max_name_len = max(len(u.get('name', '')) for u in sorted_users)
+		max_balance_len = max(len(f"{u.get('balance', 0):,}") for u in sorted_users)
 		msg = "```\n"
-		for user in sorted(users, key=lambda u: u.get('balance', 0), reverse=True):
+		for user in sorted_users:
 			name = user.get('name', '?')
 			balance = user.get('balance', 0)
-			msg += f"{name:<8} {balance:>10,}円\n"
+			name_padded = name + '　' * (max_name_len - len(name))
+			balance_str = f"{balance:,}".rjust(max_balance_len)
+			msg += f"{name_padded}  {balance_str}円\n"
 		msg += "```"
 		await ctx.send(msg)
 		return
 
-	text = text.replace('->', '→')
-	parts = text.split()
-
-	if len(parts) != 2 or '→' not in parts[0]:
-		await ctx.send('使い方: `/money まてぞん→しぐれ 20000` または `/money` で残高一覧')
+	if to_name is None or amount_str is None:
+		await ctx.send('使い方: `/money まてぞん しぐれ 20000` または `/money` で残高一覧')
 		return
-
-	names = parts[0].split('→')
-	if len(names) != 2 or not names[0].strip() or not names[1].strip():
-		await ctx.send('使い方: `/money まてぞん→しぐれ 20000`')
-		return
-
-	from_name, to_name = names[0].strip(), names[1].strip()
 
 	try:
-		amount = int(parts[1])
+		amount = int(amount_str)
 	except ValueError:
 		await ctx.send('金額は整数で入力してください')
 		return
@@ -1706,6 +1708,9 @@ async def money(ctx, *, text=None):
 
 @bot.command()
 async def moneyregist(ctx, *, name=None):
+	if not is_money_channel(ctx):
+		return
+
 	if name is None:
 		await ctx.send('使い方: `/moneyregist 名前`')
 		return
@@ -1727,6 +1732,9 @@ async def moneyregist(ctx, *, name=None):
 
 @bot.command()
 async def moneyset(ctx, name=None, amount=None):
+	if not is_money_channel(ctx):
+		return
+
 	if name is None or amount is None:
 		await ctx.send('使い方: `/moneyset 名前 金額` (初期残高の設定)')
 		return

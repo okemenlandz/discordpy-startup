@@ -1822,10 +1822,12 @@ async def ex(ctx, payer=None, amount_str=None):
 			await ctx.send(f'`{member_name}` が登録されていません')
 			return
 
-	share = amount // 4
+	share = math.ceil(amount / 4)
+	total_collected = share * 4
+	bonus = total_collected - amount
 
-	# 支払者に +amount
-	new_payer_balance = payer_user['balance'] + amount
+	# 支払者に +total_collected（余りも含めて受け取り）
+	new_payer_balance = payer_user['balance'] + total_collected
 	if update_balance_by_uid(payer_user['user_id'], new_payer_balance) != 200:
 		await ctx.send('残高更新エラー')
 		return
@@ -1842,11 +1844,13 @@ async def ex(ctx, payer=None, amount_str=None):
 			return
 
 	# 結果メッセージ
-	lines = [f'【{payer} {amount:,}円 立替】', f'分配: 各 -{share:,}円', '']
+	header = f'【{payer} {amount:,}円 立替】'
+	header += f'  (+{bonus}円 得)' if bonus > 0 else ''
+	lines = [header, f'分配: 各 -{share:,}円', '']
 	for member_name in EX_MEMBERS:
 		if member_name == payer:
-			net = amount - share
-			lines.append(f'{member_name}: +{amount:,} - {share:,} = +{net:,}円')
+			net = total_collected - share
+			lines.append(f'{member_name}: +{total_collected:,} - {share:,} = +{net:,}円')
 		else:
 			lines.append(f'{member_name}: -{share:,}円')
 	await ctx.send('```\n' + '\n'.join(lines) + '\n```')

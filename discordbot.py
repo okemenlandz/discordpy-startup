@@ -1608,5 +1608,151 @@ async def mahjong(ctx, *args):
     return
 """
 
+MONEY_API = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/money_yachin"
+
+def get_all_moneys():
+	res = requests.get(MONEY_API)
+	if res.status_code == 200:
+		return json.loads(res.text), 200
+	return [], res.status_code
+
+def find_user_by_name(name, users):
+	for user in users:
+		if user.get('name') == name:
+			return user
+	return None
+
+def update_balance_by_uid(user_id, new_balance):
+	url = f"{MONEY_API}/{user_id}"
+	res = requests.post(url, data={'balance': new_balance})
+	return res.status_code
+
+@bot.command()
+async def money(ctx, *, text=None):
+	if text is None:
+		users, status = get_all_moneys()
+		if status != 200:
+			await ctx.send('残高取得エラー')
+			return
+		if not users:
+			await ctx.send('登録されているユーザーはいません')
+			return
+		msg = "```\n"
+		for user in sorted(users, key=lambda u: u.get('balance', 0), reverse=True):
+			name = user.get('name', '?')
+			balance = user.get('balance', 0)
+			msg += f"{name:<8} {balance:>10,}円\n"
+		msg += "```"
+		await ctx.send(msg)
+		return
+
+	text = text.replace('->', '→')
+	parts = text.split()
+
+	if len(parts) != 2 or '→' not in parts[0]:
+		await ctx.send('使い方: `/money まてぞん→しぐれ 20000` または `/money` で残高一覧')
+		return
+
+	names = parts[0].split('→')
+	if len(names) != 2 or not names[0].strip() or not names[1].strip():
+		await ctx.send('使い方: `/money まてぞん→しぐれ 20000`')
+		return
+
+	from_name, to_name = names[0].strip(), names[1].strip()
+
+	try:
+		amount = int(parts[1])
+	except ValueError:
+		await ctx.send('金額は整数で入力してください')
+		return
+
+	users, status = get_all_moneys()
+	if status != 200:
+		await ctx.send('残高取得エラー')
+		return
+
+	from_user = find_user_by_name(from_name, users)
+	to_user = find_user_by_name(to_name, users)
+
+	if from_user is None:
+		await ctx.send(f'`{from_name}` は登録されていません。`/moneyregist {from_name}` で登録してください')
+		return
+	if to_user is None:
+		await ctx.send(f'`{to_name}` は登録されていません。`/moneyregist {to_name}` で登録してください')
+		return
+
+	from_balance = from_user['balance']
+	to_balance = to_user['balance']
+	from_uid = from_user['user_id']
+	to_uid = to_user['user_id']
+
+	new_from = from_balance + amount
+	new_to = to_balance - amount
+
+	s1 = update_balance_by_uid(from_uid, new_from)
+	s2 = update_balance_by_uid(to_uid, new_to)
+
+	if s1 != 200 or s2 != 200:
+		await ctx.send('残高更新エラー')
+		return
+
+	msg = (
+		f'```\n'
+		f'{from_name}: {from_balance:,}円 → {new_from:,}円 (+{amount:,})\n'
+		f'{to_name}: {to_balance:,}円 → {new_to:,}円 (-{amount:,})\n'
+		f'```'
+	)
+	await ctx.send(msg)
+
+@bot.command()
+async def moneyregist(ctx, *, name=None):
+	if name is None:
+		await ctx.send('使い方: `/moneyregist 名前`')
+		return
+
+	users, status = get_all_moneys()
+	if status == 200:
+		existing = find_user_by_name(name, users)
+		if existing:
+			await ctx.send(f'`{name}` はすでに登録されています (残高: {existing["balance"]:,}円)')
+			return
+
+	uid = int(datetime.datetime.now().timestamp() * 1000)
+	res = requests.post(MONEY_API, data={'user_id': uid, 'name': name})
+
+	if res.status_code in (200, 201):
+		await ctx.send(f'`{name}` を登録しました (残高: 0円)')
+	else:
+		await ctx.send(f'登録エラー (status: {res.status_code})')
+
+@bot.command()
+async def moneyset(ctx, name=None, amount=None):
+	if name is None or amount is None:
+		await ctx.send('使い方: `/moneyset 名前 金額` (初期残高の設定)')
+		return
+
+	try:
+		balance = int(amount)
+	except ValueError:
+		await ctx.send('金額は整数で入力してください')
+		return
+
+	users, status = get_all_moneys()
+	if status != 200:
+		await ctx.send('残高取得エラー')
+		return
+
+	user = find_user_by_name(name, users)
+	if user is None:
+		await ctx.send(f'`{name}` は登録されていません。`/moneyregist {name}` で登録してください')
+		return
+
+	s = update_balance_by_uid(user['user_id'], balance)
+	if s != 200:
+		await ctx.send('残高更新エラー')
+		return
+
+	await ctx.send(f'`{name}` の残高を {balance:,}円 に設定しました')
+
 token = getenv('DISCORD_BOT_TOKEN')
 bot.run(token)

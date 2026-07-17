@@ -1314,17 +1314,44 @@ async def nori(ctx,*args):
 		toku_list = random.sample(p_list, amari)
 
 	# 人数分ループ
+	name_diffs = {}
 	outputstr = "```"
 	for i in range(0,len(args),3):
 		if int(args[i+2]) != 0: # 子の時
-			outputstr += f'{args[i].ljust(5,"　")} {args[i+1].rjust(4)} {args[i+2].rjust(4)} {str(int(args[i+2]) - int(args[i+1])).rjust(4)}\n'
+			diff = int(args[i+2]) - int(args[i+1])
+			outputstr += f'{args[i].ljust(5,"　")} {args[i+1].rjust(4)} {args[i+2].rjust(4)} {str(diff).rjust(4)}\n'
 		else: # 親の時
 			if i in toku_list:
-				outputstr += f'{args[i].ljust(5,"　")} {args[i+1].rjust(4)} {str(per + 1).rjust(4)} {str(per - int(args[i+1]) + 1).rjust(4)}\n'
+				diff = per - int(args[i+1]) + 1
+				outputstr += f'{args[i].ljust(5,"　")} {args[i+1].rjust(4)} {str(per + 1).rjust(4)} {str(diff).rjust(4)}\n'
 			else:
-				outputstr += f'{args[i].ljust(5,"　")} {args[i+1].rjust(4)} {str(per).rjust(4)} {str(per - int(args[i+1])).rjust(4)}\n'
+				diff = per - int(args[i+1])
+				outputstr += f'{args[i].ljust(5,"　")} {args[i+1].rjust(4)} {str(per).rjust(4)} {str(diff).rjust(4)}\n'
+		name_diffs[args[i]] = diff
 
 	await ctx.send(outputstr + "```")
+
+	# 全員がmoneyDBにいる場合、残高に反映
+	users, status = get_all_moneys()
+	if status == 200 and users:
+		all_in_db = all(find_user_by_name(name, users) is not None for name in name_diffs)
+		if all_in_db:
+			results = []
+			for name, diff in name_diffs.items():
+				user = find_user_by_name(name, users)
+				new_balance = user['balance'] + diff
+				if update_balance_by_uid(user['user_id'], new_balance) == 200:
+					results.append(f'{name}: {diff:+,}円 → {new_balance:,}円')
+
+			reflect_msg = '```\n[残高に反映]\n' + '\n'.join(results) + '\n```'
+
+			if ctx.channel.id == MONEY_CHANNEL_ID:
+				await ctx.send(reflect_msg)
+			else:
+				await ctx.send('残高に反映しました')
+				money_channel = bot.get_channel(MONEY_CHANNEL_ID)
+				if money_channel:
+					await money_channel.send(reflect_msg)
 
 @bot.command()
 async def dice(ctx, *args):

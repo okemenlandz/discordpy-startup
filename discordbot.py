@@ -1706,6 +1706,21 @@ async def money(ctx, from_name=None, to_name=None, amount_str=None):
 	)
 	await ctx.send(msg)
 
+	users, status = get_all_moneys()
+	if status == 200 and users:
+		sorted_users = sorted(users, key=lambda u: u.get('balance', 0), reverse=True)
+		max_name_len = max(len(u.get('name', '')) for u in sorted_users)
+		max_balance_len = max(len(f"{u.get('balance', 0):,}") for u in sorted_users)
+		list_msg = "```\n"
+		for user in sorted_users:
+			name = user.get('name', '?')
+			balance = user.get('balance', 0)
+			name_padded = name + '　' * (max_name_len - len(name))
+			balance_str = f"{balance:,}".rjust(max_balance_len)
+			list_msg += f"{name_padded}  {balance_str}円\n"
+		list_msg += "```"
+		await ctx.send(list_msg)
+
 @bot.command()
 async def moneyregist(ctx, *, name=None):
 	if not is_money_channel(ctx):

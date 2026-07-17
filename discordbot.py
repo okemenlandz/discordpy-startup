@@ -1645,18 +1645,7 @@ async def money(ctx, from_name=None, to_name=None, amount_str=None):
 		if not users:
 			await ctx.send('登録されているユーザーはいません')
 			return
-		sorted_users = sorted(users, key=lambda u: u.get('balance', 0), reverse=True)
-		max_name_len = max(len(u.get('name', '')) for u in sorted_users)
-		max_balance_len = max(len(f"{u.get('balance', 0):,}") for u in sorted_users)
-		msg = "```\n"
-		for user in sorted_users:
-			name = user.get('name', '?')
-			balance = user.get('balance', 0)
-			name_padded = name + '　' * (max_name_len - len(name))
-			balance_str = f"{balance:,}".rjust(max_balance_len)
-			msg += f"{name_padded}  {balance_str}円\n"
-		msg += "```"
-		await ctx.send(msg)
+		await send_balance_list(ctx, users)
 		return
 
 	if to_name is None or amount_str is None:
@@ -1709,18 +1698,7 @@ async def money(ctx, from_name=None, to_name=None, amount_str=None):
 
 	users, status = get_all_moneys()
 	if status == 200 and users:
-		sorted_users = sorted(users, key=lambda u: u.get('balance', 0), reverse=True)
-		max_name_len = max(len(u.get('name', '')) for u in sorted_users)
-		max_balance_len = max(len(f"{u.get('balance', 0):,}") for u in sorted_users)
-		list_msg = "```\n"
-		for user in sorted_users:
-			name = user.get('name', '?')
-			balance = user.get('balance', 0)
-			name_padded = name + '　' * (max_name_len - len(name))
-			balance_str = f"{balance:,}".rjust(max_balance_len)
-			list_msg += f"{name_padded}  {balance_str}円\n"
-		list_msg += "```"
-		await ctx.send(list_msg)
+		await send_balance_list(ctx, users)
 
 @bot.command()
 async def moneyregist(ctx, *, name=None):
@@ -1778,7 +1756,7 @@ async def moneyset(ctx, name=None, amount=None):
 
 	await ctx.send(f'`{name}` の残高を {balance:,}円 に設定しました')
 
-def build_balance_list_msg(users):
+async def send_balance_list(ctx, users):
 	sorted_users = sorted(users, key=lambda u: u.get('balance', 0), reverse=True)
 	max_name_len = max(len(u.get('name', '')) for u in sorted_users)
 	max_balance_len = max(len(f"{u.get('balance', 0):,}") for u in sorted_users)
@@ -1790,7 +1768,10 @@ def build_balance_list_msg(users):
 		balance_str = f"{balance:,}".rjust(max_balance_len)
 		msg += f"{name_padded}  {balance_str}円\n"
 	msg += "```"
-	return msg
+	await ctx.send(msg)
+	total = sum(u.get('balance', 0) for u in users)
+	if total != 0:
+		await ctx.send(f'⚠️ 残高合計が {total:,}円 になっています（0円になるべきです）')
 
 @bot.command()
 async def ex(ctx, payer=None, amount_str=None):
@@ -1858,7 +1839,7 @@ async def ex(ctx, payer=None, amount_str=None):
 	# 全員残高表示
 	users, status = get_all_moneys()
 	if status == 200 and users:
-		await ctx.send(build_balance_list_msg(users))
+		await send_balance_list(ctx, users)
 
 token = getenv('DISCORD_BOT_TOKEN')
 bot.run(token)

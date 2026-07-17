@@ -1343,15 +1343,21 @@ async def nori(ctx,*args):
 				if update_balance_by_uid(user['user_id'], new_balance) == 200:
 					results.append(f'{name}: {diff:+,}円 → {new_balance:,}円')
 
-			reflect_msg = '```\n[残高に反映]\n' + '\n'.join(results) + '\n```'
+			reflect_msg = '```\n/nori\n' + '\n'.join(results) + '\n```'
+
+			updated_users, updated_status = get_all_moneys()
 
 			if ctx.channel.id == MONEY_CHANNEL_ID:
 				await ctx.send(reflect_msg)
+				if updated_status == 200 and updated_users:
+					await send_balance_list(ctx, updated_users)
 			else:
 				await ctx.send('残高に反映しました')
 				money_channel = bot.get_channel(MONEY_CHANNEL_ID)
 				if money_channel:
 					await money_channel.send(reflect_msg)
+					if updated_status == 200 and updated_users:
+						await send_balance_list(money_channel, updated_users)
 
 @bot.command()
 async def dice(ctx, *args):

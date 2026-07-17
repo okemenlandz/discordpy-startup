@@ -1690,8 +1690,8 @@ async def money(ctx, from_name=None, to_name=None, amount_str=None):
 
 	msg = (
 		f'```\n'
-		f'{from_name}: {from_balance:,}円 → {new_from:,}円 (+{amount:,})\n'
-		f'{to_name}: {to_balance:,}円 → {new_to:,}円 (-{amount:,})\n'
+		f'{from_name}: {from_balance:,}円 → {new_from:,}円 ({amount:+,})\n'
+		f'{to_name}: {to_balance:,}円 → {new_to:,}円 ({-amount:+,})\n'
 		f'```'
 	)
 	await ctx.send(msg)
@@ -1826,14 +1826,14 @@ async def ex(ctx, payer=None, amount_str=None):
 
 	# 結果メッセージ
 	header = f'【{payer} {amount:,}円 立替】'
-	header += f'  (+{bonus}円 得)' if bonus > 0 else ''
-	lines = [header, f'分配: 各 -{share:,}円', '']
+	header += f'  ({bonus:+,}円 得)' if bonus != 0 else ''
+	lines = [header, f'分配: 各 {-share:+,}円', '']
 	for member_name in EX_MEMBERS:
 		if member_name == payer:
 			net = total_collected - share
-			lines.append(f'{member_name}: +{total_collected:,} - {share:,} = +{net:,}円')
+			lines.append(f'{member_name}: {net:+,}円')
 		else:
-			lines.append(f'{member_name}: -{share:,}円')
+			lines.append(f'{member_name}: {-share:+,}円')
 	await ctx.send('```\n' + '\n'.join(lines) + '\n```')
 
 	# 全員残高表示

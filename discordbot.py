@@ -1610,6 +1610,7 @@ async def mahjong(ctx, *args):
 
 MONEY_API = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/money_yachin"
 MONEY_CHANNEL_ID = 1223067264987824218
+EX_MEMBERS = ['まてぞん', 'つちなか', 'しぐれ', 'ふぁりす']
 
 def get_all_moneys():
 	res = requests.get(MONEY_API)
@@ -1776,6 +1777,84 @@ async def moneyset(ctx, name=None, amount=None):
 		return
 
 	await ctx.send(f'`{name}` の残高を {balance:,}円 に設定しました')
+
+def build_balance_list_msg(users):
+	sorted_users = sorted(users, key=lambda u: u.get('balance', 0), reverse=True)
+	max_name_len = max(len(u.get('name', '')) for u in sorted_users)
+	max_balance_len = max(len(f"{u.get('balance', 0):,}") for u in sorted_users)
+	msg = "```\n"
+	for user in sorted_users:
+		name = user.get('name', '?')
+		balance = user.get('balance', 0)
+		name_padded = name + '　' * (max_name_len - len(name))
+		balance_str = f"{balance:,}".rjust(max_balance_len)
+		msg += f"{name_padded}  {balance_str}円\n"
+	msg += "```"
+	return msg
+
+@bot.command()
+async def ex(ctx, payer=None, amount_str=None):
+	if not is_money_channel(ctx):
+		return
+
+	if payer is None or amount_str is None:
+		await ctx.send('使い方: `/ex 名前 金額`')
+		return
+
+	try:
+		amount = int(amount_str)
+	except ValueError:
+		await ctx.send('金額は整数で入力してください')
+		return
+
+	users, status = get_all_moneys()
+	if status != 200:
+		await ctx.send('残高取得エラー')
+		return
+
+	payer_user = find_user_by_name(payer, users)
+	if payer_user is None:
+		await ctx.send(f'`{payer}` は登録されていません')
+		return
+
+	for member_name in EX_MEMBERS:
+		if find_user_by_name(member_name, users) is None:
+			await ctx.send(f'`{member_name}` が登録されていません')
+			return
+
+	share = amount // 4
+
+	# 支払者に +amount
+	new_payer_balance = payer_user['balance'] + amount
+	if update_balance_by_uid(payer_user['user_id'], new_payer_balance) != 200:
+		await ctx.send('残高更新エラー')
+		return
+
+	# 固定4人に -share
+	for member_name in EX_MEMBERS:
+		member = find_user_by_name(member_name, users)
+		if member_name == payer:
+			new_balance = new_payer_balance - share
+		else:
+			new_balance = member['balance'] - share
+		if update_balance_by_uid(member['user_id'], new_balance) != 200:
+			await ctx.send('残高更新エラー')
+			return
+
+	# 結果メッセージ
+	lines = [f'【{payer} {amount:,}円 立替】', f'分配: 各 -{share:,}円', '']
+	for member_name in EX_MEMBERS:
+		if member_name == payer:
+			net = amount - share
+			lines.append(f'{member_name}: +{amount:,} - {share:,} = +{net:,}円')
+		else:
+			lines.append(f'{member_name}: -{share:,}円')
+	await ctx.send('```\n' + '\n'.join(lines) + '\n```')
+
+	# 全員残高表示
+	users, status = get_all_moneys()
+	if status == 200 and users:
+		await ctx.send(build_balance_list_msg(users))
 
 token = getenv('DISCORD_BOT_TOKEN')
 bot.run(token)

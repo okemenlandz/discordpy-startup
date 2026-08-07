@@ -41,6 +41,10 @@ async def on_ready():
 	alert_channel = bot.get_channel(854002265811451944)
 	await alert_channel.send(msg)
 	await alert_channel.send(version)
+
+	dm_user = await bot.fetch_user(791993131817500674)
+	await dm_user.send(msg)
+	await dm_user.send(version)
 	
 	alert_channel = bot.get_channel(741963356663185533)
 	await alert_channel.send(msg)

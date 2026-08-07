@@ -141,7 +141,8 @@ async def help(ctx):
 		'/dice <回数>        サイコロを振る\n'
 		'/gochi <合計> <名前...>  支払い額をランダム割り振り\n'
 		'/heiten <閉店時刻>  閉店まで残り回転数を計算\n'
-		'/tousi <投資> <回収> <換金率>  投資・回収の収支計算\n'
+		'/tousi             本日の投資メッセージをユーザーごとに集計\n'
+			'/syusi <投資> <回収> <換金率>  投資・回収の収支計算\n'
 		'\n'
 		'【スロット】\n'
 		'/hanabi <G数> <ビタ率> <換金率>  花火百花繚乱 期待値計算\n'
@@ -1931,9 +1932,46 @@ async def ex(ctx, payer=None, amount_str=None):
 		await send_balance_list(ctx, users)
 
 @bot.command()
-async def tousi(ctx, *args):
+async def tousi(ctx):
+	import re
+	JST = datetime.timezone(datetime.timedelta(hours=9))
+	now = datetime.datetime.now(JST)
+	today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+	today_start_utc = today_start.astimezone(datetime.timezone.utc).replace(tzinfo=None)
+
+	ma_pattern = re.compile(r'(\d+(?:\.\d+)?)ま')
+	k_pattern  = re.compile(r'(\d+)k')
+
+	user_last = {}
+
+	async for message in ctx.channel.history(after=today_start_utc, limit=None, oldest_first=True):
+		if message.author.bot:
+			continue
+		found = []
+		for m in ma_pattern.finditer(message.content):
+			found.append((m.group(0), float(m.group(1)) * 10000))
+		for m in k_pattern.finditer(message.content):
+			found.append((m.group(0), int(m.group(1)) * 1000))
+		if found:
+			user_last[message.author.display_name] = found
+
+	if not user_last:
+		await ctx.send('本日の投資メッセージが見つかりませんでした。')
+		return
+
+	date_str = now.strftime('%Y/%m/%d')
+	lines = [f'**{date_str} の投資まとめ**']
+	for user, entries in user_last.items():
+		amounts_str = ', '.join(raw for raw, _ in entries)
+		total = sum(yen for _, yen in entries)
+		lines.append(f'{user}: {amounts_str}（計 {int(total):,}円）')
+
+	await ctx.send('\n'.join(lines))
+
+@bot.command()
+async def syusi(ctx, *args):
 	if len(args) != 3:
-		await ctx.send('使い方: /tousi <投資> <回収> <換金率>\n例: /tousi 24k+378 20k+500 5.5')
+		await ctx.send('使い方: /syusi <投資> <回収> <換金率>\n例: /syusi 24k+378 20k+500 5.5')
 		return
 
 	import re

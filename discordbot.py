@@ -14,7 +14,7 @@ from fractions import Fraction
 intents = discord.Intents.default()
 intents.message_content = True
 
-bot = commands.Bot(command_prefix='/', intents=intents)
+bot = commands.Bot(command_prefix='/', intents=intents, help_command=None)
 version = 'ver 10.0'
 
 groq_client = AsyncGroq(api_key=getenv('GROQ_API_KEY'))
@@ -114,6 +114,61 @@ async def on_message(message):
 			await message.reply(reply)
 
 	await bot.process_commands(message)
+
+@bot.command()
+async def help(ctx):
+	msg = (
+		'```\n'
+		'【基本】\n'
+		'/ping              疎通確認\n'
+		'/ver               バージョン表示\n'
+		'/oha               おはようメッセージ\n'
+		'/oya               おやすみメッセージ\n'
+		'/nemochi           ねもち\n'
+		'/connect           コネクト\n'
+		'\n'
+		'【おふざけ】\n'
+		'/happy             ハッピー絵文字\n'
+		'/sad               悲しい絵文字\n'
+		'/doya              どや顔絵文字\n'
+		'/beyond            ビヨンド\n'
+		'/rtta [回数]        りょった煽り文生成\n'
+		'/gag               ギャグの面白さをランダム判定\n'
+		'\n'
+		'【計算】\n'
+		'/prime <数字>       素因数分解\n'
+		'/gb <点数...>       麻雀の順位点計算（最大4人）\n'
+		'/dice <回数>        サイコロを振る\n'
+		'/gochi <合計> <名前...>  支払い額をランダム割り振り\n'
+		'/heiten <閉店時刻>  閉店まで残り回転数を計算\n'
+		'/tousi <投資> <回収> <換金率>  投資・回収の収支計算\n'
+		'\n'
+		'【スロット】\n'
+		'/hanabi <G数> <ビタ率> <換金率>  花火百花繚乱 期待値計算\n'
+		'/disc <G数> <ビタ率> <換金率>    ディスクアップ 期待値計算\n'
+		'/hanbetsu <JSON>   設定判別（二項分布で尤度計算）\n'
+		'\n'
+		'【パチンコシミュ】\n'
+		'/god               GOD シミュレーター\n'
+		'/symphogear        シンフォギア シミュレーター\n'
+		'/gen               超源RUSH シミュレーター\n'
+		'/gen2              超源RUSH2 シミュレーター\n'
+		'/aria              アリア シミュレーター\n'
+		'/goyoku            五億円 シミュレーター\n'
+		'\n'
+		'【麻雀】\n'
+		'/nori <名前 得点 支払> ...  のり計算（残高に反映）\n'
+		'/jantama <段位> <ルーム> <点数>  雀魂 昇段ボーダー計算\n'
+		'/val               対応機種一覧\n'
+		'\n'
+		'【家賃管理】\n'
+		'/money <from> <to> <金額>  残高移動\n'
+		'/moneyregist <名前>         残高DB登録\n'
+		'/moneyset <名前> <金額>    残高設定\n'
+		'/ex <名前> <金額>           立替精算\n'
+		'```'
+	)
+	await ctx.send(msg)
 
 @bot.command()
 async def ping(ctx):
@@ -1874,6 +1929,56 @@ async def ex(ctx, payer=None, amount_str=None):
 	users, status = get_all_moneys()
 	if status == 200 and users:
 		await send_balance_list(ctx, users)
+
+@bot.command()
+async def tousi(ctx, *args):
+	if len(args) != 3:
+		await ctx.send('使い方: /tousi <投資> <回収> <換金率>\n例: /tousi 24k+378 20k+500 5.5')
+		return
+
+	import re
+
+	def parse_amount(s):
+		m = re.match(r'^(\d+)k\+(\d+)$', s)
+		if m:
+			return int(m.group(1)) * 1000, int(m.group(2))
+		m = re.match(r'^(\d+)\+(\d+)k$', s)
+		if m:
+			return int(m.group(2)) * 1000, int(m.group(1))
+		m = re.match(r'^(\d+)k$', s)
+		if m:
+			return int(m.group(1)) * 1000, 0
+		if s.isdecimal():
+			return 0, int(s)
+		return None
+
+	invest_str, recover_str, rate_str = args
+
+	invest = parse_amount(invest_str)
+	recover = parse_amount(recover_str)
+
+	if invest is None:
+		await ctx.send(f'投資の形式が正しくありません: {invest_str}')
+		return
+	if recover is None:
+		await ctx.send(f'回収の形式が正しくありません: {recover_str}')
+		return
+
+	try:
+		rate = float(rate_str)
+		if rate <= 0:
+			raise ValueError
+	except ValueError:
+		await ctx.send(f'換金率の形式が正しくありません: {rate_str}')
+		return
+
+	invest_yen, invest_medals = invest
+	recover_yen, recover_medals = recover
+
+	result = math.floor(recover_yen + recover_medals / rate * 1000 - invest_yen - invest_medals / rate * 1000)
+
+	sign = '+' if result >= 0 else ''
+	await ctx.send(f'投資: {invest_str}\n回収: {recover_str}\n換金率: {rate_str}\n収支: {sign}{result}円')
 
 token = getenv('DISCORD_BOT_TOKEN')
 bot.run(token)

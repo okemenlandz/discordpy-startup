@@ -1339,9 +1339,10 @@ async def nori(ctx,*args):
 			results = []
 			for name, diff in name_diffs.items():
 				user = find_user_by_name(name, users)
-				new_balance = user['balance'] + diff
+				old_balance = user['balance']
+				new_balance = old_balance + diff
 				if update_balance_by_uid(user['user_id'], new_balance) == 200:
-					results.append(f'{name}: {diff:+,}円 → {new_balance:,}円')
+					results.append(f'{name}: {old_balance:,}円 → {new_balance:,}円 ({diff:+,})')
 
 			reflect_msg = '```\n/nori\n' + '\n'.join(results) + '\n```'
 

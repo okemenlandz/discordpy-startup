@@ -35,20 +35,17 @@ async def on_command_error(ctx, error):
 
 @bot.event
 async def on_ready():
-	
-	msg = '起動しました。'
-	
+
+	msg = f'起動しました。{version}'
+
 	alert_channel = bot.get_channel(854002265811451944)
 	await alert_channel.send(msg)
-	await alert_channel.send(version)
 
 	dm_user = await bot.fetch_user(791993131817500674)
 	await dm_user.send(msg)
-	await dm_user.send(version)
-	
+
 	alert_channel = bot.get_channel(741963356663185533)
 	await alert_channel.send(msg)
-	await alert_channel.send(version)
 	
 @bot.event
 async def on_voice_state_update(member, before, after): 
@@ -1965,10 +1962,12 @@ async def tousi(ctx):
 
 	date_str = now.strftime('%Y/%m/%d')
 	lines = [f'**{date_str} の投資まとめ**']
+	grand_total = 0
 	for user, entries in user_last.items():
 		amounts_str = ', '.join(raw for raw, _ in entries)
-		total = sum(yen for _, yen in entries)
-		lines.append(f'{user}: {amounts_str}（計 {int(total):,}円）')
+		grand_total += sum(yen for _, yen in entries)
+		lines.append(f'{user}: {amounts_str}')
+	lines.append(f'**合計: {int(grand_total):,}円**')
 
 	await ctx.send('\n'.join(lines))
 

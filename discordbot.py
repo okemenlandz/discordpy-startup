@@ -2029,6 +2029,7 @@ async def syusi(ctx, *args):
 	await ctx.send(f'投資: {invest_str}\n回収: {recover_str}\n換金率: {rate_str}\n収支: {sign}{result}円')
 
 M_CHANNEL_ID = 1539649137283301498
+M_NOTIFY_CHANNEL_ID = 1539669882449436722
 
 async def _check_m_permission(ctx):
 	if ctx.channel.id != M_CHANNEL_ID:
@@ -2072,17 +2073,12 @@ async def _apply_balance(ctx, diff):
 
 	updated_users, updated_status = get_all_moneys()
 
-	if ctx.channel.id == MONEY_CHANNEL_ID:
-		await ctx.send(reflect_msg)
+	await ctx.send('残高に反映しました')
+	notify_channel = bot.get_channel(M_NOTIFY_CHANNEL_ID)
+	if notify_channel:
+		await notify_channel.send(reflect_msg)
 		if updated_status == 200 and updated_users:
-			await send_balance_list(ctx, updated_users)
-	else:
-		await ctx.send('残高に反映しました')
-		money_channel = bot.get_channel(MONEY_CHANNEL_ID)
-		if money_channel:
-			await money_channel.send(reflect_msg)
-			if updated_status == 200 and updated_users:
-				await send_balance_list(money_channel, updated_users)
+			await send_balance_list(notify_channel, updated_users)
 
 	return True
 
@@ -2095,8 +2091,11 @@ def _parse_rate(rate_str):
 
 
 @bot.command(name='m-symphogear')
-async def m_symphogear(ctx, rate_str='1'):
+async def m_symphogear(ctx, rate_str=None):
 	if not await _check_m_permission(ctx):
+		return
+	if rate_str is None:
+		await ctx.send('レートを入力してください（例: /m-symphogear 1）')
 		return
 	try:
 		rate = _parse_rate(rate_str)
@@ -2205,8 +2204,11 @@ async def m_symphogear(ctx, rate_str='1'):
 
 
 @bot.command(name='m-gen')
-async def m_gen(ctx, rate_str='1'):
+async def m_gen(ctx, rate_str=None):
 	if not await _check_m_permission(ctx):
+		return
+	if rate_str is None:
+		await ctx.send('レートを入力してください（例: /m-gen 1）')
 		return
 	try:
 		rate = _parse_rate(rate_str)
@@ -2262,8 +2264,11 @@ async def m_gen(ctx, rate_str='1'):
 
 
 @bot.command(name='m-gen2')
-async def m_gen2(ctx, rate_str='1'):
+async def m_gen2(ctx, rate_str=None):
 	if not await _check_m_permission(ctx):
+		return
+	if rate_str is None:
+		await ctx.send('レートを入力してください（例: /m-gen2 1）')
 		return
 	try:
 		rate = _parse_rate(rate_str)
@@ -2338,8 +2343,11 @@ async def m_gen2(ctx, rate_str='1'):
 
 
 @bot.command(name='m-aria')
-async def m_aria(ctx, rate_str='1'):
+async def m_aria(ctx, rate_str=None):
 	if not await _check_m_permission(ctx):
+		return
+	if rate_str is None:
+		await ctx.send('レートを入力してください（例: /m-aria 1）')
 		return
 	try:
 		rate = _parse_rate(rate_str)
@@ -2485,8 +2493,11 @@ async def m_aria(ctx, rate_str='1'):
 
 
 @bot.command(name='m-goyoku')
-async def m_goyoku(ctx, rate_str='1'):
+async def m_goyoku(ctx, rate_str=None):
 	if not await _check_m_permission(ctx):
+		return
+	if rate_str is None:
+		await ctx.send('レートを入力してください（例: /m-goyoku 1）')
 		return
 	try:
 		rate = _parse_rate(rate_str)

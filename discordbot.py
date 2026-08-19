@@ -2052,15 +2052,37 @@ async def _apply_balance(ctx, diff):
 		await ctx.send('残高取得エラー')
 		return False
 
-	new_balance = user['balance'] + diff
+	old_balance = user['balance']
+	new_balance = old_balance + diff
 	if update_balance_by_uid(user['user_id'], new_balance) != 200:
 		await ctx.send('残高更新エラー')
 		return False
-	await ctx.send(f'[{ctx.author}] 残高:{new_balance}円')
+
+	results = [f'{user["name"]}: {old_balance:,}円 → {new_balance:,}円 ({diff:+,})']
 
 	matezon = find_user_by_name('まてぞん', users)
 	if matezon and matezon['user_id'] != user['user_id']:
-		update_balance_by_uid(matezon['user_id'], matezon['balance'] - diff)
+		matezon_old = matezon['balance']
+		matezon_new = matezon_old - diff
+		update_balance_by_uid(matezon['user_id'], matezon_new)
+		results.append(f'{matezon["name"]}: {matezon_old:,}円 → {matezon_new:,}円 ({-diff:+,})')
+
+	command_name = ctx.command.name if ctx.command else 'm'
+	reflect_msg = f'```\n/{command_name}\n' + '\n'.join(results) + '\n```'
+
+	updated_users, updated_status = get_all_moneys()
+
+	if ctx.channel.id == MONEY_CHANNEL_ID:
+		await ctx.send(reflect_msg)
+		if updated_status == 200 and updated_users:
+			await send_balance_list(ctx, updated_users)
+	else:
+		await ctx.send('残高に反映しました')
+		money_channel = bot.get_channel(MONEY_CHANNEL_ID)
+		if money_channel:
+			await money_channel.send(reflect_msg)
+			if updated_status == 200 and updated_users:
+				await send_balance_list(money_channel, updated_users)
 
 	return True
 

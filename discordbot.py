@@ -1980,8 +1980,10 @@ async def tousi(ctx):
 
 @bot.command()
 async def syusi(ctx, *args):
+	if len(args) == 2:
+		args = args + ('52',)
 	if len(args) != 3:
-		await ctx.send('使い方: /syusi <投資> <回収> <換金率>\n例: /syusi 24k+378 20k+500 5.5')
+		await ctx.send('使い方: /syusi <投資> <回収> [換金率]\n例: /syusi 24k+378 20k+500 5.5')
 		return
 
 	import re

@@ -157,6 +157,7 @@ async def help(ctx):
 		'/gen2              超源RUSH2 シミュレーター\n'
 		'/aria              アリア シミュレーター\n'
 		'/goyoku            五億円 シミュレーター\n'
+		'/madoka3           まどか☆マギカ3 シミュレーター\n'
 		'\n'
 		'【パチンコシミュ（残高連動）】\n'
 		'/m-symphogear [レート]  シンフォギア（残高反映、レート1〜4）\n'
@@ -164,6 +165,7 @@ async def help(ctx):
 		'/m-gen2 [レート]        超源RUSH2（残高反映、レート1〜4）\n'
 		'/m-aria [レート]        アリア（残高反映、レート1〜4）\n'
 		'/m-goyoku [レート]      五億円（残高反映、レート1〜4）\n'
+		'/m-madoka3 [レート]     まどか☆マギカ3（残高反映、レート1〜4）\n'
 		'\n'
 		'【麻雀】\n'
 		'/nori <名前 得点 支払> ...  のり計算（残高に反映）\n'
@@ -2576,6 +2578,185 @@ async def m_goyoku(ctx, rate_str=None):
 		total = round((cnt[1] * 280 + cnt[2] * 1400 + cnt[3] * 2800 + cntover * 1400 + rest) * rate)
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 		await _apply_balance(ctx, total - in_money)
+
+
+@bot.command()
+async def madoka3(ctx):
+	# 通常時: 1/319.9
+	flag = True
+	normal_cnt = 0
+	while flag:
+		v = random.randint(0, 65535)
+		normal_cnt += 1
+		if v < 205:
+			flag = False
+
+	in_money = math.ceil(normal_cnt / 9.92) * 500
+	rest = math.ceil(((0 - normal_cnt) % 9.92) / 9.92 * 125)
+	await ctx.send(f'[{ctx.author}] {normal_cnt}回転で当選しました。')
+
+	total_balls = 0
+	enter_usr = False
+
+	j = random.randint(0, 99)
+	if j == 0:  # 1%: 1400個 + USR直撃
+		total_balls += 1400
+		enter_usr = True
+		await ctx.send(f'[{ctx.author}] α図柄！1400個 アルティメット超ラッシュ突入')
+	elif j < 31:  # 30%: 420個 + 終了
+		total_balls += 420
+		await ctx.send(f'[{ctx.author}] 420個 終了')
+	else:  # 69%: 420個 + ワルプルギスの夜
+		total_balls += 420
+		await ctx.send(f'[{ctx.author}] 420個 ワルプルギスの夜突入')
+
+		# ワルプルギスの夜: 100回転, 1/146.8
+		walp_cnt = 0
+		walp_hit = False
+		while walp_cnt < 100:
+			walp_cnt += 1
+			v2 = random.randint(0, 65535)
+			if v2 < 447:
+				walp_hit = True
+				break
+
+		if walp_hit:
+			total_balls += 1400
+			enter_usr = True
+			await ctx.send(f'[{ctx.author}] {walp_cnt}G 大当たり！1400個')
+			await ctx.send(f'[{ctx.author}] ワルプルギスの夜 終了 → アルティメット超ラッシュ突入')
+		else:
+			await ctx.send(f'[{ctx.author}] ワルプルギスの夜 終了（{walp_cnt}G）')
+
+	if enter_usr:
+		await ctx.send(f'[{ctx.author}] アルティメット超ラッシュ 突入')
+		usr_cnt = 0
+		usr_hits = 0
+		cnt_2800 = 0
+		cnt_700 = 0
+		while usr_cnt < 130:
+			usr_cnt += 1
+			v3 = random.randint(0, 65535)
+			if v3 < 795:
+				usr_hits += 1
+				k = random.randint(0, 3)
+				if k == 0:  # 25%: 700個
+					cnt_700 += 1
+					total_balls += 700
+					await ctx.send(f'[{ctx.author}] {usr_cnt}G 大当たり！700個')
+				else:  # 75%: 2800個
+					cnt_2800 += 1
+					total_balls += 2800
+					await ctx.send(f'[{ctx.author}] {usr_cnt}G 大当たり！2800個')
+				usr_cnt = 0
+		await ctx.send(f'[{ctx.author}] アルティメット超ラッシュ 終了\n[{ctx.author}] 大当たり×{usr_hits}\n[{ctx.author}] 2800個×{cnt_2800}\n[{ctx.author}] 700個×{cnt_700}')
+
+	await ctx.send(f'[{ctx.author}] TOTAL {total_balls}個')
+	total = (total_balls + rest) * 4
+	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
+
+	diff = total - in_money
+	new_balance, status = save_balance(diff, ctx)
+	if status == 200:
+		await ctx.send(f'[{ctx.author}] 残高:{new_balance}円')
+	else:
+		status = auto_regist(ctx, ctx.author.global_name)
+		if status != 200:
+			await ctx.send('残高アカウント登録エラー')
+			return
+		new_balance, status = save_balance(diff, ctx)
+		if status == 200:
+			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円')
+		else:
+			await ctx.send('残高登録エラー')
+
+
+@bot.command(name='m-madoka3')
+async def m_madoka3(ctx, rate_str=None):
+	if not await _check_m_permission(ctx):
+		return
+	if rate_str is None:
+		await ctx.send('レートを入力してください（例: /m-madoka3 1）')
+		return
+	try:
+		rate = _parse_rate(rate_str)
+	except ValueError:
+		await ctx.send('レートは0より大きく1以下の数を指定してください（例: /m-madoka3 1）')
+		return
+
+	# 通常時: 1/319.9
+	flag = True
+	normal_cnt = 0
+	while flag:
+		v = random.randint(0, 65535)
+		normal_cnt += 1
+		if v < 205:
+			flag = False
+
+	unit_cost = round(125 * rate)
+	in_money = math.ceil(normal_cnt / 9.92) * unit_cost
+	rest = math.ceil(((0 - normal_cnt) % 9.92) / 9.92 * 125)
+	await ctx.send(f'[{ctx.author}] {normal_cnt}回転で当選しました。')
+
+	total_balls = 0
+	enter_usr = False
+
+	j = random.randint(0, 99)
+	if j == 0:  # 1%: 1400個 + USR直撃
+		total_balls += 1400
+		enter_usr = True
+		await ctx.send(f'[{ctx.author}] α図柄！1400個 アルティメット超ラッシュ突入')
+	elif j < 31:  # 30%: 420個 + 終了
+		total_balls += 420
+		await ctx.send(f'[{ctx.author}] 420個 終了')
+	else:  # 69%: 420個 + ワルプルギスの夜
+		total_balls += 420
+		await ctx.send(f'[{ctx.author}] 420個 ワルプルギスの夜突入')
+
+		# ワルプルギスの夜: 100回転, 1/146.8
+		walp_cnt = 0
+		walp_hit = False
+		while walp_cnt < 100:
+			walp_cnt += 1
+			v2 = random.randint(0, 65535)
+			if v2 < 447:
+				walp_hit = True
+				break
+
+		if walp_hit:
+			total_balls += 1400
+			enter_usr = True
+			await ctx.send(f'[{ctx.author}] {walp_cnt}G 大当たり！1400個')
+			await ctx.send(f'[{ctx.author}] ワルプルギスの夜 終了 → アルティメット超ラッシュ突入')
+		else:
+			await ctx.send(f'[{ctx.author}] ワルプルギスの夜 終了（{walp_cnt}G）')
+
+	if enter_usr:
+		await ctx.send(f'[{ctx.author}] アルティメット超ラッシュ 突入')
+		usr_cnt = 0
+		usr_hits = 0
+		cnt_2800 = 0
+		cnt_700 = 0
+		while usr_cnt < 130:
+			usr_cnt += 1
+			v3 = random.randint(0, 65535)
+			if v3 < 795:
+				usr_hits += 1
+				k = random.randint(0, 3)
+				if k == 0:  # 25%: 700個
+					cnt_700 += 1
+					total_balls += 700
+					await ctx.send(f'[{ctx.author}] {usr_cnt}G 大当たり！700個')
+				else:  # 75%: 2800個
+					cnt_2800 += 1
+					total_balls += 2800
+					await ctx.send(f'[{ctx.author}] {usr_cnt}G 大当たり！2800個')
+				usr_cnt = 0
+		await ctx.send(f'[{ctx.author}] アルティメット超ラッシュ 終了\n[{ctx.author}] 大当たり×{usr_hits}\n[{ctx.author}] 2800個×{cnt_2800}\n[{ctx.author}] 700個×{cnt_700}')
+
+	total = round((total_balls + rest) * rate)
+	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
+	await _apply_balance(ctx, total - in_money)
 
 
 token = getenv('DISCORD_BOT_TOKEN')

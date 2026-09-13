@@ -160,12 +160,12 @@ async def help(ctx):
 		'/madoka3           まどか☆マギカ3 シミュレーター\n'
 		'\n'
 		'【パチンコシミュ（残高連動）】\n'
-		'/m-symphogear [レート]  シンフォギア（残高反映、レート1〜4）\n'
-		'/m-gen [レート]         超源RUSH（残高反映、レート1〜4）\n'
-		'/m-gen2 [レート]        超源RUSH2（残高反映、レート1〜4）\n'
-		'/m-aria [レート]        アリア（残高反映、レート1〜4）\n'
-		'/m-goyoku [レート]      五億円（残高反映、レート1〜4）\n'
-		'/m-madoka3 [レート]     まどか☆マギカ3（残高反映、レート1〜4）\n'
+		'/m-symphogear [レート]  シンフォギア（残高反映、レート0〜1）\n'
+		'/m-gen [レート]         超源RUSH（残高反映、レート0〜1）\n'
+		'/m-gen2 [レート]        超源RUSH2（残高反映、レート0〜1）\n'
+		'/m-aria [レート]        アリア（残高反映、レート0〜1）\n'
+		'/m-goyoku [レート]      五億円（残高反映、レート0〜1）\n'
+		'/m-madoka3 [レート]     まどか☆マギカ3（残高反映、レート0〜1）\n'
 		'\n'
 		'【麻雀】\n'
 		'/nori <名前 得点 支払> ...  のり計算（残高に反映）\n'
@@ -2116,8 +2116,8 @@ async def m_symphogear(ctx, rate_str=None):
 			flag = False
 
 	unit_cost = round(125 * rate)
-	in_money = math.ceil(normal_cnt / 10) * unit_cost
-	rest = math.ceil(((0 - (normal_cnt * 2)) % 20) * 125 / 20)
+	in_money = math.ceil(normal_cnt / 9.7) * unit_cost
+	rest = math.ceil(((0 - (normal_cnt * 2)) % 19.4) * 125 / 19.4)
 	await ctx.send(f'[{ctx.author}] {normal_cnt}回転で当選しました。')
 
 	pl = f'[{ctx.author}] '
@@ -2229,8 +2229,8 @@ async def m_gen(ctx, rate_str=None):
 			flag = False
 
 	unit_cost = round(125 * rate)
-	in_money = math.ceil(normal_cnt / 10.5) * unit_cost
-	rest = math.ceil(((0 - (normal_cnt * 2)) % 21) * 125 / 21)
+	in_money = math.ceil(normal_cnt / 10.4) * unit_cost
+	rest = math.ceil(((0 - (normal_cnt * 2)) % 20.8) * 125 / 20.8)
 	await ctx.send(f'[{ctx.author}] {normal_cnt}回転で当選しました。')
 
 	judge = f'[{ctx.author}] '
@@ -2289,8 +2289,8 @@ async def m_gen2(ctx, rate_str=None):
 			flag = False
 
 	unit_cost = round(125 * rate)
-	in_money = math.ceil(normal_cnt / 8.84) * unit_cost
-	rest = math.ceil(((0 - normal_cnt) % 8.84) / 8.84 * 125)
+	in_money = math.ceil(normal_cnt / 8.54) * unit_cost
+	rest = math.ceil(((0 - normal_cnt) % 8.54) / 8.54 * 125)
 	await ctx.send(f'[{ctx.author}] {normal_cnt}回転で当選しました。')
 
 	judge = f'[{ctx.author}] '
@@ -2382,8 +2382,8 @@ async def m_aria(ctx, rate_str=None):
 			normal_cnt = 0
 
 	unit_cost = round(125 * rate)
-	in_money = math.ceil(normal_total / 8.46) * unit_cost
-	rest = math.ceil(((0 - normal_total) % 8.46) / 8.46 * 125)
+	in_money = math.ceil(normal_total / 8.36) * unit_cost
+	rest = math.ceil(((0 - normal_total) % 8.36) / 8.36 * 125)
 	await ctx.send(f'[{ctx.author}] {normal_cnt}Gで当選しました。')
 
 	status = left_aria()
@@ -2521,8 +2521,8 @@ async def m_goyoku(ctx, rate_str=None):
 			flag = False
 
 	unit_cost = round(125 * rate)
-	in_money = math.ceil(normal_cnt / 9.305) * unit_cost
-	rest = math.ceil(((0 - (normal_cnt * 2)) % 18.61) * 125 / 18.61)
+	in_money = math.ceil(normal_cnt / 9.205) * unit_cost
+	rest = math.ceil(((0 - (normal_cnt * 2)) % 18.41) * 125 / 18.41)
 	await ctx.send(f'[{ctx.author}] {normal_cnt}回転で当選しました。')
 
 	if v > 104:
@@ -2694,8 +2694,8 @@ async def m_madoka3(ctx, rate_str=None):
 			flag = False
 
 	unit_cost = round(125 * rate)
-	in_money = math.ceil(normal_cnt / 9.92) * unit_cost
-	rest = math.ceil(((0 - normal_cnt) % 9.92) / 9.92 * 125)
+	in_money = math.ceil(normal_cnt / 9.62) * unit_cost
+	rest = math.ceil(((0 - normal_cnt) % 9.62) / 9.62 * 125)
 	await ctx.send(f'[{ctx.author}] {normal_cnt}回転で当選しました。')
 
 	total_balls = 0

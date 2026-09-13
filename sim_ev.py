@@ -44,8 +44,8 @@ def sim_symphogear():
         normal_cnt += 1
         if v > 19879:
             break
-    in_money = math.ceil(normal_cnt / 9.7) * 125
-    rest = math.ceil(((0 - (normal_cnt * 2)) % 19.4) * 125 / 19.4)
+    in_money = math.ceil(normal_cnt / 9.91) * 125
+    rest = math.ceil(((0 - (normal_cnt * 2)) % 19.82) * 125 / 19.82)
 
     cnt = [0, 1, 0, 0, 0]
     for _ in range(5):
@@ -73,8 +73,8 @@ def sim_gen():
         normal_cnt += 1
         if v > 65329:
             break
-    in_money = math.ceil(normal_cnt / 10.4) * 125
-    rest = math.ceil(((0 - (normal_cnt * 2)) % 20.8) * 125 / 20.8)
+    in_money = math.ceil(normal_cnt / 10.46) * 125
+    rest = math.ceil(((0 - (normal_cnt * 2)) % 20.92) * 125 / 20.92)
 
     rush = (v > 65411)
 
@@ -97,8 +97,8 @@ def sim_gen2():
         normal_cnt += 1
         if v < 505:
             break
-    in_money = math.ceil(normal_cnt / 8.54) * 125
-    rest = math.ceil(((0 - normal_cnt) % 8.54) / 8.54 * 125)
+    in_money = math.ceil(normal_cnt / 8.65) * 125
+    rest = math.ceil(((0 - normal_cnt) % 8.65) / 8.65 * 125)
 
     rush = (v < 283)
 
@@ -148,8 +148,8 @@ def sim_aria():
             normal_total += normal_cnt
             normal_cnt = 0
 
-    in_money = math.ceil(normal_total / 8.36) * 125
-    rest = math.ceil(((0 - normal_total) % 8.36) / 8.36 * 125)
+    in_money = math.ceil(normal_total / 8.43) * 125
+    rest = math.ceil(((0 - normal_total) % 8.43) / 8.43 * 125)
 
     status = left_aria()
     if status == 0: cnt1500 += 1
@@ -210,8 +210,8 @@ def sim_goyoku():
         if v < 188:
             break
 
-    in_money = math.ceil(normal_cnt / 9.205) * 125
-    rest = math.ceil(((0 - (normal_cnt * 2)) % 18.41) * 125 / 18.41)
+    in_money = math.ceil(normal_cnt / 9.25) * 125
+    rest = math.ceil(((0 - (normal_cnt * 2)) % 18.50) * 125 / 18.50)
 
     if v <= 104:
         total = 1500 + rest
@@ -260,8 +260,8 @@ def sim_madoka3():
         normal_cnt += 1
         if v < 205:
             break
-    in_money = math.ceil(normal_cnt / 9.62) * 125
-    rest = math.ceil(((0 - normal_cnt) % 9.62) / 9.62 * 125)
+    in_money = math.ceil(normal_cnt / 9.86) * 125
+    rest = math.ceil(((0 - normal_cnt) % 9.86) / 9.86 * 125)
 
     total_balls = 0
     enter_usr = False

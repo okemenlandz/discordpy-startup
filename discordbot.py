@@ -2835,7 +2835,7 @@ async def takt(ctx):
 				else:
 					await ctx.send(f'[{ctx.author}] {rush_g}G Premium交響曲BONUS {rush_total}')
 			else:
-				await ctx.send(f'[{ctx.author}] Destiny Rush 終了（144G）')
+				await ctx.send(f'[{ctx.author}] Destiny Rush 終了')
 				break
 
 	await ctx.send(f'[{ctx.author}] TOTAL {total_disp}個')
@@ -2943,7 +2943,7 @@ async def m_takt(ctx, rate_str=None):
 				else:
 					await ctx.send(f'[{ctx.author}] {rush_g}G Premium交響曲BONUS {rush_total}')
 			else:
-				await ctx.send(f'[{ctx.author}] Destiny Rush 終了（144G）')
+				await ctx.send(f'[{ctx.author}] Destiny Rush 終了')
 				break
 
 	await ctx.send(f'[{ctx.author}] TOTAL {total_disp}個')

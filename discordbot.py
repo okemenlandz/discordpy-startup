@@ -462,9 +462,10 @@ async def symphogear(ctx):
 		judge = f'[{ctx.author}] '
 		
 	if cnt[0] == 5:
-		await ctx.send(f'最終決戦終了\n投資:{in_money}円\n回収:{1480 + rest * 4}円\n収支:{1480 + rest * 4 - in_money}円')
+		payout = min(370 + rest, 95000) * 4
+		await ctx.send(f'最終決戦終了\n投資:{in_money}円\n回収:{payout}円\n収支:{payout - in_money}円')
 
-		diff = 1480 + rest * 4 - in_money
+		diff = payout - in_money
 		new_balance, status = save_balance(diff, ctx)
 		if status == 200:
 			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
@@ -498,21 +499,21 @@ async def symphogear(ctx):
 				cnt[0] = 0
 				cnt[int(r_ch/4)] += 1
 		await ctx.send(f'{judge}\n[{ctx.author}] シンフォギアチャンス　終了\n[{ctx.author}] FEVER×{cnt[1]+cnt[2]+cnt[3]+cnt[4]}\n[{ctx.author}] (4)×{cnt[1]}\n(8)×{cnt[2]}\n(12)×{cnt[3]}\n(15)×{cnt[4]}')
-		total = (cnt[1]*370+cnt[2]*740+cnt[3]*1120+cnt[4]*1410+rest)*4
+		total = min(cnt[1]*370+cnt[2]*740+cnt[3]*1120+cnt[4]*1410+rest, 95000)*4
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 
 		diff = total - in_money
 		new_balance, status = save_balance(diff, ctx)
 		if status == 200:
-			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円')
 		else:
 			status = auto_regist(ctx, ctx.author.global_name)
 			if status != 200:
 				await ctx.send('残高アカウント登録エラー')
-				return 
+				return
 			new_balance, status = save_balance(diff, ctx)
 			if status == 200:
-				await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+				await ctx.send(f'[{ctx.author}] 残高:{new_balance}円')
 			else:
 				await ctx.send('残高登録エラー')
 
@@ -550,9 +551,10 @@ async def gen(ctx):
 		cnt = [0,0,0,0]
 		
 	if cnt[2] == 0:
-		await ctx.send(f'[{ctx.author}] チャレンジ失敗\n投資:{in_money}円\n回収:{2400 + rest * 4}円\n収支:{2400 + rest * 4 - in_money}円')
-		
-		diff = 2400 + rest * 4 - in_money
+		payout = min(600 + rest, 95000) * 4
+		await ctx.send(f'[{ctx.author}] チャレンジ失敗\n投資:{in_money}円\n回収:{payout}円\n収支:{payout - in_money}円')
+
+		diff = payout - in_money
 		new_balance, status = save_balance(diff, ctx)
 		if status == 200:
 			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
@@ -581,7 +583,7 @@ async def gen(ctx):
 				cnt[0] = 0
 				cnt[int(r_ch/3)] += 1
 		await ctx.send(f'{judge}\n[{ctx.author}] 超源RUSH　終了\n[{ctx.author}] 超源RUSH×{cnt[1]+cnt[2]}\n[{ctx.author}] 超源BONUS×{cnt[3]}')
-		total = (cnt[1]*300+cnt[2]*600+cnt[3]*900+rest)*4
+		total = min(cnt[1]*300+cnt[2]*600+cnt[3]*900+rest, 95000)*4
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 
 		diff = total - in_money
@@ -630,11 +632,11 @@ async def gen2(ctx):
 	else: # 非突入
 		cnt = [0,0,0]
 		
-	initial_payout = 210 * 4 # 初当たり出玉 
 	if cnt[1] == 0:
-		await ctx.send(f'[{ctx.author}] チャレンジ失敗\n[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{initial_payout + rest * 4}円\n[{ctx.author}] 収支:{initial_payout + rest * 4 - in_money}円')
-		
-		diff = initial_payout + rest * 4 - in_money
+		payout = min(210 + rest, 95000) * 4
+		await ctx.send(f'[{ctx.author}] チャレンジ失敗\n[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{payout}円\n[{ctx.author}] 収支:{payout - in_money}円')
+
+		diff = payout - in_money
 		new_balance, status = save_balance(diff, ctx)
 		if status == 200:
 			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
@@ -685,7 +687,7 @@ async def gen2(ctx):
 				cnt[0] = 0
 				cnt[1] += 1
 		await ctx.send(f'{judge}\n[{ctx.author}] 超源RUSH　終了\n[{ctx.author}] 超源RUSH×{cnt[1]}\n[{ctx.author}] 超源BONUS×{cnt[2]}')
-		total = (cnt[1]*210+cnt[2]*630+rest)*4
+		total = min(cnt[1]*210+cnt[2]*630+rest, 95000)*4
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 		
 		diff = total - in_money
@@ -782,7 +784,7 @@ async def aria(ctx):
 				await ctx.send(f'[{ctx.author}] 最大獲得　{max_cnt*1500}')
 				await ctx.send(f'[{ctx.author}] 3000×{cnt3000}　1500×{cnt1500}')
 
-				total = (charge_cnt*420 + cnt1500*1400 + cnt3000*2800 + cntover*1400 + rest)*4
+				total = min(charge_cnt*420 + cnt1500*1400 + cnt3000*2800 + cntover*1400 + rest, 95000)*4
 				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 				
 				diff = total - in_money
@@ -834,7 +836,7 @@ async def aria(ctx):
 				await ctx.send(f'[{ctx.author}] 最大獲得　{max_cnt*1500}')
 				await ctx.send(f'[{ctx.author}] 3000×{cnt3000}　1500×{cnt1500}')
 
-				total = (charge_cnt*420 + cnt1500*1400 + cnt3000*2800 + cntover*1400 + rest)*4
+				total = min(charge_cnt*420 + cnt1500*1400 + cnt3000*2800 + cntover*1400 + rest, 95000)*4
 				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 				
 				diff = total - in_money
@@ -905,21 +907,21 @@ async def aria(ctx):
 		await ctx.send(f'[{ctx.author}] 最大獲得　{max_cnt*1500}')
 		await ctx.send(f'[{ctx.author}] 3000×{cnt3000}　1500×{cnt1500}')
 
-		total = (charge_cnt*420 + cnt1500*1400 + cnt3000*2800 + cntover*1400 + rest)*4
+		total = min(charge_cnt*420 + cnt1500*1400 + cnt3000*2800 + cntover*1400 + rest, 95000)*4
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 
 		diff = total - in_money
 		new_balance, status = save_balance(diff, ctx)
 		if status == 200:
-			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円')
 		else:
 			status = auto_regist(ctx, ctx.author.global_name)
 			if status != 200:
 				await ctx.send('残高アカウント登録エラー')
-				return 
+				return
 			new_balance, status = save_balance(diff, ctx)
 			if status == 200:
-				await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+				await ctx.send(f'[{ctx.author}] 残高:{new_balance}円')
 			else:
 				await ctx.send('残高登録エラー')
 
@@ -946,9 +948,10 @@ async def goyoku(ctx):
 		cnt = [0,0,1,0]
 		
 	if cnt[2] == 1: # 1500のとき非突入
-		await ctx.send(f'[{ctx.author}] 大兎殲滅戦 終了\n[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{6000 + rest * 4}円\n[{ctx.author}] 収支:{6000 + rest * 4 - in_money}円')
-		
-		diff = 6000 + rest * 4 - in_money
+		payout = min(1500 + rest, 95000) * 4
+		await ctx.send(f'[{ctx.author}] 大兎殲滅戦 終了\n[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{payout}円\n[{ctx.author}] 収支:{payout - in_money}円')
+
+		diff = payout - in_money
 		new_balance, status = save_balance(diff, ctx)
 		if status == 200:
 			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
@@ -1006,7 +1009,7 @@ async def goyoku(ctx):
 		await ctx.send(f'[{ctx.author}] 強欲RUSH　終了\n[{ctx.author}] RUSH × {cnt[1]+cnt[2]+cnt[3]}\n[{ctx.author}] 超強欲 3000 BONUS × {cnt[3]}\n[{ctx.author}] 超強欲最高記録 {bonus_max}pt')
 		total = (cnt[1]*300+cnt[2]*1500+cnt[3]*3000+cntover*1500)
 		await ctx.send(f'[{ctx.author}] TOTAL {total}pt')
-		total = (cnt[1]*280+cnt[2]*1400+cnt[3]*2800+cntover*1400+rest)*4
+		total = min(cnt[1]*280+cnt[2]*1400+cnt[3]*2800+cntover*1400+rest, 95000)*4
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 
 		diff = total - in_money
@@ -2181,7 +2184,7 @@ async def m_symphogear(ctx, rate_str=None):
 		judge = f'[{ctx.author}] '
 
 	if cnt[0] == 5:
-		payout = round((370 + rest) * rate)
+		payout = round(min(370 + rest, 95000) * rate)
 		await ctx.send(f'最終決戦終了\n投資:{in_money}円\n回収:{payout}円\n収支:{payout - in_money}円')
 		await _apply_balance(ctx, payout - in_money)
 	else:
@@ -2204,7 +2207,7 @@ async def m_symphogear(ctx, rate_str=None):
 				cnt[0] = 0
 				cnt[int(r_ch / 4)] += 1
 		await ctx.send(f'{judge}\n[{ctx.author}] シンフォギアチャンス　終了\n[{ctx.author}] FEVER×{cnt[1]+cnt[2]+cnt[3]+cnt[4]}\n[{ctx.author}] (4)×{cnt[1]}\n(8)×{cnt[2]}\n(12)×{cnt[3]}\n(15)×{cnt[4]}')
-		total = round((cnt[1] * 370 + cnt[2] * 740 + cnt[3] * 1120 + cnt[4] * 1410 + rest) * rate)
+		total = round(min(cnt[1] * 370 + cnt[2] * 740 + cnt[3] * 1120 + cnt[4] * 1410 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 		await _apply_balance(ctx, total - in_money)
 
@@ -2246,7 +2249,7 @@ async def m_gen(ctx, rate_str=None):
 		cnt = [0, 0, 0, 0]
 
 	if cnt[2] == 0:
-		payout = round((600 + rest) * rate)
+		payout = round(min(600 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] チャレンジ失敗\n投資:{in_money}円\n回収:{payout}円\n収支:{payout - in_money}円')
 		await _apply_balance(ctx, payout - in_money)
 	else:
@@ -2264,7 +2267,7 @@ async def m_gen(ctx, rate_str=None):
 				cnt[0] = 0
 				cnt[int(r_ch / 3)] += 1
 		await ctx.send(f'{judge}\n[{ctx.author}] 超源RUSH　終了\n[{ctx.author}] 超源RUSH×{cnt[1]+cnt[2]}\n[{ctx.author}] 超源BONUS×{cnt[3]}')
-		total = round((cnt[1] * 300 + cnt[2] * 600 + cnt[3] * 900 + rest) * rate)
+		total = round(min(cnt[1] * 300 + cnt[2] * 600 + cnt[3] * 900 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 		await _apply_balance(ctx, total - in_money)
 
@@ -2303,7 +2306,7 @@ async def m_gen2(ctx, rate_str=None):
 		cnt = [0, 0, 0]
 
 	if cnt[1] == 0:
-		payout = round((210 + rest) * rate)
+		payout = round(min(210 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] チャレンジ失敗\n[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{payout}円\n[{ctx.author}] 収支:{payout - in_money}円')
 		await _apply_balance(ctx, payout - in_money)
 	else:
@@ -2343,7 +2346,7 @@ async def m_gen2(ctx, rate_str=None):
 				cnt[0] = 0
 				cnt[1] += 1
 		await ctx.send(f'{judge}\n[{ctx.author}] 超源RUSH　終了\n[{ctx.author}] 超源RUSH×{cnt[1]}\n[{ctx.author}] 超源BONUS×{cnt[2]}')
-		total = round((cnt[1] * 210 + cnt[2] * 630 + rest) * rate)
+		total = round(min(cnt[1] * 210 + cnt[2] * 630 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 		await _apply_balance(ctx, total - in_money)
 
@@ -2413,7 +2416,7 @@ async def m_aria(ctx, rate_str=None):
 				await ctx.send(f'[{ctx.author}] TOTAL　{cnt1500*1500 + cnt3000*3000 + cntover*1500}')
 				await ctx.send(f'[{ctx.author}] 最大獲得　{max_cnt*1500}')
 				await ctx.send(f'[{ctx.author}] 3000×{cnt3000}　1500×{cnt1500}')
-				total = round((charge_cnt * 420 + cnt1500 * 1400 + cnt3000 * 2800 + cntover * 1400 + rest) * rate)
+				total = round(min(charge_cnt * 420 + cnt1500 * 1400 + cnt3000 * 2800 + cntover * 1400 + rest, 95000) * rate)
 				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 				await _apply_balance(ctx, total - in_money)
 				return
@@ -2446,7 +2449,7 @@ async def m_aria(ctx, rate_str=None):
 				await ctx.send(f'[{ctx.author}] TOTAL　{cnt1500*1500 + cnt3000*3000 + cntover*1500}')
 				await ctx.send(f'[{ctx.author}] 最大獲得　{max_cnt*1500}')
 				await ctx.send(f'[{ctx.author}] 3000×{cnt3000}　1500×{cnt1500}')
-				total = round((charge_cnt * 420 + cnt1500 * 1400 + cnt3000 * 2800 + cntover * 1400 + rest) * rate)
+				total = round(min(charge_cnt * 420 + cnt1500 * 1400 + cnt3000 * 2800 + cntover * 1400 + rest, 95000) * rate)
 				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 				await _apply_balance(ctx, total - in_money)
 				return
@@ -2493,7 +2496,7 @@ async def m_aria(ctx, rate_str=None):
 		await ctx.send(f'[{ctx.author}] TOTAL　{cnt1500*1500 + cnt3000*3000 + cntover*1500}')
 		await ctx.send(f'[{ctx.author}] 最大獲得　{max_cnt*1500}')
 		await ctx.send(f'[{ctx.author}] 3000×{cnt3000}　1500×{cnt1500}')
-		total = round((charge_cnt * 420 + cnt1500 * 1400 + cnt3000 * 2800 + cntover * 1400 + rest) * rate)
+		total = round(min(charge_cnt * 420 + cnt1500 * 1400 + cnt3000 * 2800 + cntover * 1400 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 		await _apply_balance(ctx, total - in_money)
 
@@ -2533,7 +2536,7 @@ async def m_goyoku(ctx, rate_str=None):
 		cnt = [0, 0, 1, 0]
 
 	if cnt[2] == 1:
-		payout = round((1500 + rest) * rate)
+		payout = round(min(1500 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] 大兎殲滅戦 終了\n[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{payout}円\n[{ctx.author}] 収支:{payout - in_money}円')
 		await _apply_balance(ctx, payout - in_money)
 	else:
@@ -2577,7 +2580,7 @@ async def m_goyoku(ctx, rate_str=None):
 		await ctx.send(f'[{ctx.author}] 強欲RUSH　終了\n[{ctx.author}] RUSH × {cnt[1]+cnt[2]+cnt[3]}\n[{ctx.author}] 超強欲 3000 BONUS × {cnt[3]}\n[{ctx.author}] 超強欲最高記録 {bonus_max}pt')
 		total_pt = cnt[1] * 300 + cnt[2] * 1500 + cnt[3] * 3000 + cntover * 1500
 		await ctx.send(f'[{ctx.author}] TOTAL {total_pt}pt')
-		total = round((cnt[1] * 280 + cnt[2] * 1400 + cnt[3] * 2800 + cntover * 1400 + rest) * rate)
+		total = round(min(cnt[1] * 280 + cnt[2] * 1400 + cnt[3] * 2800 + cntover * 1400 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 		await _apply_balance(ctx, total - in_money)
 
@@ -2654,7 +2657,7 @@ async def madoka3(ctx):
 		await ctx.send(f'[{ctx.author}] アルティメット超ラッシュ 終了\n[{ctx.author}] 大当たり×{usr_hits}\n[{ctx.author}] 3000個×{cnt_2800}\n[{ctx.author}] 750個×{cnt_700}')
 
 	await ctx.send(f'[{ctx.author}] TOTAL {total_balls}個')
-	total = (total_balls + rest) * 4
+	total = min(total_balls + rest, 95000) * 4
 	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 
 	diff = total - in_money
@@ -2756,7 +2759,7 @@ async def m_madoka3(ctx, rate_str=None):
 				usr_cnt = 0
 		await ctx.send(f'[{ctx.author}] アルティメット超ラッシュ 終了\n[{ctx.author}] 大当たり×{usr_hits}\n[{ctx.author}] 3000個×{cnt_2800}\n[{ctx.author}] 750個×{cnt_700}')
 
-	total = round((total_balls + rest) * rate)
+	total = round(min(total_balls + rest, 95000) * rate)
 	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 	await _apply_balance(ctx, total - in_money)
 
@@ -2839,7 +2842,7 @@ async def takt(ctx):
 				break
 
 	await ctx.send(f'[{ctx.author}] TOTAL {total_disp}個')
-	total_yen = (total_net + rest) * 4
+	total_yen = min(total_net + rest, 95000) * 4
 	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total_yen}円\n[{ctx.author}] 収支:{total_yen - in_money}円')
 
 	diff = total_yen - in_money
@@ -2947,7 +2950,7 @@ async def m_takt(ctx, rate_str=None):
 				break
 
 	await ctx.send(f'[{ctx.author}] TOTAL {total_disp}個')
-	total_yen = round((total_net + rest) * rate)
+	total_yen = round(min(total_net + rest, 95000) * rate)
 	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total_yen}円\n[{ctx.author}] 収支:{total_yen - in_money}円')
 	await _apply_balance(ctx, total_yen - in_money)
 

@@ -293,6 +293,54 @@ def sim_madoka3():
     total = total_balls + rest
     return in_money, total
 
+def sim_takt(exchange=20.7):
+    normal_cnt = 0
+    normal_total = 0
+    total_net = 0
+
+    while True:
+        v = random.randint(0, 65535)
+        normal_cnt += 1
+        if v < 47:
+            normal_total += normal_cnt
+            break
+        elif v < 188:
+            total_net += 280
+            normal_total += normal_cnt
+            normal_cnt = 0
+
+    in_money = math.ceil(normal_total / exchange) * 500
+    rest = math.ceil(((0 - normal_total) % exchange) / exchange * 125)
+
+    total_net += 1400
+
+    if random.randint(0, 1) == 1:
+        for _ in range(5):
+            r = random.randint(0, 999)
+            if r < 237:
+                total_net += 1400
+            else:
+                total_net += 280
+
+        while True:
+            rush_hit = False
+            for i in range(144):
+                if random.randint(0, 65535) < 656:
+                    rush_hit = True
+                    break
+            if rush_hit:
+                for _ in range(5):
+                    r2 = random.randint(0, 999)
+                    if r2 < 237:
+                        total_net += 1400
+                    else:
+                        total_net += 280
+            else:
+                break
+
+    return in_money, (total_net + rest) * 4
+
+
 machines = [
     ('m-symphogear', sim_symphogear),
     ('m-gen',        sim_gen),

@@ -2625,7 +2625,7 @@ async def madoka3(ctx):
 		if walp_hit:
 			total_balls += 1400
 			enter_usr = True
-			await ctx.send(f'[{ctx.author}] {walp_cnt}G 大当たり！1400個')
+			await ctx.send(f'[{ctx.author}] {walp_cnt}G 1400個')
 			await ctx.send(f'[{ctx.author}] ワルプルギスの夜 終了 → アルティメット超ラッシュ突入')
 		else:
 			await ctx.send(f'[{ctx.author}] ワルプルギスの夜 終了（{walp_cnt}G）')
@@ -2645,13 +2645,13 @@ async def madoka3(ctx):
 				if k == 0:  # 25%: 700個
 					cnt_700 += 1
 					total_balls += 700
-					await ctx.send(f'[{ctx.author}] {usr_cnt}G 大当たり！700個')
+					await ctx.send(f'[{ctx.author}] {usr_cnt}G 750個')
 				else:  # 75%: 2800個
 					cnt_2800 += 1
 					total_balls += 2800
-					await ctx.send(f'[{ctx.author}] {usr_cnt}G 大当たり！2800個')
+					await ctx.send(f'[{ctx.author}] {usr_cnt}G 3000個')
 				usr_cnt = 0
-		await ctx.send(f'[{ctx.author}] アルティメット超ラッシュ 終了\n[{ctx.author}] 大当たり×{usr_hits}\n[{ctx.author}] 2800個×{cnt_2800}\n[{ctx.author}] 700個×{cnt_700}')
+		await ctx.send(f'[{ctx.author}] アルティメット超ラッシュ 終了\n[{ctx.author}] 大当たり×{usr_hits}\n[{ctx.author}] 3000個×{cnt_2800}\n[{ctx.author}] 750個×{cnt_700}')
 
 	await ctx.send(f'[{ctx.author}] TOTAL {total_balls}個')
 	total = (total_balls + rest) * 4
@@ -2728,7 +2728,7 @@ async def m_madoka3(ctx, rate_str=None):
 		if walp_hit:
 			total_balls += 1400
 			enter_usr = True
-			await ctx.send(f'[{ctx.author}] {walp_cnt}G 大当たり！1400個')
+			await ctx.send(f'[{ctx.author}] {walp_cnt}G 1400個')
 			await ctx.send(f'[{ctx.author}] ワルプルギスの夜 終了 → アルティメット超ラッシュ突入')
 		else:
 			await ctx.send(f'[{ctx.author}] ワルプルギスの夜 終了（{walp_cnt}G）')
@@ -2748,13 +2748,13 @@ async def m_madoka3(ctx, rate_str=None):
 				if k == 0:  # 25%: 700個
 					cnt_700 += 1
 					total_balls += 700
-					await ctx.send(f'[{ctx.author}] {usr_cnt}G 大当たり！700個')
+					await ctx.send(f'[{ctx.author}] {usr_cnt}G 750個')
 				else:  # 75%: 2800個
 					cnt_2800 += 1
 					total_balls += 2800
-					await ctx.send(f'[{ctx.author}] {usr_cnt}G 大当たり！2800個')
+					await ctx.send(f'[{ctx.author}] {usr_cnt}G 3000個')
 				usr_cnt = 0
-		await ctx.send(f'[{ctx.author}] アルティメット超ラッシュ 終了\n[{ctx.author}] 大当たり×{usr_hits}\n[{ctx.author}] 2800個×{cnt_2800}\n[{ctx.author}] 700個×{cnt_700}')
+		await ctx.send(f'[{ctx.author}] アルティメット超ラッシュ 終了\n[{ctx.author}] 大当たり×{usr_hits}\n[{ctx.author}] 3000個×{cnt_2800}\n[{ctx.author}] 750個×{cnt_700}')
 
 	total = round((total_balls + rest) * rate)
 	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
@@ -2782,8 +2782,8 @@ async def takt(ctx):
 			normal_total += normal_cnt
 			normal_cnt = 0
 
-	in_money = math.ceil(normal_total / 20.7) * 500
-	rest = math.ceil(((0 - normal_total) % 20.7) / 20.7 * 125)
+	in_money = math.ceil(normal_total / 21.5) * 500
+	rest = math.ceil(((0 - normal_total) % 21.5) / 21.5 * 125)
 	await ctx.send(f'[{ctx.author}] {normal_cnt}Gで当選しました。')
 
 	total_net += 1400
@@ -2798,45 +2798,45 @@ async def takt(ctx):
 		for _ in range(5):
 			r = random.randint(0, 999)
 			if r < 237:
-				total_net += 280
-				total_disp += 300
-				dc_detail.append(300)
-			else:
 				total_net += 1400
 				total_disp += 1500
 				dc_detail.append(1500)
-		detail_str = ' + '.join([f'{x}個' for x in dc_detail])
-		await ctx.send(f'[{ctx.author}] Destiny Challenge: {detail_str} → {sum(dc_detail)}個')
+			else:
+				total_net += 280
+				total_disp += 300
+				dc_detail.append(300)
+		await ctx.send(f'[{ctx.author}] Destiny Challenge: {sum(dc_detail)}個')
 
 		await ctx.send(f'[{ctx.author}] Destiny Rush 突入')
-		rush_hit = False
-		rush_g = 0
-		for i in range(144):
-			if random.randint(0, 65535) < 656:  # 1/99.9
-				rush_hit = True
-				rush_g = i + 1
-				break
+		while True:
+			rush_hit = False
+			rush_g = 0
+			for i in range(144):
+				if random.randint(0, 65535) < 656:  # 1/99.9
+					rush_hit = True
+					rush_g = i + 1
+					break
 
-		if rush_hit:
-			rush_detail = []
-			for _ in range(5):
-				r2 = random.randint(0, 999)
-				if r2 < 237:
-					rush_detail.append(300)
-					total_net += 280
-					total_disp += 300
+			if rush_hit:
+				rush_detail = []
+				for _ in range(5):
+					r2 = random.randint(0, 999)
+					if r2 < 237:
+						rush_detail.append(1500)
+						total_net += 1400
+						total_disp += 1500
+					else:
+						rush_detail.append(300)
+						total_net += 280
+						total_disp += 300
+				rush_total = sum(rush_detail)
+				if rush_total == 1500:
+					await ctx.send(f'[{ctx.author}] {rush_g}G 運命BONUS 1500')
 				else:
-					rush_detail.append(1500)
-					total_net += 1400
-					total_disp += 1500
-			rush_total = sum(rush_detail)
-			rush_str = ' + '.join([f'{x}個' for x in rush_detail])
-			if rush_total == 1500:
-				await ctx.send(f'[{ctx.author}] {rush_g}G 大当たり！運命BONUS 1500\n[{ctx.author}] Destiny Rush: {rush_str} → {rush_total}個')
+					await ctx.send(f'[{ctx.author}] {rush_g}G Premium交響曲BONUS {rush_total}')
 			else:
-				await ctx.send(f'[{ctx.author}] {rush_g}G 大当たり！Premium交響曲BONUS {rush_total}\n[{ctx.author}] Destiny Rush: {rush_str} → {rush_total}個')
-		else:
-			await ctx.send(f'[{ctx.author}] Destiny Rush 終了（144G）')
+				await ctx.send(f'[{ctx.author}] Destiny Rush 終了（144G）')
+				break
 
 	await ctx.send(f'[{ctx.author}] TOTAL {total_disp}個')
 	total_yen = (total_net + rest) * 4
@@ -2890,8 +2890,8 @@ async def m_takt(ctx, rate_str=None):
 			normal_cnt = 0
 
 	unit_cost = round(125 * rate)
-	in_money = math.ceil(normal_total / 23.83) * unit_cost
-	rest = math.ceil(((0 - normal_total) % 23.83) / 23.83 * 125)
+	in_money = math.ceil(normal_total / 21.5) * unit_cost
+	rest = math.ceil(((0 - normal_total) % 21.5) / 21.5 * 125)
 	await ctx.send(f'[{ctx.author}] {normal_cnt}Gで当選しました。')
 
 	total_net += 1400
@@ -2906,45 +2906,45 @@ async def m_takt(ctx, rate_str=None):
 		for _ in range(5):
 			r = random.randint(0, 999)
 			if r < 237:
-				total_net += 280
-				total_disp += 300
-				dc_detail.append(300)
-			else:
 				total_net += 1400
 				total_disp += 1500
 				dc_detail.append(1500)
-		detail_str = ' + '.join([f'{x}個' for x in dc_detail])
-		await ctx.send(f'[{ctx.author}] Destiny Challenge: {detail_str} → {sum(dc_detail)}個')
+			else:
+				total_net += 280
+				total_disp += 300
+				dc_detail.append(300)
+		await ctx.send(f'[{ctx.author}] Destiny Challenge: {sum(dc_detail)}個')
 
 		await ctx.send(f'[{ctx.author}] Destiny Rush 突入')
-		rush_hit = False
-		rush_g = 0
-		for i in range(144):
-			if random.randint(0, 65535) < 656:
-				rush_hit = True
-				rush_g = i + 1
-				break
+		while True:
+			rush_hit = False
+			rush_g = 0
+			for i in range(144):
+				if random.randint(0, 65535) < 656:
+					rush_hit = True
+					rush_g = i + 1
+					break
 
-		if rush_hit:
-			rush_detail = []
-			for _ in range(5):
-				r2 = random.randint(0, 999)
-				if r2 < 237:
-					rush_detail.append(300)
-					total_net += 280
-					total_disp += 300
+			if rush_hit:
+				rush_detail = []
+				for _ in range(5):
+					r2 = random.randint(0, 999)
+					if r2 < 237:
+						rush_detail.append(1500)
+						total_net += 1400
+						total_disp += 1500
+					else:
+						rush_detail.append(300)
+						total_net += 280
+						total_disp += 300
+				rush_total = sum(rush_detail)
+				if rush_total == 1500:
+					await ctx.send(f'[{ctx.author}] {rush_g}G 運命BONUS 1500')
 				else:
-					rush_detail.append(1500)
-					total_net += 1400
-					total_disp += 1500
-			rush_total = sum(rush_detail)
-			rush_str = ' + '.join([f'{x}個' for x in rush_detail])
-			if rush_total == 1500:
-				await ctx.send(f'[{ctx.author}] {rush_g}G 大当たり！運命BONUS 1500\n[{ctx.author}] Destiny Rush: {rush_str} → {rush_total}個')
+					await ctx.send(f'[{ctx.author}] {rush_g}G Premium交響曲BONUS {rush_total}')
 			else:
-				await ctx.send(f'[{ctx.author}] {rush_g}G 大当たり！Premium交響曲BONUS {rush_total}\n[{ctx.author}] Destiny Rush: {rush_str} → {rush_total}個')
-		else:
-			await ctx.send(f'[{ctx.author}] Destiny Rush 終了（144G）')
+				await ctx.send(f'[{ctx.author}] Destiny Rush 終了（144G）')
+				break
 
 	await ctx.send(f'[{ctx.author}] TOTAL {total_disp}個')
 	total_yen = round((total_net + rest) * rate)

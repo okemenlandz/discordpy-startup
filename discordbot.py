@@ -1062,7 +1062,7 @@ def save_balance(diff, ctx):
 
 	url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/moneys/" + str(ctx.author.id)
 	res = requests.get(url)
-				
+
 	status = res.status_code
 
 	if status == 200:
@@ -1075,6 +1075,10 @@ def save_balance(diff, ctx):
 		return balance + diff, status
 	else:
 		return 0, status
+
+def save_machine_count(ctx, machine):
+	url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/machine_counts/" + str(ctx.author.id)
+	requests.post(url, data={"machine": machine})
 
 @bot.command()
 async def jantama(ctx,*args):
@@ -2210,6 +2214,7 @@ async def m_symphogear(ctx, rate_str=None):
 		total = round(min(cnt[1] * 370 + cnt[2] * 740 + cnt[3] * 1120 + cnt[4] * 1410 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 		await _apply_balance(ctx, total - in_money)
+	save_machine_count(ctx, 'symphogear')
 
 
 @bot.command(name='m-gen')
@@ -2270,6 +2275,7 @@ async def m_gen(ctx, rate_str=None):
 		total = round(min(cnt[1] * 300 + cnt[2] * 600 + cnt[3] * 900 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 		await _apply_balance(ctx, total - in_money)
+	save_machine_count(ctx, 'gen')
 
 
 @bot.command(name='m-gen2')
@@ -2349,6 +2355,7 @@ async def m_gen2(ctx, rate_str=None):
 		total = round(min(cnt[1] * 210 + cnt[2] * 630 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 		await _apply_balance(ctx, total - in_money)
+	save_machine_count(ctx, 'gen2')
 
 
 @bot.command(name='m-aria')
@@ -2419,6 +2426,7 @@ async def m_aria(ctx, rate_str=None):
 				total = round(min(charge_cnt * 420 + cnt1500 * 1400 + cnt3000 * 2800 + cntover * 1400 + rest, 95000) * rate)
 				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 				await _apply_balance(ctx, total - in_money)
+				save_machine_count(ctx, 'aria')
 				return
 
 			v = random.randint(0, 65535)
@@ -2452,6 +2460,7 @@ async def m_aria(ctx, rate_str=None):
 				total = round(min(charge_cnt * 420 + cnt1500 * 1400 + cnt3000 * 2800 + cntover * 1400 + rest, 95000) * rate)
 				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 				await _apply_balance(ctx, total - in_money)
+				save_machine_count(ctx, 'aria')
 				return
 
 			v = random.randint(0, 65535)
@@ -2499,6 +2508,7 @@ async def m_aria(ctx, rate_str=None):
 		total = round(min(charge_cnt * 420 + cnt1500 * 1400 + cnt3000 * 2800 + cntover * 1400 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 		await _apply_balance(ctx, total - in_money)
+	save_machine_count(ctx, 'aria')
 
 
 @bot.command(name='m-goyoku')
@@ -2583,6 +2593,7 @@ async def m_goyoku(ctx, rate_str=None):
 		total = round(min(cnt[1] * 280 + cnt[2] * 1400 + cnt[3] * 2800 + cntover * 1400 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 		await _apply_balance(ctx, total - in_money)
+	save_machine_count(ctx, 'goyoku')
 
 
 @bot.command()
@@ -2762,6 +2773,7 @@ async def m_madoka3(ctx, rate_str=None):
 	total = round(min(total_balls + rest, 95000) * rate)
 	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 	await _apply_balance(ctx, total - in_money)
+	save_machine_count(ctx, 'madoka3')
 
 
 @bot.command()
@@ -2953,6 +2965,7 @@ async def m_takt(ctx, rate_str=None):
 	total_yen = round(min(total_net + rest, 95000) * rate)
 	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total_yen}円\n[{ctx.author}] 収支:{total_yen - in_money}円')
 	await _apply_balance(ctx, total_yen - in_money)
+	save_machine_count(ctx, 'takt')
 
 
 token = getenv('DISCORD_BOT_TOKEN')

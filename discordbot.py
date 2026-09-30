@@ -466,17 +466,17 @@ async def symphogear(ctx):
 		await ctx.send(f'最終決戦終了\n投資:{in_money}円\n回収:{payout}円\n収支:{payout - in_money}円')
 
 		diff = payout - in_money
-		new_balance, status = save_balance(diff, ctx)
+		old_balance, new_balance, status = save_balance(diff, ctx)
 		if status == 200:
-			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+			await ctx.send(f'{old_balance:,}円 → {new_balance:,}円') 
 		else:
 			status = auto_regist(ctx, ctx.author.global_name)
 			if status != 200:
 				await ctx.send('残高アカウント登録エラー')
 				return 
-			new_balance, status = save_balance(diff, ctx)
+			old_balance, new_balance, status = save_balance(diff, ctx)
 			if status == 200:
-				await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+				await ctx.send(f'{old_balance:,}円 → {new_balance:,}円') 
 			else:
 				await ctx.send('残高登録エラー')
 	else:
@@ -503,17 +503,17 @@ async def symphogear(ctx):
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 
 		diff = total - in_money
-		new_balance, status = save_balance(diff, ctx)
+		old_balance, new_balance, status = save_balance(diff, ctx)
 		if status == 200:
-			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円')
+			await ctx.send(f'{old_balance:,}円 → {new_balance:,}円')
 		else:
 			status = auto_regist(ctx, ctx.author.global_name)
 			if status != 200:
 				await ctx.send('残高アカウント登録エラー')
 				return
-			new_balance, status = save_balance(diff, ctx)
+			old_balance, new_balance, status = save_balance(diff, ctx)
 			if status == 200:
-				await ctx.send(f'[{ctx.author}] 残高:{new_balance}円')
+				await ctx.send(f'{old_balance:,}円 → {new_balance:,}円')
 			else:
 				await ctx.send('残高登録エラー')
 
@@ -555,17 +555,17 @@ async def gen(ctx):
 		await ctx.send(f'[{ctx.author}] チャレンジ失敗\n投資:{in_money}円\n回収:{payout}円\n収支:{payout - in_money}円')
 
 		diff = payout - in_money
-		new_balance, status = save_balance(diff, ctx)
+		old_balance, new_balance, status = save_balance(diff, ctx)
 		if status == 200:
-			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+			await ctx.send(f'{old_balance:,}円 → {new_balance:,}円') 
 		else:
 			status = auto_regist(ctx, ctx.author.global_name)
 			if status != 200:
 				await ctx.send('残高アカウント登録エラー')
 				return 
-			new_balance, status = save_balance(diff, ctx)
+			old_balance, new_balance, status = save_balance(diff, ctx)
 			if status == 200:
-				await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+				await ctx.send(f'{old_balance:,}円 → {new_balance:,}円') 
 			else:
 				await ctx.send('残高登録エラー')
 	else:
@@ -587,17 +587,17 @@ async def gen(ctx):
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 
 		diff = total - in_money
-		new_balance, status = save_balance(diff, ctx)
+		old_balance, new_balance, status = save_balance(diff, ctx)
 		if status == 200:
-			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+			await ctx.send(f'{old_balance:,}円 → {new_balance:,}円') 
 		else:
 			status = auto_regist(ctx, ctx.author.global_name)
 			if status != 200:
 				await ctx.send('残高アカウント登録エラー')
 				return 
-			new_balance, status = save_balance(diff, ctx)
+			old_balance, new_balance, status = save_balance(diff, ctx)
 			if status == 200:
-				await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+				await ctx.send(f'{old_balance:,}円 → {new_balance:,}円') 
 			else:
 				await ctx.send('残高登録エラー')
 
@@ -637,17 +637,17 @@ async def gen2(ctx):
 		await ctx.send(f'[{ctx.author}] チャレンジ失敗\n[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{payout}円\n[{ctx.author}] 収支:{payout - in_money}円')
 
 		diff = payout - in_money
-		new_balance, status = save_balance(diff, ctx)
+		old_balance, new_balance, status = save_balance(diff, ctx)
 		if status == 200:
-			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+			await ctx.send(f'{old_balance:,}円 → {new_balance:,}円') 
 		else:
 			status = auto_regist(ctx, ctx.author.global_name)
 			if status != 200:
 				await ctx.send('残高アカウント登録エラー')
 				return 
-			new_balance, status = save_balance(diff, ctx)
+			old_balance, new_balance, status = save_balance(diff, ctx)
 			if status == 200:
-				await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+				await ctx.send(f'{old_balance:,}円 → {new_balance:,}円') 
 			else:
 				await ctx.send('残高登録エラー')
 	else:
@@ -691,17 +691,17 @@ async def gen2(ctx):
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 		
 		diff = total - in_money
-		new_balance, status = save_balance(diff, ctx)
+		old_balance, new_balance, status = save_balance(diff, ctx)
 		if status == 200:
-			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+			await ctx.send(f'{old_balance:,}円 → {new_balance:,}円') 
 		else:
 			status = auto_regist(ctx, ctx.author.global_name)
 			if status != 200:
 				await ctx.send('残高アカウント登録エラー')
 				return 
-			new_balance, status = save_balance(diff, ctx)
+			old_balance, new_balance, status = save_balance(diff, ctx)
 			if status == 200:
-				await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+				await ctx.send(f'{old_balance:,}円 → {new_balance:,}円') 
 			else:
 				await ctx.send('残高登録エラー')
 
@@ -788,17 +788,17 @@ async def aria(ctx):
 				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 				
 				diff = total - in_money
-				new_balance, status = save_balance(diff, ctx)
+				old_balance, new_balance, status = save_balance(diff, ctx)
 				if status == 200:
-					await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+					await ctx.send(f'{old_balance:,}円 → {new_balance:,}円') 
 				else:
 					status = auto_regist(ctx, ctx.author.global_name)
 					if status != 200:
 						await ctx.send('残高アカウント登録エラー')
 						return 
-					new_balance, status = save_balance(diff, ctx)
+					old_balance, new_balance, status = save_balance(diff, ctx)
 					if status == 200:
-						await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+						await ctx.send(f'{old_balance:,}円 → {new_balance:,}円') 
 					else:
 						await ctx.send('残高登録エラー')
 				return
@@ -840,17 +840,17 @@ async def aria(ctx):
 				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 				
 				diff = total - in_money
-				new_balance, status = save_balance(diff, ctx)
+				old_balance, new_balance, status = save_balance(diff, ctx)
 				if status == 200:
-					await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+					await ctx.send(f'{old_balance:,}円 → {new_balance:,}円') 
 				else:
 					status = auto_regist(ctx, ctx.author.global_name)
 					if status != 200:
 						await ctx.send('残高アカウント登録エラー')
 						return 
-					new_balance, status = save_balance(diff, ctx)
+					old_balance, new_balance, status = save_balance(diff, ctx)
 					if status == 200:
-						await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+						await ctx.send(f'{old_balance:,}円 → {new_balance:,}円') 
 					else:
 						await ctx.send('残高登録エラー')
 				return
@@ -911,17 +911,17 @@ async def aria(ctx):
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 
 		diff = total - in_money
-		new_balance, status = save_balance(diff, ctx)
+		old_balance, new_balance, status = save_balance(diff, ctx)
 		if status == 200:
-			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円')
+			await ctx.send(f'{old_balance:,}円 → {new_balance:,}円')
 		else:
 			status = auto_regist(ctx, ctx.author.global_name)
 			if status != 200:
 				await ctx.send('残高アカウント登録エラー')
 				return
-			new_balance, status = save_balance(diff, ctx)
+			old_balance, new_balance, status = save_balance(diff, ctx)
 			if status == 200:
-				await ctx.send(f'[{ctx.author}] 残高:{new_balance}円')
+				await ctx.send(f'{old_balance:,}円 → {new_balance:,}円')
 			else:
 				await ctx.send('残高登録エラー')
 
@@ -952,17 +952,17 @@ async def goyoku(ctx):
 		await ctx.send(f'[{ctx.author}] 大兎殲滅戦 終了\n[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{payout}円\n[{ctx.author}] 収支:{payout - in_money}円')
 
 		diff = payout - in_money
-		new_balance, status = save_balance(diff, ctx)
+		old_balance, new_balance, status = save_balance(diff, ctx)
 		if status == 200:
-			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+			await ctx.send(f'{old_balance:,}円 → {new_balance:,}円') 
 		else:
 			status = auto_regist(ctx, ctx.author.global_name)
 			if status != 200:
 				await ctx.send('残高アカウント登録エラー')
 				return 
-			new_balance, status = save_balance(diff, ctx)
+			old_balance, new_balance, status = save_balance(diff, ctx)
 			if status == 200:
-				await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+				await ctx.send(f'{old_balance:,}円 → {new_balance:,}円') 
 			else:
 				await ctx.send('残高登録エラー')
 	else:
@@ -1013,17 +1013,17 @@ async def goyoku(ctx):
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 
 		diff = total - in_money
-		new_balance, status = save_balance(diff, ctx)
+		old_balance, new_balance, status = save_balance(diff, ctx)
 		if status == 200:
-			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+			await ctx.send(f'{old_balance:,}円 → {new_balance:,}円') 
 		else:
 			status = auto_regist(ctx, ctx.author.global_name)
 			if status != 200:
 				await ctx.send('残高アカウント登録エラー')
 				return 
-			new_balance, status = save_balance(diff, ctx)
+			old_balance, new_balance, status = save_balance(diff, ctx)
 			if status == 200:
-				await ctx.send(f'[{ctx.author}] 残高:{new_balance}円') 
+				await ctx.send(f'{old_balance:,}円 → {new_balance:,}円') 
 			else:
 				await ctx.send('残高登録エラー')
 
@@ -1072,9 +1072,9 @@ def save_balance(diff, ctx):
 			'balance': balance + diff
 		}
 		res = requests.post(url, data=data)
-		return balance + diff, status
+		return balance, balance + diff, status
 	else:
-		return 0, status
+		return 0, 0, status
 
 def save_machine_count(ctx, machine):
 	url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/machine_counts/" + str(ctx.author.id)
@@ -2672,17 +2672,17 @@ async def madoka3(ctx):
 	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 
 	diff = total - in_money
-	new_balance, status = save_balance(diff, ctx)
+	old_balance, new_balance, status = save_balance(diff, ctx)
 	if status == 200:
-		await ctx.send(f'[{ctx.author}] 残高:{new_balance}円')
+		await ctx.send(f'{old_balance:,}円 → {new_balance:,}円')
 	else:
 		status = auto_regist(ctx, ctx.author.global_name)
 		if status != 200:
 			await ctx.send('残高アカウント登録エラー')
 			return
-		new_balance, status = save_balance(diff, ctx)
+		old_balance, new_balance, status = save_balance(diff, ctx)
 		if status == 200:
-			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円')
+			await ctx.send(f'{old_balance:,}円 → {new_balance:,}円')
 		else:
 			await ctx.send('残高登録エラー')
 
@@ -2858,17 +2858,17 @@ async def takt(ctx):
 	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total_yen}円\n[{ctx.author}] 収支:{total_yen - in_money}円')
 
 	diff = total_yen - in_money
-	new_balance, status = save_balance(diff, ctx)
+	old_balance, new_balance, status = save_balance(diff, ctx)
 	if status == 200:
-		await ctx.send(f'[{ctx.author}] 残高:{new_balance}円')
+		await ctx.send(f'{old_balance:,}円 → {new_balance:,}円')
 	else:
 		status = auto_regist(ctx, ctx.author.global_name)
 		if status != 200:
 			await ctx.send('残高アカウント登録エラー')
 			return
-		new_balance, status = save_balance(diff, ctx)
+		old_balance, new_balance, status = save_balance(diff, ctx)
 		if status == 200:
-			await ctx.send(f'[{ctx.author}] 残高:{new_balance}円')
+			await ctx.send(f'{old_balance:,}円 → {new_balance:,}円')
 		else:
 			await ctx.send('残高登録エラー')
 

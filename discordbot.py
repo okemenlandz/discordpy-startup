@@ -2086,9 +2086,9 @@ async def _apply_balance(ctx, diff):
 
 	updated_users, updated_status = get_all_moneys()
 
-	await ctx.send('残高に反映しました')
+	await ctx.send(f'残高に反映しました\n{user["name"]}: {new_balance:,}円')
 	notify_channel = bot.get_channel(M_NOTIFY_CHANNEL_ID)
-	if notify_channel:
+	if notify_channel and notify_channel.id != ctx.channel.id:
 		await notify_channel.send(reflect_msg)
 		if updated_status == 200 and updated_users:
 			await send_balance_list(notify_channel, updated_users)

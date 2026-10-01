@@ -159,6 +159,7 @@ async def help(ctx):
 		'/goyoku            五億円 シミュレーター\n'
 		'/madoka3           まどか☆マギカ3 シミュレーター\n'
 		'/takt              タクト シミュレーター\n'
+		'/ghoul             喰種 シミュレーター\n'
 		'\n'
 		'【パチンコシミュ（残高連動）】\n'
 		'/m-symphogear [レート]  シンフォギア（残高反映、レート0〜1）\n'
@@ -168,6 +169,7 @@ async def help(ctx):
 		'/m-goyoku [レート]      五億円（残高反映、レート0〜1）\n'
 		'/m-madoka3 [レート]     まどか☆マギカ3（残高反映、レート0〜1）\n'
 		'/m-takt [レート]        タクト（残高反映、レート0〜1）\n'
+		'/m-ghoul [レート]       喰種（残高反映、レート0〜1）\n'
 		'\n'
 		'【麻雀】\n'
 		'/nori <名前 得点 支払> ...  のり計算（残高に反映）\n'
@@ -2966,6 +2968,143 @@ async def m_takt(ctx, rate_str=None):
 	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total_yen}円\n[{ctx.author}] 収支:{total_yen - in_money}円')
 	await _apply_balance(ctx, total_yen - in_money)
 	save_machine_count(ctx, 'takt')
+
+
+@bot.command()
+async def ghoul(ctx):
+	normal_cnt = 0
+	normal_total = 0
+	total_net = 0
+	total_disp = 0
+
+	while True:
+		v = random.randint(0, 65535)
+		normal_cnt += 1
+		if v < 164:  # 1/399.9
+			normal_total += normal_cnt
+			break
+
+	in_money = math.ceil(normal_total / 11.0) * 500
+	rest = math.ceil(((0 - normal_total) % 11.0) / 11.0 * 125)
+	await ctx.send(f'[{ctx.author}] {normal_cnt}Gで当選しました。')
+
+	total_net += 280
+	total_disp += 300
+	await ctx.send(f'[{ctx.author}] 喰種チャージ')
+
+	if random.randint(0, 1) == 0:
+		await ctx.send(f'[{ctx.author}] 終了')
+	else:
+		await ctx.send(f'[{ctx.author}] HYPER喰種RUSH 突入')
+		while True:
+			rush_hit = False
+			rush_g = 0
+			for i in range(130):
+				if random.randint(0, 65535) < 688:  # 1/95.3
+					rush_hit = True
+					rush_g = i + 1
+					break
+
+			if rush_hit:
+				r = random.randint(0, 99)
+				if r < 97:
+					total_net += 2800
+					total_disp += 3000
+					await ctx.send(f'[{ctx.author}] {rush_g}G 3000個')
+				else:
+					total_net += 5600
+					total_disp += 6000
+					await ctx.send(f'[{ctx.author}] {rush_g}G 6000個')
+			else:
+				await ctx.send(f'[{ctx.author}] HYPER喰種RUSH 終了')
+				break
+
+	await ctx.send(f'[{ctx.author}] TOTAL {total_disp}個')
+	total_yen = min(total_net + rest, 95000) * 4
+	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total_yen}円\n[{ctx.author}] 収支:{total_yen - in_money}円')
+
+	diff = total_yen - in_money
+	old_balance, new_balance, status = save_balance(diff, ctx)
+	if status == 200:
+		await ctx.send(f'{old_balance:,}円 → {new_balance:,}円')
+	else:
+		status = auto_regist(ctx, ctx.author.global_name)
+		if status != 200:
+			await ctx.send('残高アカウント登録エラー')
+			return
+		old_balance, new_balance, status = save_balance(diff, ctx)
+		if status == 200:
+			await ctx.send(f'{old_balance:,}円 → {new_balance:,}円')
+		else:
+			await ctx.send('残高登録エラー')
+
+
+@bot.command(name='m-ghoul')
+async def m_ghoul(ctx, rate_str=None):
+	if not await _check_m_permission(ctx):
+		return
+	if rate_str is None:
+		await ctx.send('レートを入力してください（例: /m-ghoul 1）')
+		return
+	try:
+		rate = _parse_rate(rate_str)
+	except ValueError:
+		await ctx.send('レートは0より大きく1以下の数を指定してください（例: /m-ghoul 1）')
+		return
+
+	normal_cnt = 0
+	normal_total = 0
+	total_net = 0
+	total_disp = 0
+
+	while True:
+		v = random.randint(0, 65535)
+		normal_cnt += 1
+		if v < 164:  # 1/399.9
+			normal_total += normal_cnt
+			break
+
+	unit_cost = round(125 * rate)
+	in_money = math.ceil(normal_total / 11.0) * unit_cost
+	rest = math.ceil(((0 - normal_total) % 11.0) / 11.0 * 125)
+	await ctx.send(f'[{ctx.author}] {normal_cnt}Gで当選しました。')
+
+	total_net += 280
+	total_disp += 300
+	await ctx.send(f'[{ctx.author}] 喰種チャージ')
+
+	if random.randint(0, 1) == 0:
+		await ctx.send(f'[{ctx.author}] 終了')
+	else:
+		await ctx.send(f'[{ctx.author}] HYPER喰種RUSH 突入')
+		while True:
+			rush_hit = False
+			rush_g = 0
+			for i in range(130):
+				if random.randint(0, 65535) < 688:  # 1/95.3
+					rush_hit = True
+					rush_g = i + 1
+					break
+
+			if rush_hit:
+				r = random.randint(0, 99)
+				if r < 97:
+					total_net += 2800
+					total_disp += 3000
+					await ctx.send(f'[{ctx.author}] {rush_g}G 3000個')
+				else:
+					total_net += 5600
+					total_disp += 6000
+					await ctx.send(f'[{ctx.author}] {rush_g}G 6000個')
+			else:
+				await ctx.send(f'[{ctx.author}] HYPER喰種RUSH 終了')
+				break
+
+	await ctx.send(f'[{ctx.author}] TOTAL {total_disp}個')
+	total_yen = round(min(total_net + rest, 95000) * rate)
+	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total_yen}円\n[{ctx.author}] 収支:{total_yen - in_money}円')
+	await _apply_balance(ctx, total_yen - in_money)
+	save_machine_count(ctx, 'ghoul')
 
 
 token = getenv('DISCORD_BOT_TOKEN')

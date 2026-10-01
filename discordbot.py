@@ -2990,9 +2990,13 @@ async def ghoul(ctx):
 			normal_total += normal_cnt
 			normal_cnt = 0
 
-	in_money = math.ceil(normal_total / 11.0) * 500
-	rest = math.ceil(((0 - normal_total) % 11.0) / 11.0 * 125)
+	in_money = math.ceil(normal_total / 8.41) * 500
+	rest = math.ceil(((0 - normal_total) % 8.41) / 8.41 * 125)
 	await ctx.send(f'[{ctx.author}] {normal_cnt}Gで当選しました。')
+
+	total_net += 1400
+	total_disp += 1500
+	await ctx.send(f'[{ctx.author}] 1500個')
 
 	if random.randint(0, 1) == 0:
 		await ctx.send(f'[{ctx.author}] 終了')
@@ -3073,9 +3077,13 @@ async def m_ghoul(ctx, rate_str=None):
 			normal_cnt = 0
 
 	unit_cost = round(125 * rate)
-	in_money = math.ceil(normal_total / 11.0) * unit_cost
-	rest = math.ceil(((0 - normal_total) % 11.0) / 11.0 * 125)
+	in_money = math.ceil(normal_total / 8.41) * unit_cost
+	rest = math.ceil(((0 - normal_total) % 8.41) / 8.41 * 125)
 	await ctx.send(f'[{ctx.author}] {normal_cnt}Gで当選しました。')
+
+	total_net += 1400
+	total_disp += 1500
+	await ctx.send(f'[{ctx.author}] 1500個')
 
 	if random.randint(0, 1) == 0:
 		await ctx.send(f'[{ctx.author}] 終了')

@@ -161,16 +161,6 @@ async def help(ctx):
 		'/takt              タクト シミュレーター\n'
 		'/ghoul             喰種 シミュレーター\n'
 		'\n'
-		'【パチンコシミュ（残高連動）】\n'
-		'/m-symphogear [レート]  シンフォギア（残高反映、レート0〜1）\n'
-		'/m-gen [レート]         超源RUSH（残高反映、レート0〜1）\n'
-		'/m-gen2 [レート]        超源RUSH2（残高反映、レート0〜1）\n'
-		'/m-aria [レート]        アリア（残高反映、レート0〜1）\n'
-		'/m-goyoku [レート]      五億円（残高反映、レート0〜1）\n'
-		'/m-madoka3 [レート]     まどか☆マギカ3（残高反映、レート0〜1）\n'
-		'/m-takt [レート]        タクト（残高反映、レート0〜1）\n'
-		'/m-ghoul [レート]       喰種（残高反映、レート0〜1）\n'
-		'\n'
 		'【麻雀】\n'
 		'/nori <名前 得点 支払> ...  のり計算（残高に反映）\n'
 		'/jantama <段位> <ルーム> <点数>  雀魂 昇段ボーダー計算\n'
@@ -2100,7 +2090,7 @@ async def _apply_balance(ctx, diff):
 
 def _parse_rate(rate_str):
 	rate = float(rate_str)
-	if rate <= 0 or rate > 1:
+	if rate <= 0 or rate > 4:
 		raise ValueError
 	return rate
 

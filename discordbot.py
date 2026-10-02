@@ -5,8 +5,6 @@ import math
 import requests
 import json
 import datetime
-from groq import AsyncGroq
-from collections import defaultdict
 from discord.ext import commands
 from os import getenv
 from fractions import Fraction
@@ -17,10 +15,6 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='/', intents=intents, help_command=None)
 version = 'ver 10.0'
 
-groq_client = AsyncGroq(api_key=getenv('GROQ_API_KEY'))
-GROQ_MODEL = 'llama-3.3-70b-versatile'
-conversation_histories = defaultdict(list)
-MAX_HISTORY = 20
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -77,42 +71,6 @@ async def on_voice_state_update(member, before, after):
 async def on_message(message):
 	if message.author == bot.user:
 		return
-
-	if bot.user.mentioned_in(message):
-		content = message.content
-		content = content.replace(f'<@{bot.user.id}>', '').replace(f'<@!{bot.user.id}>', '').strip()
-
-		if content:
-			channel_id = message.channel.id
-			history = conversation_histories[channel_id]
-
-			reply = 'エラーが発生しました。'
-			async with message.channel.typing():
-				try:
-					messages_to_send = history + [{'role': 'user', 'content': content}]
-					response = await groq_client.chat.completions.create(
-						model=GROQ_MODEL,
-						messages=messages_to_send
-					)
-					reply = response.choices[0].message.content
-					history.append({'role': 'user', 'content': content})
-					history.append({'role': 'assistant', 'content': reply})
-					if len(history) > MAX_HISTORY:
-						conversation_histories[channel_id] = history[-MAX_HISTORY:]
-				except Exception as e:
-					reply = 'エラーが発生しました。'
-					error_msg = ''.join(traceback.TracebackException.from_exception(e).format())
-					print(error_msg)
-					try:
-						alert_channel = await bot.fetch_channel(1298134191418114180)
-						await alert_channel.send(error_msg[:2000])
-					except Exception as log_err:
-						print(f'ログ送信失敗: {log_err}')
-
-			if len(reply) > 2000:
-				reply = reply[:1997] + '...'
-
-			await message.reply(reply)
 
 	await bot.process_commands(message)
 
@@ -1068,9 +1026,9 @@ def save_balance(diff, ctx):
 	else:
 		return 0, 0, status
 
-def save_machine_count(ctx, machine):
+def save_machine_count(ctx, machine, rate=0, expected_value=0):
 	url = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/machine_counts/" + str(ctx.author.id)
-	requests.post(url, data={"machine": machine})
+	requests.post(url, data={"machine": machine, "rate": rate, "expected_value": expected_value})
 
 @bot.command()
 async def jantama(ctx,*args):
@@ -2095,6 +2053,8 @@ def _parse_rate(rate_str):
 	return rate
 
 
+SYMPHOGEAR_EV = -24
+
 @bot.command(name='m-symphogear')
 async def m_symphogear(ctx, rate_str=None):
 	if not await _check_m_permission(ctx):
@@ -2206,8 +2166,10 @@ async def m_symphogear(ctx, rate_str=None):
 		total = round(min(cnt[1] * 370 + cnt[2] * 740 + cnt[3] * 1120 + cnt[4] * 1410 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 		await _apply_balance(ctx, total - in_money)
-	save_machine_count(ctx, 'symphogear')
+	save_machine_count(ctx, 'symphogear', rate=rate, expected_value=round(SYMPHOGEAR_EV * rate, 4))
 
+
+GEN_EV = -30
 
 @bot.command(name='m-gen')
 async def m_gen(ctx, rate_str=None):
@@ -2267,8 +2229,10 @@ async def m_gen(ctx, rate_str=None):
 		total = round(min(cnt[1] * 300 + cnt[2] * 600 + cnt[3] * 900 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 		await _apply_balance(ctx, total - in_money)
-	save_machine_count(ctx, 'gen')
+	save_machine_count(ctx, 'gen', rate=rate, expected_value=round(GEN_EV * rate, 4))
 
+
+GEN2_EV = -34
 
 @bot.command(name='m-gen2')
 async def m_gen2(ctx, rate_str=None):
@@ -2347,8 +2311,10 @@ async def m_gen2(ctx, rate_str=None):
 		total = round(min(cnt[1] * 210 + cnt[2] * 630 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 		await _apply_balance(ctx, total - in_money)
-	save_machine_count(ctx, 'gen2')
+	save_machine_count(ctx, 'gen2', rate=rate, expected_value=round(GEN2_EV * rate, 4))
 
+
+ARIA_EV = -16
 
 @bot.command(name='m-aria')
 async def m_aria(ctx, rate_str=None):
@@ -2418,7 +2384,7 @@ async def m_aria(ctx, rate_str=None):
 				total = round(min(charge_cnt * 420 + cnt1500 * 1400 + cnt3000 * 2800 + cntover * 1400 + rest, 95000) * rate)
 				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 				await _apply_balance(ctx, total - in_money)
-				save_machine_count(ctx, 'aria')
+				save_machine_count(ctx, 'aria', rate=rate, expected_value=round(ARIA_EV * rate, 4))
 				return
 
 			v = random.randint(0, 65535)
@@ -2452,7 +2418,7 @@ async def m_aria(ctx, rate_str=None):
 				total = round(min(charge_cnt * 420 + cnt1500 * 1400 + cnt3000 * 2800 + cntover * 1400 + rest, 95000) * rate)
 				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 				await _apply_balance(ctx, total - in_money)
-				save_machine_count(ctx, 'aria')
+				save_machine_count(ctx, 'aria', rate=rate, expected_value=round(ARIA_EV * rate, 4))
 				return
 
 			v = random.randint(0, 65535)
@@ -2500,8 +2466,10 @@ async def m_aria(ctx, rate_str=None):
 		total = round(min(charge_cnt * 420 + cnt1500 * 1400 + cnt3000 * 2800 + cntover * 1400 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 		await _apply_balance(ctx, total - in_money)
-	save_machine_count(ctx, 'aria')
+	save_machine_count(ctx, 'aria', rate=rate, expected_value=round(ARIA_EV * rate, 4))
 
+
+GOYOKU_EV = -40
 
 @bot.command(name='m-goyoku')
 async def m_goyoku(ctx, rate_str=None):
@@ -2585,7 +2553,7 @@ async def m_goyoku(ctx, rate_str=None):
 		total = round(min(cnt[1] * 280 + cnt[2] * 1400 + cnt[3] * 2800 + cntover * 1400 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 		await _apply_balance(ctx, total - in_money)
-	save_machine_count(ctx, 'goyoku')
+	save_machine_count(ctx, 'goyoku', rate=rate, expected_value=round(GOYOKU_EV * rate, 4))
 
 
 @bot.command()
@@ -2679,6 +2647,8 @@ async def madoka3(ctx):
 			await ctx.send('残高登録エラー')
 
 
+MADOKA3_EV = -32
+
 @bot.command(name='m-madoka3')
 async def m_madoka3(ctx, rate_str=None):
 	if not await _check_m_permission(ctx):
@@ -2765,7 +2735,7 @@ async def m_madoka3(ctx, rate_str=None):
 	total = round(min(total_balls + rest, 95000) * rate)
 	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 	await _apply_balance(ctx, total - in_money)
-	save_machine_count(ctx, 'madoka3')
+	save_machine_count(ctx, 'madoka3', rate=rate, expected_value=round(MADOKA3_EV * rate, 4))
 
 
 @bot.command()
@@ -2865,6 +2835,8 @@ async def takt(ctx):
 			await ctx.send('残高登録エラー')
 
 
+TAKT_EV = -62
+
 @bot.command(name='m-takt')
 async def m_takt(ctx, rate_str=None):
 	if not await _check_m_permission(ctx):
@@ -2957,7 +2929,7 @@ async def m_takt(ctx, rate_str=None):
 	total_yen = round(min(total_net + rest, 95000) * rate)
 	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total_yen}円\n[{ctx.author}] 収支:{total_yen - in_money}円')
 	await _apply_balance(ctx, total_yen - in_money)
-	save_machine_count(ctx, 'takt')
+	save_machine_count(ctx, 'takt', rate=rate, expected_value=round(TAKT_EV * rate, 4))
 
 
 @bot.command()
@@ -2980,8 +2952,8 @@ async def ghoul(ctx):
 			normal_total += normal_cnt
 			normal_cnt = 0
 
-	in_money = math.ceil(normal_total / 8.41) * 500
-	rest = math.ceil(((0 - normal_total) % 8.41) / 8.41 * 125)
+	in_money = math.ceil(normal_total / 8.38) * 500
+	rest = math.ceil(((0 - normal_total) % 8.38) / 8.38 * 125)
 	await ctx.send(f'[{ctx.author}] {normal_cnt}Gで当選しました。')
 
 	total_net += 1400
@@ -3035,6 +3007,8 @@ async def ghoul(ctx):
 			await ctx.send('残高登録エラー')
 
 
+GHOUL_EV = -37
+
 @bot.command(name='m-ghoul')
 async def m_ghoul(ctx, rate_str=None):
 	if not await _check_m_permission(ctx):
@@ -3067,8 +3041,8 @@ async def m_ghoul(ctx, rate_str=None):
 			normal_cnt = 0
 
 	unit_cost = round(125 * rate)
-	in_money = math.ceil(normal_total / 8.41) * unit_cost
-	rest = math.ceil(((0 - normal_total) % 8.41) / 8.41 * 125)
+	in_money = math.ceil(normal_total / 8.38) * unit_cost
+	rest = math.ceil(((0 - normal_total) % 8.38) / 8.38 * 125)
 	await ctx.send(f'[{ctx.author}] {normal_cnt}Gで当選しました。')
 
 	total_net += 1400
@@ -3106,7 +3080,7 @@ async def m_ghoul(ctx, rate_str=None):
 	total_yen = round(min(total_net + rest, 95000) * rate)
 	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total_yen}円\n[{ctx.author}] 収支:{total_yen - in_money}円')
 	await _apply_balance(ctx, total_yen - in_money)
-	save_machine_count(ctx, 'ghoul')
+	save_machine_count(ctx, 'ghoul', rate=rate, expected_value=round(GHOUL_EV * rate, 4))
 
 
 token = getenv('DISCORD_BOT_TOKEN')

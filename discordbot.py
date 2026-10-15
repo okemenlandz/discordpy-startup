@@ -2016,15 +2016,35 @@ async def _check_m_permission(ctx):
 		return False
 	return True
 
+async def _check_m_permission_with_rate(ctx):
+	if not await _check_m_basic(ctx):
+		return False, None
+	rate = _get_declared_rate(ctx.author.id)
+	if rate is None:
+		await ctx.send('本日のレートが未宣言です。/m-rate <レート> で宣言してください')
+		return False, None
+	res2 = requests.post(f"{M_DAILY_API}/{ctx.author.id}")
+	if res2.status_code == 429:
+		data = res2.json()
+		await ctx.send(f'本日の上限（{data["limit"]}回）に達しています（本日 {data["count"]}回 プレイ済み）')
+		return False, None
+	return True, rate
 
-async def _notify_if_milestone(ctx):
+
+async def _notify_if_milestone(ctx, rate=None):
 	try:
 		res = requests.get(f"{M_DAILY_API}/{ctx.author.id}")
-		if res.status_code == 200 and res.json().get('count') == 15:
-			res2 = requests.get(f"{MACHINE_SETTINGS_API}/average")
-			if res2.status_code == 200:
-				avg = res2.json()['average']
-				await ctx.send(f'[{ctx.author}] 本日15回目！本日の平均設定: {avg:.2f}')
+		if res.status_code == 200:
+			data = res.json()
+			count = data.get('count', 0)
+			limit = 20
+			remaining = limit - count
+			await ctx.send(f'[{ctx.author}] 本日残り{remaining}回')
+			if count == 15 and rate == 4:
+				res2 = requests.get(f"{MACHINE_SETTINGS_API}/average")
+				if res2.status_code == 200:
+					avg = res2.json()['average']
+					await ctx.send(f'[{ctx.author}] 本日15回目！本日の平均設定: {avg:.2f}')
 	except Exception:
 		pass
 
@@ -2067,15 +2087,14 @@ async def _apply_balance(ctx, diff, rate=None):
 		if updated_status == 200 and updated_users:
 			await send_balance_list(notify_channel, updated_users)
 
-	if rate == 4:
-		await _notify_if_milestone(ctx)
+	await _notify_if_milestone(ctx, rate=rate)
 
 	return True
 
 
 def _parse_rate(rate_str):
 	rate = float(rate_str)
-	if rate <= 0 or rate > 4:
+	if rate < 0.1 or rate > 4:
 		raise ValueError
 	return rate
 
@@ -2116,7 +2135,7 @@ async def m_rate(ctx, rate_str=None):
 	try:
 		rate = _parse_rate(rate_str)
 	except ValueError:
-		await ctx.send('レートは0より大きい数を指定してください（例: /m-rate 4）')
+		await ctx.send('レートは0.1以上の数を指定してください（例: /m-rate 4）')
 		return
 	res = requests.post(f"{M_DAILY_RATES_API}/{ctx.author.id}", data={'rate': rate})
 	if res.status_code == 409:
@@ -2130,11 +2149,8 @@ SYMPHOGEAR_EV = -24
 
 @bot.command(name='m-symphogear')
 async def m_symphogear(ctx):
-	if not await _check_m_permission(ctx):
-		return
-	rate = _get_declared_rate(ctx.author.id)
-	if rate is None:
-		await ctx.send('本日のレートが未宣言です。/m-rate <レート> で宣言してください')
+	ok, rate = await _check_m_permission_with_rate(ctx)
+	if not ok:
 		return
 	setting = _get_machine_setting('symphogear')
 	scale = _setting_scale(setting)
@@ -2245,11 +2261,8 @@ GEN_EV = -30
 
 @bot.command(name='m-gen')
 async def m_gen(ctx):
-	if not await _check_m_permission(ctx):
-		return
-	rate = _get_declared_rate(ctx.author.id)
-	if rate is None:
-		await ctx.send('本日のレートが未宣言です。/m-rate <レート> で宣言してください')
+	ok, rate = await _check_m_permission_with_rate(ctx)
+	if not ok:
 		return
 	setting = _get_machine_setting('gen')
 	scale = _setting_scale(setting)
@@ -2307,11 +2320,8 @@ GEN2_EV = -34
 
 @bot.command(name='m-gen2')
 async def m_gen2(ctx):
-	if not await _check_m_permission(ctx):
-		return
-	rate = _get_declared_rate(ctx.author.id)
-	if rate is None:
-		await ctx.send('本日のレートが未宣言です。/m-rate <レート> で宣言してください')
+	ok, rate = await _check_m_permission_with_rate(ctx)
+	if not ok:
 		return
 	setting = _get_machine_setting('gen2')
 	scale = _setting_scale(setting)
@@ -2388,11 +2398,8 @@ ARIA_EV = -16
 
 @bot.command(name='m-aria')
 async def m_aria(ctx):
-	if not await _check_m_permission(ctx):
-		return
-	rate = _get_declared_rate(ctx.author.id)
-	if rate is None:
-		await ctx.send('本日のレートが未宣言です。/m-rate <レート> で宣言してください')
+	ok, rate = await _check_m_permission_with_rate(ctx)
+	if not ok:
 		return
 	setting = _get_machine_setting('aria')
 	scale = _setting_scale(setting)
@@ -2543,11 +2550,8 @@ GOYOKU_EV = -40
 
 @bot.command(name='m-goyoku')
 async def m_goyoku(ctx):
-	if not await _check_m_permission(ctx):
-		return
-	rate = _get_declared_rate(ctx.author.id)
-	if rate is None:
-		await ctx.send('本日のレートが未宣言です。/m-rate <レート> で宣言してください')
+	ok, rate = await _check_m_permission_with_rate(ctx)
+	if not ok:
 		return
 	setting = _get_machine_setting('goyoku')
 	scale = _setting_scale(setting)
@@ -2720,11 +2724,8 @@ MADOKA3_EV = -32
 
 @bot.command(name='m-madoka3')
 async def m_madoka3(ctx):
-	if not await _check_m_permission(ctx):
-		return
-	rate = _get_declared_rate(ctx.author.id)
-	if rate is None:
-		await ctx.send('本日のレートが未宣言です。/m-rate <レート> で宣言してください')
+	ok, rate = await _check_m_permission_with_rate(ctx)
+	if not ok:
 		return
 	setting = _get_machine_setting('madoka3')
 	scale = _setting_scale(setting)
@@ -2907,11 +2908,8 @@ TAKT_EV = -62
 
 @bot.command(name='m-takt')
 async def m_takt(ctx):
-	if not await _check_m_permission(ctx):
-		return
-	rate = _get_declared_rate(ctx.author.id)
-	if rate is None:
-		await ctx.send('本日のレートが未宣言です。/m-rate <レート> で宣言してください')
+	ok, rate = await _check_m_permission_with_rate(ctx)
+	if not ok:
 		return
 	setting = _get_machine_setting('takt')
 	scale = _setting_scale(setting)
@@ -3079,11 +3077,8 @@ GHOUL_EV = -37
 
 @bot.command(name='m-ghoul')
 async def m_ghoul(ctx):
-	if not await _check_m_permission(ctx):
-		return
-	rate = _get_declared_rate(ctx.author.id)
-	if rate is None:
-		await ctx.send('本日のレートが未宣言です。/m-rate <レート> で宣言してください')
+	ok, rate = await _check_m_permission_with_rate(ctx)
+	if not ok:
 		return
 	setting = _get_machine_setting('ghoul')
 	scale = _setting_scale(setting)
@@ -3224,11 +3219,8 @@ DAISTAR_EV = 0
 
 @bot.command(name='m-daistar')
 async def m_daistar(ctx):
-	if not await _check_m_permission(ctx):
-		return
-	rate = _get_declared_rate(ctx.author.id)
-	if rate is None:
-		await ctx.send('本日のレートが未宣言です。/m-rate <レート> で宣言してください')
+	ok, rate = await _check_m_permission_with_rate(ctx)
+	if not ok:
 		return
 	setting = _get_machine_setting('daistar')
 	scale = _setting_scale(setting)
@@ -3287,6 +3279,37 @@ async def m_daistar(ctx):
 	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total_yen}円\n[{ctx.author}] 収支:{total_yen - in_money}円')
 	await _apply_balance(ctx, total_yen - in_money, rate=rate)
 	save_machine_count(ctx, 'daistar', rate=rate, expected_value=round(DAISTAR_EV * rate, 4))
+
+
+M_WEEKLY_MACHINES = ['symphogear', 'gen', 'gen2', 'aria', 'goyoku', 'madoka3', 'takt', 'ghoul', 'daistar']
+M_WEEKLY_ALLOWED_USER = 791993131817500674
+
+@bot.command(name='m-weekly')
+async def m_weekly(ctx):
+	if ctx.author.id != M_WEEKLY_ALLOWED_USER:
+		await ctx.send('このコマンドは使用できません')
+		return
+	res = requests.get(f"{MACHINE_SETTINGS_API}/weekly")
+	if res.status_code != 200:
+		await ctx.send('取得エラー')
+		return
+	data = res.json()
+	dates = data['dates']
+	settings = data['settings']
+
+	headers = [d[5:].replace('-', '/') for d in dates]
+	name_w = max(len(m) for m in M_WEEKLY_MACHINES)
+	col_w = 6
+
+	lines = [' ' * name_w + ''.join(h.rjust(col_w) for h in headers)]
+	for machine in M_WEEKLY_MACHINES:
+		row = machine.ljust(name_w)
+		for date in dates:
+			s = settings.get(machine, {}).get(date, 3)
+			row += str(s).rjust(col_w)
+		lines.append(row)
+
+	await ctx.send('```\n' + '\n'.join(lines) + '\n```')
 
 
 token = getenv('DISCORD_BOT_TOKEN')

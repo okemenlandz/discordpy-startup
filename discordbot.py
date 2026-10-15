@@ -118,6 +118,7 @@ async def help(ctx):
 		'/madoka3           まどか☆マギカ3 シミュレーター\n'
 		'/takt              タクト シミュレーター\n'
 		'/ghoul             喰種 シミュレーター\n'
+		'/daistar           ワールドダイスター シミュレーター\n'
 		'\n'
 		'【麻雀】\n'
 		'/nori <名前 得点 支払> ...  のり計算（残高に反映）\n'
@@ -1668,6 +1669,7 @@ async def mahjong(ctx, *args):
 """
 
 MONEY_API = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/money_yachin"
+M_DAILY_API = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/m_daily"
 MONEY_CHANNEL_ID = 1223067264987824218
 EX_MEMBERS = ['まてぞん', 'つちなか', 'しぐれ', 'ふぁりす']
 
@@ -1994,7 +1996,7 @@ async def syusi(ctx, *args):
 M_CHANNEL_ID = 1539649137283301498
 M_NOTIFY_CHANNEL_ID = 1539669882449436722
 
-async def _check_m_permission(ctx):
+async def _check_m_basic(ctx):
 	if ctx.channel.id != M_CHANNEL_ID:
 		await ctx.send('許可されていません')
 		return False
@@ -2004,8 +2006,30 @@ async def _check_m_permission(ctx):
 		return False
 	return True
 
+async def _check_m_permission(ctx):
+	if not await _check_m_basic(ctx):
+		return False
+	res2 = requests.post(f"{M_DAILY_API}/{ctx.author.id}")
+	if res2.status_code == 429:
+		data = res2.json()
+		await ctx.send(f'本日の上限（{data["limit"]}回）に達しています（本日 {data["count"]}回 プレイ済み）')
+		return False
+	return True
 
-async def _apply_balance(ctx, diff):
+
+async def _notify_if_milestone(ctx):
+	try:
+		res = requests.get(f"{M_DAILY_API}/{ctx.author.id}")
+		if res.status_code == 200 and res.json().get('count') == 15:
+			res2 = requests.get(f"{MACHINE_SETTINGS_API}/average")
+			if res2.status_code == 200:
+				avg = res2.json()['average']
+				await ctx.send(f'[{ctx.author}] 本日15回目！本日の平均設定: {avg:.2f}')
+	except Exception:
+		pass
+
+
+async def _apply_balance(ctx, diff, rate=None):
 	users, status = get_all_moneys()
 	if status != 200:
 		await ctx.send('残高取得エラー')
@@ -2043,6 +2067,9 @@ async def _apply_balance(ctx, diff):
 		if updated_status == 200 and updated_users:
 			await send_balance_list(notify_channel, updated_users)
 
+	if rate == 4:
+		await _notify_if_milestone(ctx)
+
 	return True
 
 
@@ -2053,27 +2080,72 @@ def _parse_rate(rate_str):
 	return rate
 
 
-SYMPHOGEAR_EV = -24
+SETTING_SCALES = [48, 49, 50, 51, 52, 53]
+MACHINE_SETTINGS_API = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/machine_settings"
+M_DAILY_RATES_API = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/m_daily_rates"
 
-@bot.command(name='m-symphogear')
-async def m_symphogear(ctx, rate_str=None):
-	if not await _check_m_permission(ctx):
+def _setting_scale(setting):
+	return SETTING_SCALES[setting - 1] / 50
+
+def _get_machine_setting(machine):
+	try:
+		res = requests.get(f"{MACHINE_SETTINGS_API}/{machine}")
+		if res.status_code == 200:
+			return int(res.json()['setting'])
+	except Exception:
+		pass
+	return 3
+
+def _get_declared_rate(discord_user_id):
+	try:
+		res = requests.get(f"{M_DAILY_RATES_API}/{discord_user_id}")
+		if res.status_code == 200:
+			return float(res.json()['rate'])
+	except Exception:
+		pass
+	return None
+
+
+@bot.command(name='m-rate')
+async def m_rate(ctx, rate_str=None):
+	if not await _check_m_basic(ctx):
 		return
 	if rate_str is None:
-		await ctx.send('レートを入力してください（例: /m-symphogear 1）')
+		await ctx.send('レートを入力してください（例: /m-rate 4）')
 		return
 	try:
 		rate = _parse_rate(rate_str)
 	except ValueError:
-		await ctx.send('レートは0より大きく1以下の数を指定してください（例: /m-symphogear 1）')
+		await ctx.send('レートは0より大きい数を指定してください（例: /m-rate 4）')
 		return
+	res = requests.post(f"{M_DAILY_RATES_API}/{ctx.author.id}", data={'rate': rate})
+	if res.status_code == 409:
+		data = res.json()
+		await ctx.send(f'[{ctx.author}] 本日はすでにレート {data["rate"]} を宣言済みです')
+		return
+	await ctx.send(f'[{ctx.author}] 本日のレートを {rate} に宣言しました')
+
+
+SYMPHOGEAR_EV = -24
+
+@bot.command(name='m-symphogear')
+async def m_symphogear(ctx):
+	if not await _check_m_permission(ctx):
+		return
+	rate = _get_declared_rate(ctx.author.id)
+	if rate is None:
+		await ctx.send('本日のレートが未宣言です。/m-rate <レート> で宣言してください')
+		return
+	setting = _get_machine_setting('symphogear')
+	scale = _setting_scale(setting)
+	hit_slots = round(100 * scale)
 
 	flag = True
 	normal_cnt = 0
 	while flag:
 		v = random.randint(0, 19979)
 		normal_cnt += 1
-		if v > 19879:
+		if v > 19979 - hit_slots:
 			flag = False
 
 	unit_cost = round(125 * rate)
@@ -2142,7 +2214,7 @@ async def m_symphogear(ctx, rate_str=None):
 	if cnt[0] == 5:
 		payout = round(min(370 + rest, 95000) * rate)
 		await ctx.send(f'最終決戦終了\n投資:{in_money}円\n回収:{payout}円\n収支:{payout - in_money}円')
-		await _apply_balance(ctx, payout - in_money)
+		await _apply_balance(ctx, payout - in_money, rate=rate)
 	else:
 		await ctx.send('シンフォギアチャンス　突入')
 		while cnt[0] < 11:
@@ -2165,31 +2237,30 @@ async def m_symphogear(ctx, rate_str=None):
 		await ctx.send(f'{judge}\n[{ctx.author}] シンフォギアチャンス　終了\n[{ctx.author}] FEVER×{cnt[1]+cnt[2]+cnt[3]+cnt[4]}\n[{ctx.author}] (4)×{cnt[1]}\n(8)×{cnt[2]}\n(12)×{cnt[3]}\n(15)×{cnt[4]}')
 		total = round(min(cnt[1] * 370 + cnt[2] * 740 + cnt[3] * 1120 + cnt[4] * 1410 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
-		await _apply_balance(ctx, total - in_money)
+		await _apply_balance(ctx, total - in_money, rate=rate)
 	save_machine_count(ctx, 'symphogear', rate=rate, expected_value=round(SYMPHOGEAR_EV * rate, 4))
 
 
 GEN_EV = -30
 
 @bot.command(name='m-gen')
-async def m_gen(ctx, rate_str=None):
+async def m_gen(ctx):
 	if not await _check_m_permission(ctx):
 		return
-	if rate_str is None:
-		await ctx.send('レートを入力してください（例: /m-gen 1）')
+	rate = _get_declared_rate(ctx.author.id)
+	if rate is None:
+		await ctx.send('本日のレートが未宣言です。/m-rate <レート> で宣言してください')
 		return
-	try:
-		rate = _parse_rate(rate_str)
-	except ValueError:
-		await ctx.send('レートは0より大きく1以下の数を指定してください（例: /m-gen 1）')
-		return
+	setting = _get_machine_setting('gen')
+	scale = _setting_scale(setting)
+	hit_slots = round(206 * scale)
 
 	flag = True
 	normal_cnt = 0
 	while flag:
 		v = random.randint(0, 65535)
 		normal_cnt += 1
-		if v > 65329:
+		if v > 65535 - hit_slots:
 			flag = False
 
 	unit_cost = round(125 * rate)
@@ -2210,7 +2281,7 @@ async def m_gen(ctx, rate_str=None):
 	if cnt[2] == 0:
 		payout = round(min(600 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] チャレンジ失敗\n投資:{in_money}円\n回収:{payout}円\n収支:{payout - in_money}円')
-		await _apply_balance(ctx, payout - in_money)
+		await _apply_balance(ctx, payout - in_money, rate=rate)
 	else:
 		await ctx.send(f'[{ctx.author}] 超源RUSH 突入')
 		cnt = [0, 1, 0, 0]
@@ -2228,31 +2299,30 @@ async def m_gen(ctx, rate_str=None):
 		await ctx.send(f'{judge}\n[{ctx.author}] 超源RUSH　終了\n[{ctx.author}] 超源RUSH×{cnt[1]+cnt[2]}\n[{ctx.author}] 超源BONUS×{cnt[3]}')
 		total = round(min(cnt[1] * 300 + cnt[2] * 600 + cnt[3] * 900 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
-		await _apply_balance(ctx, total - in_money)
+		await _apply_balance(ctx, total - in_money, rate=rate)
 	save_machine_count(ctx, 'gen', rate=rate, expected_value=round(GEN_EV * rate, 4))
 
 
 GEN2_EV = -34
 
 @bot.command(name='m-gen2')
-async def m_gen2(ctx, rate_str=None):
+async def m_gen2(ctx):
 	if not await _check_m_permission(ctx):
 		return
-	if rate_str is None:
-		await ctx.send('レートを入力してください（例: /m-gen2 1）')
+	rate = _get_declared_rate(ctx.author.id)
+	if rate is None:
+		await ctx.send('本日のレートが未宣言です。/m-rate <レート> で宣言してください')
 		return
-	try:
-		rate = _parse_rate(rate_str)
-	except ValueError:
-		await ctx.send('レートは0より大きく1以下の数を指定してください（例: /m-gen2 1）')
-		return
+	setting = _get_machine_setting('gen2')
+	scale = _setting_scale(setting)
+	hit_thr = round(505 * scale)
 
 	flag = True
 	normal_cnt = 0
 	while flag:
 		v = random.randint(0, 65535)
 		normal_cnt += 1
-		if v < 505:
+		if v < hit_thr:
 			flag = False
 
 	unit_cost = round(125 * rate)
@@ -2270,7 +2340,7 @@ async def m_gen2(ctx, rate_str=None):
 	if cnt[1] == 0:
 		payout = round(min(210 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] チャレンジ失敗\n[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{payout}円\n[{ctx.author}] 収支:{payout - in_money}円')
-		await _apply_balance(ctx, payout - in_money)
+		await _apply_balance(ctx, payout - in_money, rate=rate)
 	else:
 		await ctx.send(f'[{ctx.author}] 超源RUSH 突入')
 		cnt = [0, 1, 0, 0]
@@ -2310,24 +2380,24 @@ async def m_gen2(ctx, rate_str=None):
 		await ctx.send(f'{judge}\n[{ctx.author}] 超源RUSH　終了\n[{ctx.author}] 超源RUSH×{cnt[1]}\n[{ctx.author}] 超源BONUS×{cnt[2]}')
 		total = round(min(cnt[1] * 210 + cnt[2] * 630 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
-		await _apply_balance(ctx, total - in_money)
+		await _apply_balance(ctx, total - in_money, rate=rate)
 	save_machine_count(ctx, 'gen2', rate=rate, expected_value=round(GEN2_EV * rate, 4))
 
 
 ARIA_EV = -16
 
 @bot.command(name='m-aria')
-async def m_aria(ctx, rate_str=None):
+async def m_aria(ctx):
 	if not await _check_m_permission(ctx):
 		return
-	if rate_str is None:
-		await ctx.send('レートを入力してください（例: /m-aria 1）')
+	rate = _get_declared_rate(ctx.author.id)
+	if rate is None:
+		await ctx.send('本日のレートが未宣言です。/m-rate <レート> で宣言してください')
 		return
-	try:
-		rate = _parse_rate(rate_str)
-	except ValueError:
-		await ctx.send('レートは0より大きく1以下の数を指定してください（例: /m-aria 1）')
-		return
+	setting = _get_machine_setting('aria')
+	scale = _setting_scale(setting)
+	hit_thr = round(164 * scale)
+	charge_thr = round(340 * scale)
 
 	flag = True
 	normal_cnt = 0
@@ -2342,10 +2412,10 @@ async def m_aria(ctx, rate_str=None):
 	while flag:
 		v = random.randint(0, 65535)
 		normal_cnt += 1
-		if v < 164:
+		if v < hit_thr:
 			flag = False
 			normal_total += normal_cnt
-		elif v < 340:
+		elif v < charge_thr:
 			await ctx.send(f'[{ctx.author}] {normal_cnt}G 緋弾チャージ')
 			charge_cnt += 1
 			normal_total += normal_cnt
@@ -2383,7 +2453,7 @@ async def m_aria(ctx, rate_str=None):
 				await ctx.send(f'[{ctx.author}] 3000×{cnt3000}　1500×{cnt1500}')
 				total = round(min(charge_cnt * 420 + cnt1500 * 1400 + cnt3000 * 2800 + cntover * 1400 + rest, 95000) * rate)
 				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
-				await _apply_balance(ctx, total - in_money)
+				await _apply_balance(ctx, total - in_money, rate=rate)
 				save_machine_count(ctx, 'aria', rate=rate, expected_value=round(ARIA_EV * rate, 4))
 				return
 
@@ -2417,7 +2487,7 @@ async def m_aria(ctx, rate_str=None):
 				await ctx.send(f'[{ctx.author}] 3000×{cnt3000}　1500×{cnt1500}')
 				total = round(min(charge_cnt * 420 + cnt1500 * 1400 + cnt3000 * 2800 + cntover * 1400 + rest, 95000) * rate)
 				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
-				await _apply_balance(ctx, total - in_money)
+				await _apply_balance(ctx, total - in_money, rate=rate)
 				save_machine_count(ctx, 'aria', rate=rate, expected_value=round(ARIA_EV * rate, 4))
 				return
 
@@ -2465,24 +2535,23 @@ async def m_aria(ctx, rate_str=None):
 		await ctx.send(f'[{ctx.author}] 3000×{cnt3000}　1500×{cnt1500}')
 		total = round(min(charge_cnt * 420 + cnt1500 * 1400 + cnt3000 * 2800 + cntover * 1400 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
-		await _apply_balance(ctx, total - in_money)
+		await _apply_balance(ctx, total - in_money, rate=rate)
 	save_machine_count(ctx, 'aria', rate=rate, expected_value=round(ARIA_EV * rate, 4))
 
 
 GOYOKU_EV = -40
 
 @bot.command(name='m-goyoku')
-async def m_goyoku(ctx, rate_str=None):
+async def m_goyoku(ctx):
 	if not await _check_m_permission(ctx):
 		return
-	if rate_str is None:
-		await ctx.send('レートを入力してください（例: /m-goyoku 1）')
+	rate = _get_declared_rate(ctx.author.id)
+	if rate is None:
+		await ctx.send('本日のレートが未宣言です。/m-rate <レート> で宣言してください')
 		return
-	try:
-		rate = _parse_rate(rate_str)
-	except ValueError:
-		await ctx.send('レートは0より大きく1以下の数を指定してください（例: /m-goyoku 1）')
-		return
+	setting = _get_machine_setting('goyoku')
+	scale = _setting_scale(setting)
+	hit_thr = round(188 * scale)
 
 	flag = True
 	normal_cnt = 0
@@ -2492,7 +2561,7 @@ async def m_goyoku(ctx, rate_str=None):
 	while flag:
 		v = random.randint(0, 65535)
 		normal_cnt += 1
-		if v < 188:
+		if v < hit_thr:
 			flag = False
 
 	unit_cost = round(125 * rate)
@@ -2508,7 +2577,7 @@ async def m_goyoku(ctx, rate_str=None):
 	if cnt[2] == 1:
 		payout = round(min(1500 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] 大兎殲滅戦 終了\n[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{payout}円\n[{ctx.author}] 収支:{payout - in_money}円')
-		await _apply_balance(ctx, payout - in_money)
+		await _apply_balance(ctx, payout - in_money, rate=rate)
 	else:
 		cnt1500 = 2
 		flag = True
@@ -2552,7 +2621,7 @@ async def m_goyoku(ctx, rate_str=None):
 		await ctx.send(f'[{ctx.author}] TOTAL {total_pt}pt')
 		total = round(min(cnt[1] * 280 + cnt[2] * 1400 + cnt[3] * 2800 + cntover * 1400 + rest, 95000) * rate)
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
-		await _apply_balance(ctx, total - in_money)
+		await _apply_balance(ctx, total - in_money, rate=rate)
 	save_machine_count(ctx, 'goyoku', rate=rate, expected_value=round(GOYOKU_EV * rate, 4))
 
 
@@ -2650,17 +2719,16 @@ async def madoka3(ctx):
 MADOKA3_EV = -32
 
 @bot.command(name='m-madoka3')
-async def m_madoka3(ctx, rate_str=None):
+async def m_madoka3(ctx):
 	if not await _check_m_permission(ctx):
 		return
-	if rate_str is None:
-		await ctx.send('レートを入力してください（例: /m-madoka3 1）')
+	rate = _get_declared_rate(ctx.author.id)
+	if rate is None:
+		await ctx.send('本日のレートが未宣言です。/m-rate <レート> で宣言してください')
 		return
-	try:
-		rate = _parse_rate(rate_str)
-	except ValueError:
-		await ctx.send('レートは0より大きく1以下の数を指定してください（例: /m-madoka3 1）')
-		return
+	setting = _get_machine_setting('madoka3')
+	scale = _setting_scale(setting)
+	hit_thr = round(205 * scale)
 
 	# 通常時: 1/319.9
 	flag = True
@@ -2668,7 +2736,7 @@ async def m_madoka3(ctx, rate_str=None):
 	while flag:
 		v = random.randint(0, 65535)
 		normal_cnt += 1
-		if v < 205:
+		if v < hit_thr:
 			flag = False
 
 	unit_cost = round(125 * rate)
@@ -2734,7 +2802,7 @@ async def m_madoka3(ctx, rate_str=None):
 
 	total = round(min(total_balls + rest, 95000) * rate)
 	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
-	await _apply_balance(ctx, total - in_money)
+	await _apply_balance(ctx, total - in_money, rate=rate)
 	save_machine_count(ctx, 'madoka3', rate=rate, expected_value=round(MADOKA3_EV * rate, 4))
 
 
@@ -2838,17 +2906,17 @@ async def takt(ctx):
 TAKT_EV = -62
 
 @bot.command(name='m-takt')
-async def m_takt(ctx, rate_str=None):
+async def m_takt(ctx):
 	if not await _check_m_permission(ctx):
 		return
-	if rate_str is None:
-		await ctx.send('レートを入力してください（例: /m-takt 1）')
+	rate = _get_declared_rate(ctx.author.id)
+	if rate is None:
+		await ctx.send('本日のレートが未宣言です。/m-rate <レート> で宣言してください')
 		return
-	try:
-		rate = _parse_rate(rate_str)
-	except ValueError:
-		await ctx.send('レートは0より大きく1以下の数を指定してください（例: /m-takt 1）')
-		return
+	setting = _get_machine_setting('takt')
+	scale = _setting_scale(setting)
+	hit_thr = round(47 * scale)
+	charge_thr = round(188 * scale)
 
 	normal_cnt = 0
 	normal_total = 0
@@ -2858,10 +2926,10 @@ async def m_takt(ctx, rate_str=None):
 	while True:
 		v = random.randint(0, 65535)
 		normal_cnt += 1
-		if v < 47:
+		if v < hit_thr:
 			normal_total += normal_cnt
 			break
-		elif v < 188:
+		elif v < charge_thr:
 			await ctx.send(f'[{ctx.author}] {normal_cnt}G 運命チャージ')
 			total_net += 280
 			total_disp += 300
@@ -2928,7 +2996,7 @@ async def m_takt(ctx, rate_str=None):
 	await ctx.send(f'[{ctx.author}] TOTAL {total_disp}個')
 	total_yen = round(min(total_net + rest, 95000) * rate)
 	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total_yen}円\n[{ctx.author}] 収支:{total_yen - in_money}円')
-	await _apply_balance(ctx, total_yen - in_money)
+	await _apply_balance(ctx, total_yen - in_money, rate=rate)
 	save_machine_count(ctx, 'takt', rate=rate, expected_value=round(TAKT_EV * rate, 4))
 
 
@@ -3010,17 +3078,17 @@ async def ghoul(ctx):
 GHOUL_EV = -37
 
 @bot.command(name='m-ghoul')
-async def m_ghoul(ctx, rate_str=None):
+async def m_ghoul(ctx):
 	if not await _check_m_permission(ctx):
 		return
-	if rate_str is None:
-		await ctx.send('レートを入力してください（例: /m-ghoul 1）')
+	rate = _get_declared_rate(ctx.author.id)
+	if rate is None:
+		await ctx.send('本日のレートが未宣言です。/m-rate <レート> で宣言してください')
 		return
-	try:
-		rate = _parse_rate(rate_str)
-	except ValueError:
-		await ctx.send('レートは0より大きく1以下の数を指定してください（例: /m-ghoul 1）')
-		return
+	setting = _get_machine_setting('ghoul')
+	scale = _setting_scale(setting)
+	hit_thr = round(164 * scale)
+	charge_thr = round(328 * scale)
 
 	normal_cnt = 0
 	normal_total = 0
@@ -3030,10 +3098,10 @@ async def m_ghoul(ctx, rate_str=None):
 	while True:
 		v = random.randint(0, 65535)
 		normal_cnt += 1
-		if v < 164:  # 1/399.9
+		if v < hit_thr:
 			normal_total += normal_cnt
 			break
-		elif v < 328:  # 1/399.9 喰種チャージ
+		elif v < charge_thr:
 			await ctx.send(f'[{ctx.author}] {normal_cnt}G 喰種チャージ')
 			total_net += 280
 			total_disp += 300
@@ -3079,8 +3147,146 @@ async def m_ghoul(ctx, rate_str=None):
 	await ctx.send(f'[{ctx.author}] TOTAL {total_disp}個')
 	total_yen = round(min(total_net + rest, 95000) * rate)
 	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total_yen}円\n[{ctx.author}] 収支:{total_yen - in_money}円')
-	await _apply_balance(ctx, total_yen - in_money)
+	await _apply_balance(ctx, total_yen - in_money, rate=rate)
 	save_machine_count(ctx, 'ghoul', rate=rate, expected_value=round(GHOUL_EV * rate, 4))
+
+
+@bot.command()
+async def daistar(ctx):
+	normal_cnt = 0
+	normal_total = 0
+	total_net = 0
+	total_disp = 0
+
+	while True:
+		v = random.randint(0, 65535)
+		normal_cnt += 1
+		if v < 412:  # 1/159
+			normal_total += normal_cnt
+			break
+
+	in_money = math.ceil(normal_total / 8.25) * 500
+	rest = math.ceil(((0 - normal_total) % 8.25) / 8.25 * 125)
+	await ctx.send(f'[{ctx.author}] {normal_cnt}Gで当選しました。')
+
+	total_net += 660
+	total_disp += 710
+	await ctx.send(f'[{ctx.author}] 710個')
+
+	if random.randint(0, 3) != 0:  # 75% 非突入
+		await ctx.send(f'[{ctx.author}] 終了')
+	else:  # 25% 突入
+		await ctx.send(f'[{ctx.author}] ダイスターRUSH 突入')
+		while True:
+			rush_hit = False
+			rush_g = 0
+			for i in range(7):
+				if random.randint(0, 65535) < 18725:  # 1/3.5
+					rush_hit = True
+					rush_g = i + 1
+					break
+
+			if rush_hit:
+				r = random.randint(0, 9)
+				if r == 0:  # 10%
+					total_net += 4700
+					total_disp += 5050
+					await ctx.send(f'[{ctx.author}] {rush_g}G 超演劇ワールドダイスターBONUS 5050個')
+				else:  # 90%
+					total_net += 280
+					total_disp += 300
+					await ctx.send(f'[{ctx.author}] {rush_g}G 300個')
+			else:
+				await ctx.send(f'[{ctx.author}] ダイスターRUSH 終了')
+				break
+
+	await ctx.send(f'[{ctx.author}] TOTAL {total_disp}個')
+	total_yen = min(total_net + rest, 95000) * 4
+	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total_yen}円\n[{ctx.author}] 収支:{total_yen - in_money}円')
+
+	diff = total_yen - in_money
+	old_balance, new_balance, status = save_balance(diff, ctx)
+	if status == 200:
+		await ctx.send(f'{old_balance:,}円 → {new_balance:,}円')
+	else:
+		status = auto_regist(ctx, ctx.author.global_name)
+		if status != 200:
+			await ctx.send('残高アカウント登録エラー')
+			return
+		old_balance, new_balance, status = save_balance(diff, ctx)
+		if status == 200:
+			await ctx.send(f'{old_balance:,}円 → {new_balance:,}円')
+		else:
+			await ctx.send('残高登録エラー')
+
+
+DAISTAR_EV = 0
+
+@bot.command(name='m-daistar')
+async def m_daistar(ctx):
+	if not await _check_m_permission(ctx):
+		return
+	rate = _get_declared_rate(ctx.author.id)
+	if rate is None:
+		await ctx.send('本日のレートが未宣言です。/m-rate <レート> で宣言してください')
+		return
+	setting = _get_machine_setting('daistar')
+	scale = _setting_scale(setting)
+	hit_thr = round(412 * scale)
+
+	normal_cnt = 0
+	normal_total = 0
+	total_net = 0
+	total_disp = 0
+
+	while True:
+		v = random.randint(0, 65535)
+		normal_cnt += 1
+		if v < hit_thr:
+			normal_total += normal_cnt
+			break
+
+	unit_cost = round(125 * rate)
+	in_money = math.ceil(normal_total / 8.25) * unit_cost
+	rest = math.ceil(((0 - normal_total) % 8.25) / 8.25 * 125)
+	await ctx.send(f'[{ctx.author}] {normal_cnt}Gで当選しました。')
+
+	total_net += 660
+	total_disp += 710
+	await ctx.send(f'[{ctx.author}] 710個')
+
+	if random.randint(0, 3) != 0:  # 75% 非突入
+		await ctx.send(f'[{ctx.author}] 終了')
+	else:  # 25% 突入
+		await ctx.send(f'[{ctx.author}] ダイスターRUSH 突入')
+		while True:
+			rush_hit = False
+			rush_g = 0
+			for i in range(7):
+				if random.randint(0, 65535) < 18725:  # 1/3.5
+					rush_hit = True
+					rush_g = i + 1
+					break
+
+			if rush_hit:
+				r = random.randint(0, 9)
+				if r == 0:  # 10%
+					total_net += 4700
+					total_disp += 5050
+					await ctx.send(f'[{ctx.author}] {rush_g}G 超演劇ワールドダイスターBONUS 5050個')
+				else:  # 90%
+					total_net += 280
+					total_disp += 300
+					await ctx.send(f'[{ctx.author}] {rush_g}G 300個')
+			else:
+				await ctx.send(f'[{ctx.author}] ダイスターRUSH 終了')
+				break
+
+	await ctx.send(f'[{ctx.author}] TOTAL {total_disp}個')
+	total_yen = round(min(total_net + rest, 95000) * rate)
+	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total_yen}円\n[{ctx.author}] 収支:{total_yen - in_money}円')
+	await _apply_balance(ctx, total_yen - in_money, rate=rate)
+	save_machine_count(ctx, 'daistar', rate=rate, expected_value=round(DAISTAR_EV * rate, 4))
 
 
 token = getenv('DISCORD_BOT_TOKEN')

@@ -2099,12 +2099,34 @@ def _parse_rate(rate_str):
 	return rate
 
 
-SETTING_SCALES = [48, 49, 50, 51, 52, 53]
+SETTING_SCALES = [46, 48, 50, 52, 54, 56]
 MACHINE_SETTINGS_API = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/machine_settings"
 M_DAILY_RATES_API = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/m_daily_rates"
 
 def _setting_scale(setting):
 	return SETTING_SCALES[setting - 1] / 50
+
+SETTING_HINT_TABLE = [
+	('奇数示唆',         [20,   10,   20,   10,   20,   10  ]),
+	('偶数示唆',         [10,   20,   10,   20,   10,   20  ]),
+	('高設定示唆(弱)',   [ 5,    5,    7,    8,    9,   10  ]),
+	('高設定示唆(強)',   [ 2,    2,    5,    5,   10,   10  ]),
+	('銅トロフィー',     [ 0,    2,    1,    1,    1,    1  ]),
+	('銀トロフィー',     [ 0,    0,    2,    1,    1,    1  ]),
+	('金トロフィー',     [ 0,    0,    0,    2,    1,    1  ]),
+	('キリントロフィー', [ 0,    0,    0,    0,    0.6,  0.3]),
+	('虹トロフィー',     [ 0,    0,    0,    0,    0,    0.1]),
+]
+
+async def _show_setting_hints(ctx, setting, rate):
+	scale = min(rate, 4) / 4
+	r = random.random() * 100
+	cumulative = 0
+	for name, probs in SETTING_HINT_TABLE:
+		cumulative += probs[setting - 1] * scale
+		if r < cumulative:
+			await ctx.send(f'[{ctx.author}] 設定示唆: {name}')
+			return
 
 def _get_machine_setting(machine):
 	try:
@@ -2255,6 +2277,7 @@ async def m_symphogear(ctx):
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 		await _apply_balance(ctx, total - in_money, rate=rate)
 	save_machine_count(ctx, 'symphogear', rate=rate, expected_value=round(SYMPHOGEAR_EV * rate, 4))
+	await _show_setting_hints(ctx, setting, rate)
 
 
 GEN_EV = -30
@@ -2314,6 +2337,7 @@ async def m_gen(ctx):
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 		await _apply_balance(ctx, total - in_money, rate=rate)
 	save_machine_count(ctx, 'gen', rate=rate, expected_value=round(GEN_EV * rate, 4))
+	await _show_setting_hints(ctx, setting, rate)
 
 
 GEN2_EV = -34
@@ -2392,6 +2416,7 @@ async def m_gen2(ctx):
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 		await _apply_balance(ctx, total - in_money, rate=rate)
 	save_machine_count(ctx, 'gen2', rate=rate, expected_value=round(GEN2_EV * rate, 4))
+	await _show_setting_hints(ctx, setting, rate)
 
 
 ARIA_EV = -16
@@ -2462,6 +2487,7 @@ async def m_aria(ctx):
 				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 				await _apply_balance(ctx, total - in_money, rate=rate)
 				save_machine_count(ctx, 'aria', rate=rate, expected_value=round(ARIA_EV * rate, 4))
+				await _show_setting_hints(ctx, setting, rate)
 				return
 
 			v = random.randint(0, 65535)
@@ -2496,6 +2522,7 @@ async def m_aria(ctx):
 				await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 				await _apply_balance(ctx, total - in_money, rate=rate)
 				save_machine_count(ctx, 'aria', rate=rate, expected_value=round(ARIA_EV * rate, 4))
+				await _show_setting_hints(ctx, setting, rate)
 				return
 
 			v = random.randint(0, 65535)
@@ -2544,6 +2571,7 @@ async def m_aria(ctx):
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 		await _apply_balance(ctx, total - in_money, rate=rate)
 	save_machine_count(ctx, 'aria', rate=rate, expected_value=round(ARIA_EV * rate, 4))
+	await _show_setting_hints(ctx, setting, rate)
 
 
 GOYOKU_EV = -40
@@ -2627,6 +2655,7 @@ async def m_goyoku(ctx):
 		await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 		await _apply_balance(ctx, total - in_money, rate=rate)
 	save_machine_count(ctx, 'goyoku', rate=rate, expected_value=round(GOYOKU_EV * rate, 4))
+	await _show_setting_hints(ctx, setting, rate)
 
 
 @bot.command()
@@ -2805,6 +2834,7 @@ async def m_madoka3(ctx):
 	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total}円\n[{ctx.author}] 収支:{total - in_money}円')
 	await _apply_balance(ctx, total - in_money, rate=rate)
 	save_machine_count(ctx, 'madoka3', rate=rate, expected_value=round(MADOKA3_EV * rate, 4))
+	await _show_setting_hints(ctx, setting, rate)
 
 
 @bot.command()
@@ -2996,6 +3026,7 @@ async def m_takt(ctx):
 	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total_yen}円\n[{ctx.author}] 収支:{total_yen - in_money}円')
 	await _apply_balance(ctx, total_yen - in_money, rate=rate)
 	save_machine_count(ctx, 'takt', rate=rate, expected_value=round(TAKT_EV * rate, 4))
+	await _show_setting_hints(ctx, setting, rate)
 
 
 @bot.command()
@@ -3144,6 +3175,7 @@ async def m_ghoul(ctx):
 	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total_yen}円\n[{ctx.author}] 収支:{total_yen - in_money}円')
 	await _apply_balance(ctx, total_yen - in_money, rate=rate)
 	save_machine_count(ctx, 'ghoul', rate=rate, expected_value=round(GHOUL_EV * rate, 4))
+	await _show_setting_hints(ctx, setting, rate)
 
 
 @bot.command()
@@ -3279,6 +3311,7 @@ async def m_daistar(ctx):
 	await ctx.send(f'[{ctx.author}] 投資:{in_money}円\n[{ctx.author}] 回収:{total_yen}円\n[{ctx.author}] 収支:{total_yen - in_money}円')
 	await _apply_balance(ctx, total_yen - in_money, rate=rate)
 	save_machine_count(ctx, 'daistar', rate=rate, expected_value=round(DAISTAR_EV * rate, 4))
+	await _show_setting_hints(ctx, setting, rate)
 
 
 M_WEEKLY_MACHINES = ['symphogear', 'gen', 'gen2', 'aria', 'goyoku', 'madoka3', 'takt', 'ghoul', 'daistar']
@@ -3294,6 +3327,9 @@ async def m_weekly(ctx):
 		await ctx.send('取得エラー')
 		return
 	data = res.json()
+	if 'dates' not in data or 'settings' not in data:
+		await ctx.send(f'レスポンス形式エラー: {data}')
+		return
 	dates = data['dates']
 	settings = data['settings']
 

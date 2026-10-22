@@ -2099,7 +2099,7 @@ def _parse_rate(rate_str):
 	return rate
 
 
-SETTING_SCALES = [46, 48, 50, 52, 54, 56]
+SETTING_SCALES = [47, 49, 50, 51, 53, 55]
 MACHINE_SETTINGS_API = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/machine_settings"
 M_DAILY_RATES_API = "https://okemenlandz.sakura.ne.jp/okemenlandz/public/api/m_daily_rates"
 
@@ -2109,8 +2109,8 @@ def _setting_scale(setting):
 SETTING_HINT_TABLE = [
 	('奇数示唆',         [20,   10,   20,   10,   20,   10  ]),
 	('偶数示唆',         [10,   20,   10,   20,   10,   20  ]),
-	('高設定示唆(弱)',   [ 5,    5,    7,    8,    9,   10  ]),
-	('高設定示唆(強)',   [ 2,    2,    5,    5,   10,   10  ]),
+	('高設定示唆(弱)',   [ 7,    7,    8,    8,    9,   10  ]),
+	('高設定示唆(強)',   [ 3,    3,    4,    5,    6,    8  ]),
 	('銅トロフィー',     [ 0,    2,    1,    1,    1,    1  ]),
 	('銀トロフィー',     [ 0,    0,    2,    1,    1,    1  ]),
 	('金トロフィー',     [ 0,    0,    0,    2,    1,    1  ]),

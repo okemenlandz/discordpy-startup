@@ -5,9 +5,25 @@ import math
 import requests
 import json
 import datetime
+import unicodedata
 from discord.ext import commands, tasks
 from os import getenv
 from fractions import Fraction
+
+
+def _disp_width(s):
+    w = 0
+    for c in s:
+        w += 2 if unicodedata.east_asian_width(c) in ('W', 'F') else 1
+    return w
+
+def _ljust_w(s, width, fillchar='　'):
+    current = _disp_width(s)
+    if current >= width:
+        return s
+    padding = width - current
+    fill_w = _disp_width(fillchar)
+    return s + fillchar * (padding // fill_w) + ' ' * (padding % fill_w)
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -1343,21 +1359,33 @@ async def nori(ctx,*args):
 	else:
 		toku_list = random.sample(p_list, amari)
 
-	# 人数分ループ
+	# 人数分ループ（先に全値計算）
+	rows = []
+	for i in range(0, len(args), 3):
+		name = args[i]
+		score = int(args[i+1])
+		payment = int(args[i+2])
+		if payment != 0:  # 子の時
+			receive = payment
+			diff = payment - score
+		else:  # 親の時
+			if i in toku_list:
+				receive = per + 1
+				diff = per + 1 - score
+			else:
+				receive = per
+				diff = per - score
+		rows.append((name, score, receive, diff))
+
+	w1 = max(len(str(r[1])) for r in rows)
+	w2 = max(len(str(r[2])) for r in rows)
+	w3 = max(len(str(r[3])) for r in rows)
+
 	name_diffs = {}
 	outputstr = "```"
-	for i in range(0,len(args),3):
-		if int(args[i+2]) != 0: # 子の時
-			diff = int(args[i+2]) - int(args[i+1])
-			outputstr += f'{args[i].ljust(5,"　")} {args[i+1].rjust(4)} {args[i+2].rjust(4)} {str(diff).rjust(4)}\n'
-		else: # 親の時
-			if i in toku_list:
-				diff = per - int(args[i+1]) + 1
-				outputstr += f'{args[i].ljust(5,"　")} {args[i+1].rjust(4)} {str(per + 1).rjust(4)} {str(diff).rjust(4)}\n'
-			else:
-				diff = per - int(args[i+1])
-				outputstr += f'{args[i].ljust(5,"　")} {args[i+1].rjust(4)} {str(per).rjust(4)} {str(diff).rjust(4)}\n'
-		name_diffs[args[i]] = diff
+	for name, score, receive, diff in rows:
+		outputstr += f'{_ljust_w(name,10)} {str(score).rjust(w1)} {str(receive).rjust(w2)} {str(diff).rjust(w3)}\n'
+		name_diffs[name] = diff
 
 	await ctx.send(outputstr + "```")
 
@@ -1416,8 +1444,8 @@ async def nori_rate(ctx, *args):
 		for i in random.sample([i for i, _ in dist_list], amari):
 			shares[i] += 1
 
-	name_diffs = {}
-	outputstr = "```"
+	# 先に全値計算
+	rows = []
 	for i in range(0, len(args), 4):
 		name = args[i]
 		score = int(args[i+1])
@@ -1426,10 +1454,19 @@ async def nori_rate(ctx, *args):
 		if ratio != 0:
 			receive = shares[i] + payment
 			diff = receive - score
-			outputstr += f'{name.ljust(5,"　")} {args[i+1].rjust(4)} {str(receive).rjust(4)} {str(diff).rjust(4)}\n'
 		else:
+			receive = payment
 			diff = payment - score
-			outputstr += f'{name.ljust(5,"　")} {args[i+1].rjust(4)} {args[i+2].rjust(4)} {str(diff).rjust(4)}\n'
+		rows.append((name, score, receive, diff))
+
+	w1 = max(len(str(r[1])) for r in rows)
+	w2 = max(len(str(r[2])) for r in rows)
+	w3 = max(len(str(r[3])) for r in rows)
+
+	name_diffs = {}
+	outputstr = "```"
+	for name, score, receive, diff in rows:
+		outputstr += f'{_ljust_w(name,10)} {str(score).rjust(w1)} {str(receive).rjust(w2)} {str(diff).rjust(w3)}\n'
 		name_diffs[name] = diff
 
 	await ctx.send(outputstr + "```")

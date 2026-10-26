@@ -5,7 +5,7 @@ import math
 import requests
 import json
 import datetime
-from discord.ext import commands
+from discord.ext import commands, tasks
 from os import getenv
 from fractions import Fraction
 
@@ -40,6 +40,9 @@ async def on_ready():
 
 	alert_channel = bot.get_channel(741963356663185533)
 	await alert_channel.send(msg)
+
+	if not midnight_excellent_announce.is_running():
+		midnight_excellent_announce.start()
 	
 @bot.event
 async def on_voice_state_update(member, before, after): 
@@ -121,7 +124,8 @@ async def help(ctx):
 		'/daistar           ワールドダイスター シミュレーター\n'
 		'\n'
 		'【麻雀】\n'
-		'/nori <名前 得点 支払> ...  のり計算（残高に反映）\n'
+		'/nori <名前 得点 支払> ...       のり計算（残高に反映）\n'
+		'/nori-rate <名前 得点 支払 比率> ...  比率分配のり計算（残高に反映）\n'
 		'/jantama <段位> <ルーム> <点数>  雀魂 昇段ボーダー計算\n'
 		'/val               対応機種一覧\n'
 		'\n'
@@ -1371,6 +1375,78 @@ async def nori(ctx,*args):
 					results.append(f'{name}: {old_balance:,}円 → {new_balance:,}円 ({diff:+,})')
 
 			reflect_msg = '```\n/nori\n' + '\n'.join(results) + '\n```'
+
+			updated_users, updated_status = get_all_moneys()
+
+			if ctx.channel.id == MONEY_CHANNEL_ID:
+				await ctx.send(reflect_msg)
+				if updated_status == 200 and updated_users:
+					await send_balance_list(ctx, updated_users)
+			else:
+				await ctx.send('残高に反映しました')
+				money_channel = bot.get_channel(MONEY_CHANNEL_ID)
+				if money_channel:
+					await money_channel.send(reflect_msg)
+					if updated_status == 200 and updated_users:
+						await send_balance_list(money_channel, updated_users)
+
+@bot.command(name='nori-rate')
+async def nori_rate(ctx, *args):
+	if len(args) % 4 != 0:
+		await ctx.send('使い方: `/nori-rate 名前 得点 支払 比率 ...`')
+		return
+
+	total = 0
+	dist_list = []
+	for i in range(0, len(args), 4):
+		total += int(args[i+1])
+		if int(args[i+2]) != 0:
+			total -= int(args[i+2])
+		if int(args[i+3]) != 0:
+			dist_list.append((i, int(args[i+3])))
+
+	total_ratio = sum(r for _, r in dist_list)
+
+	shares = {}
+	for i, ratio in dist_list:
+		shares[i] = math.floor(total * ratio / total_ratio)
+
+	amari = total - sum(shares.values())
+	if amari > 0:
+		for i in random.sample([i for i, _ in dist_list], amari):
+			shares[i] += 1
+
+	name_diffs = {}
+	outputstr = "```"
+	for i in range(0, len(args), 4):
+		name = args[i]
+		score = int(args[i+1])
+		payment = int(args[i+2])
+		ratio = int(args[i+3])
+		if ratio != 0:
+			receive = shares[i] + payment
+			diff = receive - score
+			outputstr += f'{name.ljust(5,"　")} {args[i+1].rjust(4)} {str(receive).rjust(4)} {str(diff).rjust(4)}\n'
+		else:
+			diff = payment - score
+			outputstr += f'{name.ljust(5,"　")} {args[i+1].rjust(4)} {args[i+2].rjust(4)} {str(diff).rjust(4)}\n'
+		name_diffs[name] = diff
+
+	await ctx.send(outputstr + "```")
+
+	users, status = get_all_moneys()
+	if status == 200 and users:
+		all_in_db = all(find_user_by_name(name, users) is not None for name in name_diffs)
+		if all_in_db:
+			results = []
+			for name, diff in name_diffs.items():
+				user = find_user_by_name(name, users)
+				old_balance = user['balance']
+				new_balance = old_balance + diff
+				if update_balance_by_uid(user['user_id'], new_balance) == 200:
+					results.append(f'{name}: {old_balance:,}円 → {new_balance:,}円 ({diff:+,})')
+
+			reflect_msg = '```\n/nori-rate\n' + '\n'.join(results) + '\n```'
 
 			updated_users, updated_status = get_all_moneys()
 
@@ -3346,6 +3422,62 @@ async def m_weekly(ctx):
 		lines.append(row)
 
 	await ctx.send('```\n' + '\n'.join(lines) + '\n```')
+
+
+_JST = datetime.timezone(datetime.timedelta(hours=9))
+
+
+_SETTING_EXCELLENT_PROBS = {4: 0.30, 5: 0.50, 6: 0.70}
+
+@tasks.loop(time=datetime.time(hour=0, minute=0, tzinfo=_JST))
+async def midnight_excellent_announce():
+	try:
+		now = datetime.datetime.now(_JST)
+		yesterday = (now - datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+
+		res = requests.get(f"{MACHINE_SETTINGS_API}/weekly")
+		if res.status_code != 200:
+			return
+		data = res.json()
+		dates = data.get('dates', [])
+		settings = data.get('settings', {})
+
+		if yesterday not in dates:
+			return
+
+		candidates = []
+		for machine in M_WEEKLY_MACHINES:
+			s = settings.get(machine, {}).get(yesterday, 3)
+			if s in _SETTING_EXCELLENT_PROBS:
+				if random.random() < _SETTING_EXCELLENT_PROBS[s]:
+					candidates.append(machine)
+
+		if not candidates:
+			max_setting = max(
+				(settings.get(machine, {}).get(yesterday, 1) for machine in M_WEEKLY_MACHINES),
+				default=1
+			)
+			top_machines = [m for m in M_WEEKLY_MACHINES
+							if settings.get(m, {}).get(yesterday, 1) == max_setting]
+			if top_machines:
+				candidates = [random.choice(top_machines)]
+
+		if not candidates:
+			return
+
+		date_str = yesterday[5:].replace('-', '/')
+		lines = [f'@everyone 【超優秀台一覧】{date_str}']
+		for machine in candidates:
+			lines.append(f'・{machine}')
+		msg = '\n'.join(lines)
+
+		channel = bot.get_channel(M_CHANNEL_ID)
+		if channel:
+			await channel.send(msg)
+	except Exception as e:
+		alert_channel = bot.get_channel(1298134191418114180)
+		if alert_channel:
+			await alert_channel.send(f'midnight_excellent_announce エラー: {e}')
 
 
 token = getenv('DISCORD_BOT_TOKEN')
